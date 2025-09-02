@@ -107,6 +107,20 @@ button.btn-accent { background: var(--accent-2); }
 .photo-tile.placeholder { opacity: .6; }
 .photo-remove { position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.55); color:#fff; border: 0; width: 24px; height: 24px; border-radius: 999px; cursor: pointer; }
 
+/* Generic dropdown (dd) */
+.dd { position: relative; display: inline-block; vertical-align: top; }
+.dd-trigger { display: inline-flex; align-items: center; gap: 6px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 6px; background: #fff; cursor: pointer; color: var(--fg); }
+.dd-trigger:hover { background: #f7f9fa; }
+.dd-caret { opacity: 0.7; font-size: 12px; }
+.dd-menu { position: absolute; top: calc(100% + 8px); background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.12); padding: 8px; z-index: 60; width: max-content; min-width: 220px; max-width: 360px; }
+.dd-right { right: 0; }
+.dd-left { left: 0; }
+.dd-item { display: flex; align-items: center; gap: 8px; width: 100%; padding: 6px 12px; border: 0; background: transparent; cursor: pointer; border-radius: 6px; text-align: left; color: var(--fg); }
+.dd-item span { flex: 1; white-space: normal; }
+.dd-item:hover { background: #f5f7f8; }
+.dd-item.is-active { font-weight: 600; }
+.dd-check { width: 14px; display: inline-block; color: var(--fg); }
+
 /* Home hero */
 .hero { background: linear-gradient(180deg, #fff 0%, #f7f9fa 100%); border-bottom: 1px solid var(--border); }
 .hero__inner { padding: 28px 0; }

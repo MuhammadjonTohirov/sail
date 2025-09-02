@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n';
 import { useRouter, useSearchParams } from 'next/navigation';
+import Dropdown from '@/components/ui/Dropdown';
 
 type Hit = { id: string; title: string; price?: number; currency?: string; media_urls?: string[] };
 type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; children: CategoryNode[] };
@@ -74,6 +75,7 @@ export default function SearchPage() {
   };
 
   useEffect(() => { run(); }, []);
+  useEffect(() => { run(); /* refresh on sort change */ }, [sort]);
 
   const saveSearch = async () => {
     const payload = { title: q || 'Search', query: { params: { q, min_price: minPrice, max_price: maxPrice, ...(selectedCategory ? { category_slug: selectedCategory.slug } : {}) } } };
@@ -91,14 +93,15 @@ export default function SearchPage() {
     <div>
       <div className="search-top">
         <input className="search-top__input" placeholder={t('searchTitle')} value={q} onChange={e => setQ(e.target.value)} onKeyDown={e => e.key === 'Enter' && run()} />
-        <select className="search-top__select" value={selectedCategory?.id || ''} onChange={e => {
-          const id = Number(e.target.value);
-          const slug = flatCategories.find(c => c.id === id)?.slug || '';
-          if (id) setSelectedCategory({ id, slug }); else setSelectedCategory(null);
-        }}>
-          <option value="">— {t('navSearch')} —</option>
-          {flatCategories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-        </select>
+        <Dropdown
+          value={selectedCategory?.id ? String(selectedCategory.id) : ''}
+          onChange={(v) => {
+            const id = Number(v);
+            const slug = flatCategories.find(c => c.id === id)?.slug || '';
+            if (v) setSelectedCategory({ id, slug }); else setSelectedCategory(null);
+          }}
+          options={[{ value: '', label: `— ${t('navSearch')} —` }, ...flatCategories.map(c => ({ value: String(c.id), label: c.name }))]}
+        />
         <button className="btn-accent" onClick={run}>🔍</button>
         <a className="btn-outline" href={`${base}/post`}>{t('postTitle')}</a>
       </div>
@@ -151,12 +154,16 @@ export default function SearchPage() {
             <div className="muted">{loading ? (locale === 'uz' ? 'Yuklanmoqda…' : 'Загрузка…') : `${total} ${locale === 'uz' ? 'e‘lon' : 'объявлений'}`}</div>
             <div className="row" style={{ alignItems: 'center' }}>
               <label className="muted">{locale === 'uz' ? 'Saralash:' : 'Сортировка:'}</label>
-              <select value={sort} onChange={(e) => setSort(e.target.value)}>
-                <option value="relevance">{locale === 'uz' ? 'Relevanta' : 'По релевантности'}</option>
-                <option value="newest">{locale === 'uz' ? 'Yangi' : 'Сначала новые'}</option>
-                <option value="price_asc">{locale === 'uz' ? 'Narx o‘s.' : 'Цена: по возрастанию'}</option>
-                <option value="price_desc">{locale === 'uz' ? 'Narx kamay.' : 'Цена: по убыванию'}</option>
-              </select>
+              <Dropdown
+                value={sort}
+                onChange={(v) => setSort(v)}
+                options={[
+                  { value: 'relevance', label: locale === 'uz' ? 'Relevanta' : 'По релевантности' },
+                  { value: 'newest', label: locale === 'uz' ? 'Yangi' : 'Сначала новые' },
+                  { value: 'price_asc', label: locale === 'uz' ? 'Narx o‘s.' : 'Цена: по возрастанию' },
+                  { value: 'price_desc', label: locale === 'uz' ? 'Narx kamay.' : 'Цена: по убыванию' },
+                ]}
+              />
               <button className="btn-outline" onClick={saveSearch}>{locale === 'uz' ? 'Qidiruvni saqlash' : 'Сохранить поиск'}</button>
             </div>
           </div>

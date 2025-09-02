@@ -3,6 +3,8 @@ import { Listings, Taxonomy } from '@/lib/api';
 import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
+import Dropdown from '@/components/ui/Dropdown';
+import MultiDropdown from '@/components/ui/MultiDropdown';
 
 type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; children: CategoryNode[] };
 type Attr = { id: number; key: string; label: string; type: string; unit?: string; options?: string[]; is_required?: boolean; min_number?: number; max_number?: number };
@@ -95,10 +97,11 @@ export default function PostPage() {
           </div>
           <div className="field">
             <label>{label('Категория*', 'Kategoriya*')}</label>
-            <select value={selectedCat || ''} onChange={e => setSelectedCat(e.target.value ? Number(e.target.value) : null)}>
-              <option value="">{label('Выберите категорию', 'Kategoriyani tanlang')}</option>
-              {flatCategories.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
-            </select>
+            <Dropdown
+              value={selectedCat ? String(selectedCat) : ''}
+              onChange={(v) => setSelectedCat(v ? Number(v) : null)}
+              options={[{ value: '', label: label('Выберите категорию', 'Kategoriyani tanlang') }, ...flatCategories.map(c => ({ value: String(c.id), label: c.name }))]}
+            />
           </div>
         </div>
 
@@ -137,15 +140,18 @@ export default function PostPage() {
               <div key={a.id} className="field">
                 <label>{a.label}{a.is_required ? ' *' : ''}</label>
                 {a.type === 'select' && (
-                  <select value={values[a.key] || ''} onChange={e => setValues(s => ({ ...s, [a.key]: e.target.value }))}>
-                    <option value="">--</option>
-                    {(a.options || []).map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
+                  <Dropdown
+                    value={values[a.key] || ''}
+                    onChange={(v) => setValues(s => ({ ...s, [a.key]: v }))}
+                    options={[{ value: '', label: '--' }, ...(a.options || []).map(o => ({ value: String(o), label: String(o) }))]}
+                  />
                 )}
                 {a.type === 'multiselect' && (
-                  <select multiple value={values[a.key] || []} onChange={e => setValues(s => ({ ...s, [a.key]: Array.from(e.target.selectedOptions).map(o => o.value) }))}>
-                    {(a.options || []).map(o => <option key={o} value={o}>{o}</option>)}
-                  </select>
+                  <MultiDropdown
+                    value={values[a.key] || []}
+                    onChange={(v) => setValues(s => ({ ...s, [a.key]: v }))}
+                    options={(a.options || []).map(o => ({ value: String(o), label: String(o) }))}
+                  />
                 )}
                 {(a.type === 'number' || a.type === 'range') && (
                   <input type="number" value={values[a.key] ?? ''} min={a.min_number ?? undefined} max={a.max_number ?? undefined} onChange={e => setValues(s => ({ ...s, [a.key]: e.target.value }))} />
@@ -166,17 +172,19 @@ export default function PostPage() {
           <div className="row">
             <div className="field" style={{ flex: 1 }}>
               <label>{label('Регион', 'Viloyat')}</label>
-              <select value={rootLoc || ''} onChange={e => setRootLoc(e.target.value ? Number(e.target.value) : null)}>
-                <option value="">--</option>
-                {roots.map(r => (<option key={r.id} value={r.id}>{r.name}</option>))}
-              </select>
+              <Dropdown
+                value={rootLoc ? String(rootLoc) : ''}
+                onChange={(v) => setRootLoc(v ? Number(v) : null)}
+                options={[{ value: '', label: '--' }, ...roots.map(r => ({ value: String(r.id), label: r.name }))]}
+              />
             </div>
             <div className="field" style={{ flex: 1 }}>
               <label>{label('Город/район', 'Shahar/tuman')}</label>
-              <select value={locationId || ''} onChange={e => setLocationId(e.target.value ? Number(e.target.value) : null)} disabled={!children.length}>
-                <option value="">--</option>
-                {children.map(c => (<option key={c.id} value={c.id}>{c.name}</option>))}
-              </select>
+              <Dropdown
+                value={locationId ? String(locationId) : ''}
+                onChange={(v) => setLocationId(v ? Number(v) : null)}
+                options={[{ value: '', label: '--' }, ...children.map(c => ({ value: String(c.id), label: c.name }))]}
+              />
             </div>
           </div>
         </div>
