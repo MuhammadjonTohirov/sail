@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Django: Runserver (server)",
+      "type": "python",
+      "request": "launch",
+      "program": "${workspaceFolder}/server/manage.py",
+      "args": ["runserver", "0.0.0.0:8080"],
+      "django": true,
+      "cwd": "${workspaceFolder}/server",
+      "envFile": "${workspaceFolder}/server/.env",
+      "console": "integratedTerminal",
+      // interpreterpath: /server/venv/bin/python3.12
+      "python": "${workspaceFolder}/server/venv/bin/python3.12"
+    }
+  ]
+}
+

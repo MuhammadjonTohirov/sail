@@ -1,0 +1,7 @@
+Mirror in progress since Mon, 01 Sep 2025 07:42:27 .. please wait!
+winhttrack https://www.olx.uz -O "/Users/r/Documents/Development/Personal/clones/olx_clone" -%v 
+To pause the engine: create an empty file named 'hts-stop.lock'
+PID=34652
+UID=501
+GID=501
+START=1756694547

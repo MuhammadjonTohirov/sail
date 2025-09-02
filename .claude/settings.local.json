@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python manage.py:*)",
+      "Bash(source:*)",
+      "Bash(curl:*)",
+      "Bash(npm start)",
+      "Bash(npm start:*)",
+      "Bash(lsof:*)",
+      "Bash(PORT=3002 npm start)",
+      "Bash(pip install:*)",
+      "Bash(python3 manage.py startapp:*)",
+      "Bash(python3 manage.py setup_payments:*)",
+      "Bash(python3 manage.py test_payment_integration:*)",
+      "Bash(find:*)",
+      "Bash(python test:*)",
+      "Bash(python3:*)",
+      "Bash(npm install:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
