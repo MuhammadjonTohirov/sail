@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import { Taxonomy } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 
-type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; children?: CategoryNode[] };
+type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; icon?: string; icon_url?: string; children?: CategoryNode[] };
 
 export default function CategoriesGrid() {
   const [cats, setCats] = useState<CategoryNode[]>([]);
@@ -23,7 +23,13 @@ export default function CategoriesGrid() {
         <div className="category-grid">
           {cats.map((c) => (
             <a key={c.id} className="category-tile" href={`${base}/search?category_slug=${encodeURIComponent(c.slug)}`}>
-              <div className="category-tile__icon" aria-hidden>{c.name.charAt(0)}</div>
+              <div className="category-tile__icon" aria-hidden>
+                {c.icon_url ? (
+                  <img src={c.icon_url} alt="" style={{ width: 24, height: 24, objectFit: 'contain' }} />
+                ) : (
+                  c.icon || c.name.charAt(0)
+                )}
+              </div>
               <div className="category-tile__name">{c.name}</div>
             </a>
           ))}
@@ -32,4 +38,3 @@ export default function CategoriesGrid() {
     </section>
   );
 }
-

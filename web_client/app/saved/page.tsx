@@ -1,5 +1,6 @@
 "use client";
 import { useEffect, useState } from 'react';
+import { apiFetch } from '@/lib/api';
 
 type Saved = { id: number; title: string; query: any; is_active: boolean; created_at: string };
 
@@ -9,25 +10,18 @@ export default function SavedPage() {
 
   const load = async () => {
     try {
-      const token = localStorage.getItem('access_token') || '';
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/saved-searches`, { headers: token ? { Authorization: `Bearer ${token}` } : undefined });
-      if (!res.ok) throw new Error('Failed');
-      setItems(await res.json());
+      const res = await apiFetch('/api/v1/saved-searches');
+      setItems(res);
     } catch (e: any) { setError(e.message); }
   };
   useEffect(() => { load(); }, []);
 
   const toggle = async (id: number, isActive: boolean) => {
-    const token = localStorage.getItem('access_token') || '';
-    await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/saved-searches/${id}`, {
-      method: 'PATCH', headers: { 'Content-Type': 'application/json', ...(token ? { Authorization: `Bearer ${token}` } : {}) },
-      body: JSON.stringify({ is_active: !isActive })
-    });
+    await apiFetch(`/api/v1/saved-searches/${id}`, { method: 'PATCH', body: JSON.stringify({ is_active: !isActive }) });
     await load();
   };
   const del = async (id: number) => {
-    const token = localStorage.getItem('access_token') || '';
-    await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/saved-searches/${id}`, { method: 'DELETE', headers: token ? { Authorization: `Bearer ${token}` } : undefined });
+    await apiFetch(`/api/v1/saved-searches/${id}`, { method: 'DELETE' });
     await load();
   };
 
@@ -50,4 +44,3 @@ export default function SavedPage() {
     </div>
   );
 }
-

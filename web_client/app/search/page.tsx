@@ -1,13 +1,15 @@
 "use client";
-import { Search, Taxonomy } from '@/lib/api';
+import { Search, Taxonomy, apiFetch } from '@/lib/api';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Dropdown from '@/components/ui/Dropdown';
+import CategoryPicker from '@/components/ui/CategoryPicker';
+import ProductCard from '@/components/search/ProductCard';
 
-type Hit = { id: string; title: string; price?: number; currency?: string; media_urls?: string[] };
-type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; children: CategoryNode[] };
+type Hit = { id: string; title: string; price?: number; currency?: string; media_urls?: string[]; location_name_ru?: string; location_name_uz?: string; refreshed_at?: string };
+type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; icon?: string; children: CategoryNode[] };
 type Attr = { id: number; key: string; label: string; type: string; options?: string[] };
 
 export default function SearchPage() {
@@ -22,6 +24,8 @@ export default function SearchPage() {
   const [sort, setSort] = useState(sp.get('sort') || 'relevance');
   const [categoryTree, setCategoryTree] = useState<CategoryNode[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<{ id: number; slug: string } | null>(null);
+  const [selectedCategoryPath, setSelectedCategoryPath] = useState<string>('');
+  const [catPickerOpen, setCatPickerOpen] = useState(false);
   const [attributes, setAttributes] = useState<Attr[]>([]);
   const [attrValues, setAttrValues] = useState<Record<string, any>>({});
   const [results, setResults] = useState<Hit[]>([]);
@@ -29,6 +33,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => { (async () => { setCategoryTree(await Taxonomy.categories()); })(); }, []);
+  // No dedicated "my listings" merge here — results come from search backend
   useEffect(() => { (async () => {
     if (selectedCategory?.id) setAttributes(await Taxonomy.attributes(selectedCategory.id)); else setAttributes([]);
   })(); }, [selectedCategory?.id]);
@@ -80,35 +85,99 @@ export default function SearchPage() {
   const saveSearch = async () => {
     const payload = { title: q || 'Search', query: { params: { q, min_price: minPrice, max_price: maxPrice, ...(selectedCategory ? { category_slug: selectedCategory.slug } : {}) } } };
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/api/v1/saved-searches`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', ...(localStorage.getItem('access_token') ? { Authorization: `Bearer ${localStorage.getItem('access_token')}` } : {}) },
-        body: JSON.stringify(payload)
-      }).then(r => { if (!r.ok) throw new Error('Failed'); });
+      await apiFetch('/api/v1/saved-searches', { method: 'POST', body: JSON.stringify(payload) });
       alert('Saved');
     } catch (e) { alert('Save failed'); }
   };
 
+  const label = (ru: string, uz: string) => locale === 'uz' ? uz : ru;
+
   return (
-    <div>
-      <div className="search-top">
-        <input className="search-top__input" placeholder={t('searchTitle')} value={q} onChange={e => setQ(e.target.value)} onKeyDown={e => e.key === 'Enter' && run()} />
-        <Dropdown
-          value={selectedCategory?.id ? String(selectedCategory.id) : ''}
-          onChange={(v) => {
-            const id = Number(v);
+    <div className="container" style={{ paddingTop: 16, paddingBottom: 32 }}>
+      {/* Search Bar */}
+      <div className="olx-search-bar">
+        <div className="search-input-wrapper">
+          <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input
+            className="olx-search-input"
+            placeholder={label('Я ищу...', 'Men qidiryapman...')}
+            value={q}
+            onChange={e => setQ(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && run()}
+          />
+        </div>
+
+        <button
+          type="button"
+          className="category-select-btn"
+          onClick={() => setCatPickerOpen(true)}
+        >
+          <span className="truncate">
+            {selectedCategory ? selectedCategoryPath : label('Все категории', 'Barcha kategoriyalar')}
+          </span>
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        <button className="olx-search-btn" onClick={run} disabled={loading}>
+          {loading ? (
+            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+          ) : (
+            label('Искать', 'Qidirish')
+          )}
+        </button>
+
+        <CategoryPicker
+          open={catPickerOpen}
+          categories={categoryTree}
+          onClose={() => setCatPickerOpen(false)}
+          onSelect={({ id, path }) => {
             const slug = flatCategories.find(c => c.id === id)?.slug || '';
-            if (v) setSelectedCategory({ id, slug }); else setSelectedCategory(null);
+            setSelectedCategory({ id, slug });
+            setSelectedCategoryPath(path);
+            setCatPickerOpen(false);
+            setTimeout(() => run(), 0);
           }}
-          options={[{ value: '', label: `— ${t('navSearch')} —` }, ...flatCategories.map(c => ({ value: String(c.id), label: c.name }))]}
         />
-        <button className="btn-accent" onClick={run}>🔍</button>
-        <a className="btn-outline" href={`${base}/post`}>{t('postTitle')}</a>
       </div>
+
+      {/* Breadcrumbs */}
+      {selectedCategory && (
+        <div className="breadcrumbs mb-4">
+          <a href={`${base}/search`} className="breadcrumb-link">{label('Главная', 'Bosh sahifa')}</a>
+          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+          <span className="text-gray-700">{selectedCategoryPath}</span>
+        </div>
+      )}
 
       <div className="search-layout">
         <aside className="search-filters card">
-          <h3 style={{ marginTop: 0 }}>{locale === 'uz' ? 'Filtrlar' : 'Фильтры'}</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold m-0">{label('Фильтры', 'Filtrlar')}</h3>
+            {(selectedCategory || minPrice || maxPrice || Object.keys(attrValues).length > 0) && (
+              <button
+                onClick={() => {
+                  setSelectedCategory(null);
+                  setSelectedCategoryPath('');
+                  setMinPrice('');
+                  setMaxPrice('');
+                  setAttrValues({});
+                  setTimeout(() => run(), 0);
+                }}
+                className="text-sm text-[#23E5DB] hover:text-[#1dd4cb]"
+              >
+                {label('Сбросить', 'Tozalash')}
+              </button>
+            )}
+          </div>
           <div className="filter-group">
             <label className="muted">{locale === 'uz' ? 'Narx' : 'Цена'}</label>
             <div className="row">
@@ -177,12 +246,7 @@ export default function SearchPage() {
           ) : (
             <div className="grid">
               {results.map((r) => (
-                <div key={r.id} className="card">
-                  {r.media_urls?.[0] && (<img src={r.media_urls[0]} alt="" style={{ width: '100%', height: 160, objectFit: 'cover', borderRadius: 6 }} />)}
-                  <h3 style={{ margin: '8px 0' }}>{r.title}</h3>
-                  {r.price !== undefined && (<p><strong>{r.price}</strong> {r.currency}</p>)}
-                  <Link href={`${base}/l/${r.id}`}>{locale === 'uz' ? 'Ochish' : 'Открыть'}</Link>
-                </div>
+                <ProductCard key={r.id} hit={r as any} href={`${base}/l/${r.id}`} locale={locale} />
               ))}
             </div>
           )}
