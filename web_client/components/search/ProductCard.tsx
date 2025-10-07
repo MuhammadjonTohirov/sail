@@ -1,6 +1,7 @@
 "use client";
 import Link from 'next/link';
 import { useState } from 'react';
+import { FavoriteButton } from '@/components/FavoriteButton';
 
 export type ProductHit = {
   id: string;
@@ -16,7 +17,6 @@ export type ProductHit = {
 };
 
 export default function ProductCard({ hit, href, locale = 'ru' }: { hit: ProductHit; href: string; locale?: 'ru' | 'uz' }) {
-  const [isFavorited, setIsFavorited] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   const img = hit.media_urls?.[0];
@@ -38,13 +38,6 @@ export default function ProductCard({ hit, href, locale = 'ru' }: { hit: Product
   };
 
   const timeAgo = hit.refreshed_at ? getTimeAgo(hit.refreshed_at) : '';
-
-  const handleFavoriteClick = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsFavorited(!isFavorited);
-    // TODO: Call API to add/remove favorite
-  };
 
   return (
     <Link href={href} className="olx-product-card">
@@ -77,26 +70,10 @@ export default function ProductCard({ hit, href, locale = 'ru' }: { hit: Product
           </div>
         )}
 
-        {/* Favorite Button */}
-        <button
-          onClick={handleFavoriteClick}
-          className="favorite-btn"
-          aria-label={locale === 'uz' ? 'Sevimlilar' : 'В избранное'}
-        >
-          <svg
-            className="w-5 h-5"
-            fill={isFavorited ? 'currentColor' : 'none'}
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-            />
-          </svg>
-        </button>
+        {/* Favorite Button - positioned absolutely in top right */}
+        <div style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 10 }}>
+          <FavoriteButton listingId={parseInt(hit.id)} size="sm" />
+        </div>
       </div>
 
       {/* Content */}

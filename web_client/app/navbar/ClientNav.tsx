@@ -73,10 +73,26 @@ export default function ClientNav() {
     <header className="topbar">
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <Link href={isUZ ? '/uz' : '/'}>{t('brand')}</Link>
-        <nav style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+        <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link href={`${base}/search`}>{t('navSearch')}</Link>
+
+          {/* Favorites Link with Heart Icon */}
+          <Link
+            href={`${base}/favorites`}
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 4,
+              textDecoration: 'none'
+            }}
+            title={locale === 'uz' ? 'Sevimlilar' : 'Избранное'}
+          >
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+            </svg>
+          </Link>
+
           <Link href={`${base}/post`} className="btn-outline" style={{ padding: 8 }}>{t('navPost')}</Link>
-          <Link href={`${base}/u/listings`}>{t('navMyListings')}</Link>
           {authed ? (
             <div className="dropdown" ref={menuRef}>
               <button className="btn-outline" style={{ padding: 8 }} onClick={(e) => { e.preventDefault(); setMenuOpen((v) => !v); }} aria-haspopup="menu" aria-expanded={menuOpen}>

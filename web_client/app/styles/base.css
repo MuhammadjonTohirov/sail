@@ -1,0 +1,65 @@
+/* OLX-inspired theme variables */
+:root {
+  --fg: #002F34;
+  --bg: #F2F4F5;
+  --card-bg: #ffffff;
+  --muted: #7f9799;
+  --border: #d9dfe3;
+  --brand: #002F34;        /* primary text / button bg */
+  --accent: #23E5DB;       /* cyan accent */
+  --accent-2: #35a4c8;     /* blue accent used in CTAs */
+  --danger: #FF5631;
+  --radius: 8px;
+}
+
+/* Reset and base styles */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  color: var(--fg);
+  background: var(--bg);
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: 600;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Common elements */
+.link {
+  color: var(--accent-2);
+  text-decoration: none;
+}
+.link:hover {
+  text-decoration: underline;
+}
+
+.muted {
+  color: var(--muted);
+}
+
+.tag {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #e9f8f7;
+  color: var(--brand);
+  font-size: 12px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 4px 10px;
+  gap: 6px;
+}

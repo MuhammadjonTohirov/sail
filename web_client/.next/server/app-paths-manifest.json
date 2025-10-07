@@ -1,7 +1,7 @@
 {
+  "/page": "app/page.js",
+  "/favorites/page": "app/favorites/page.js",
   "/search/page": "app/search/page.js",
   "/auth/otp/page": "app/auth/otp/page.js",
-  "/post/page": "app/post/page.js",
-  "/l/[id]/page": "app/l/[id]/page.js",
   "/u/listings/page": "app/u/listings/page.js"
 }

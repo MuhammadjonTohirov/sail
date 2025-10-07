@@ -3,6 +3,8 @@ import { Listings, apiFetch } from '@/lib/api';
 import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 import { useRouter } from 'next/navigation';
+import { FavoriteButton } from '@/components/FavoriteButton';
+import { RecentlyViewedTracker } from '@/components/RecentlyViewedTracker';
 
 export default function ListingDetail({ params }: { params: { id: string } }) {
   const { locale } = useI18n();
@@ -125,6 +127,9 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
 
   return (
     <div className="container py-6">
+      {/* Track view automatically */}
+      <RecentlyViewedTracker listingId={id} />
+
       <div className="detail-grid">
         <div>
           <div className="gallery card">
@@ -141,25 +146,6 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
               className="gallery-main"
               tabIndex={0}
               onKeyDown={(e) => { if (e.key === 'ArrowLeft') prev(); if (e.key === 'ArrowRight') next(); }}
-              onWheel={(e) => {
-                if (media.length <= 1) return;
-                const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
-                if (delta > 0) next(); else prev();
-              }}
-              onPointerDown={(e) => {
-                (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
-                setDrag({ startX: e.clientX, moved: false });
-              }}
-              onPointerMove={(e) => {
-                if (!drag) return;
-                const dx = e.clientX - drag.startX;
-                if (Math.abs(dx) > 40) {
-                  setDrag({ startX: e.clientX, moved: true });
-                  if (dx > 0) prev(); else next();
-                }
-              }}
-              onPointerUp={(e) => { try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {} setDrag(null); }}
-              onPointerCancel={() => setDrag(null)}
             >
               {current ? (
                 <img src={current} alt={data.title} />
@@ -184,31 +170,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
               )}
             </div>
           {media.length > 0 && (
-            <div
-              className="gallery-thumbs"
-              onWheel={(e) => {
-                // horizontal scroll for thumbs
-                const el = e.currentTarget as HTMLDivElement;
-                el.scrollLeft += (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY);
-                setThumbsScrolling(true);
-                window.setTimeout(() => setThumbsScrolling(false), 80);
-              }}
-              onPointerDown={(e) => {
-                const el = e.currentTarget as HTMLDivElement;
-                el.setPointerCapture(e.pointerId);
-                (el as any)._dragX = e.clientX;
-                (el as any)._dragLeft = el.scrollLeft;
-              }}
-              onPointerMove={(e) => {
-                const el = e.currentTarget as any as HTMLDivElement & { _dragX?: number; _dragLeft?: number };
-                if (el._dragX !== undefined) {
-                  const dx = e.clientX - (el._dragX as number);
-                  el.scrollLeft = (el._dragLeft as number) - dx;
-                }
-              }}
-              onPointerUp={(e) => { try { (e.currentTarget as HTMLElement).releasePointerCapture(e.pointerId); } catch {} const el = e.currentTarget as any; el._dragX = undefined; }}
-              onPointerCancel={(e) => { const el = e.currentTarget as any; el._dragX = undefined; }}
-            >
+            <div className="gallery-thumbs">
               {media.map((m: any, i: number) => (
                 <img key={m.id} src={m.image_url} className={i===idx?'is-active':''} onClick={() => setIdx(i)} alt="" />
               ))}
@@ -299,11 +261,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
                 day: 'numeric'
               })}
             </div>
-            <button className="favorite-btn-detail" title={label('В избранное', 'Sevimlilarga')}>
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-              </svg>
-            </button>
+            <FavoriteButton listingId={id} size="md" variant="icon" />
           </div>
 
           {data.price_amount > 0 ? (

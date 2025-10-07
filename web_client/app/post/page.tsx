@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 import Dropdown from '@/components/ui/Dropdown';
 import CategoryPicker from '@/components/ui/CategoryPicker';
+import LocationPicker from '@/components/ui/LocationPicker';
 import MultiDropdown from '@/components/ui/MultiDropdown';
 import AttributesForm from '@/components/listing/AttributesForm';
 
@@ -23,10 +24,9 @@ export default function PostPage() {
   const [catPickerOpen, setCatPickerOpen] = useState(false);
   const [attrs, setAttrs] = useState<Attr[]>([]);
 
-  const [roots, setRoots] = useState<Loc[]>([]);
-  const [children, setChildren] = useState<Loc[]>([]);
-  const [rootLoc, setRootLoc] = useState<number | null>(null);
   const [locationId, setLocationId] = useState<number | null>(null);
+  const [locationPath, setLocationPath] = useState<string>('');
+  const [locationPickerOpen, setLocationPickerOpen] = useState(false);
 
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
@@ -41,7 +41,11 @@ export default function PostPage() {
   const [uploading, setUploading] = useState<boolean>(false);
   const [error, setError] = useState<string>('');
 
-  useEffect(() => { (async () => { setCats(await Taxonomy.categories()); const r = await Taxonomy.locations(); setRoots(r); })(); }, []);
+  useEffect(() => {
+    (async () => {
+      setCats(await Taxonomy.categories());
+    })();
+  }, []);
   useEffect(() => { (async () => { if (selectedCat) setAttrs(await Taxonomy.attributes(selectedCat)); else setAttrs([]); })(); }, [selectedCat]);
   // Prune attribute values when the attributes set changes (category switch)
   useEffect(() => {
@@ -52,7 +56,6 @@ export default function PostPage() {
       return out;
     });
   }, [attrs]);
-  useEffect(() => { (async () => { if (rootLoc) { const ch = await Taxonomy.locations(rootLoc); setChildren(ch); } else { setChildren([]); setLocationId(null);} })(); }, [rootLoc]);
 
   const flatCategories = useMemo(() => {
     const arr: { id: number; slug: string; name: string }[] = [];
@@ -247,24 +250,26 @@ export default function PostPage() {
 
         <div className="form-card">
           <h3>{label('Местоположение', 'Manzil')}</h3>
-          <div className="row">
-            <div className="field" style={{ flex: 1 }}>
-              <label>{label('Регион', 'Viloyat')}</label>
-              <Dropdown
-                value={rootLoc ? String(rootLoc) : ''}
-                onChange={(v) => setRootLoc(v ? Number(v) : null)}
-                options={[{ value: '', label: '--' }, ...roots.map(r => ({ value: String(r.id), label: r.name }))]}
-              />
-            </div>
-            <div className="field" style={{ flex: 1 }}>
-              <label>{label('Город/район', 'Shahar/tuman')}</label>
-              <Dropdown
-                value={locationId ? String(locationId) : ''}
-                onChange={(v) => setLocationId(v ? Number(v) : null)}
-                options={[{ value: '', label: '--' }, ...children.map(c => ({ value: String(c.id), label: c.name }))]}
-              />
-            </div>
+          <div className="field">
+            <label>{label('Выберите местоположение*', 'Manzilni tanlang*')}</label>
+            <button
+              type="button"
+              className="btn-outline"
+              onClick={() => setLocationPickerOpen(true)}
+              style={{ width: '100%', textAlign: 'left' }}
+            >
+              {locationPath || label('Выберите регион и город', 'Viloyat va shaharni tanlang')}
+            </button>
           </div>
+          <LocationPicker
+            open={locationPickerOpen}
+            onClose={() => setLocationPickerOpen(false)}
+            onSelect={(loc) => {
+              setLocationId(loc.id);
+              setLocationPath(loc.path);
+            }}
+            locale={locale as 'ru' | 'uz'}
+          />
         </div>
 
         <div className="form-actions">

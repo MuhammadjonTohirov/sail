@@ -176,3 +176,24 @@ export const Search = {
     return data;
   },
 };
+
+export const SavedSearches = {
+  list: () => apiFetch('/api/v1/saved-searches'),
+  create: (payload: { title: string; query: Record<string, any>; frequency?: 'instant' | 'daily' }) =>
+    apiFetch('/api/v1/saved-searches', { method: 'POST', body: JSON.stringify(payload) }),
+  delete: (id: number) => apiFetch(`/api/v1/saved-searches/${id}`, { method: 'DELETE' }),
+  update: (id: number, payload: Partial<{ title: string; query: Record<string, any>; frequency: 'instant' | 'daily'; is_active: boolean }>) =>
+    apiFetch(`/api/v1/saved-searches/${id}`, { method: 'PATCH', body: JSON.stringify(payload) }),
+};
+
+export const Favorites = {
+  list: () => apiFetch('/api/v1/favorites'),
+  toggle: (listingId: number) => apiFetch(`/api/v1/favorites/${listingId}/toggle`, { method: 'POST' }),
+  delete: (listingId: number) => apiFetch(`/api/v1/favorites/${listingId}`, { method: 'DELETE' }),
+};
+
+export const RecentlyViewed = {
+  list: () => apiFetch('/api/v1/recently-viewed'),
+  track: (listingId: number) => apiFetch(`/api/v1/recently-viewed/${listingId}`, { method: 'POST' }),
+  clear: () => apiFetch('/api/v1/recently-viewed/clear', { method: 'DELETE' }),
+};

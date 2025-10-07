@@ -1,5 +1,5 @@
 "use client";
-import { Search, Taxonomy, apiFetch } from '@/lib/api';
+import { Search, Taxonomy, SavedSearches } from '@/lib/api';
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n';
@@ -83,14 +83,30 @@ export default function SearchPage() {
   useEffect(() => { run(); /* refresh on sort change */ }, [sort]);
 
   const saveSearch = async () => {
-    const payload = { title: q || 'Search', query: { params: { q, min_price: minPrice, max_price: maxPrice, ...(selectedCategory ? { category_slug: selectedCategory.slug } : {}) } } };
+    const title = selectedCategoryPath || q || (locale === 'uz' ? 'Qidiruv' : 'Поиск');
+    const query = {
+      params: {
+        q,
+        min_price: minPrice,
+        max_price: maxPrice,
+        ...(selectedCategory ? { category_slug: selectedCategory.slug } : {})
+      },
+      category_name: selectedCategoryPath,
+      location_name: sp.get('location_name') || undefined,
+      price_min: minPrice ? Number(minPrice) : undefined,
+      price_max: maxPrice ? Number(maxPrice) : undefined,
+    };
     try {
-      await apiFetch('/api/v1/saved-searches', { method: 'POST', body: JSON.stringify(payload) });
-      alert('Saved');
-    } catch (e) { alert('Save failed'); }
+      await SavedSearches.create({ title, query });
+      alert(locale === 'uz' ? 'Qidiruv saqlandi' : 'Поиск сохранен');
+    } catch (e) {
+      alert(locale === 'uz' ? 'Xatolik yuz berdi' : 'Ошибка при сохранении');
+    }
   };
 
-  const label = (ru: string, uz: string) => locale === 'uz' ? uz : ru;
+  function label(ru: string, uz: string) {
+    return locale === 'uz' ? uz : ru;
+  }
 
   return (
     <div className="container" style={{ paddingTop: 16, paddingBottom: 32 }}>
@@ -220,8 +236,8 @@ export default function SearchPage() {
 
         <section className="search-results">
           <div className="results-bar card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div className="muted">{loading ? (locale === 'uz' ? 'Yuklanmoqda…' : 'Загрузка…') : `${total} ${locale === 'uz' ? 'e‘lon' : 'объявлений'}`}</div>
-            <div className="row" style={{ alignItems: 'center' }}>
+            <div className="muted">{loading ? (locale === 'uz' ? 'Yuklanmoqda…' : 'Загрузка…') : `${total} ${locale === 'uz' ? 'e\'lon' : 'объявлений'}`}</div>
+            <div className="row" style={{ alignItems: 'center', gap: '12px' }}>
               <label className="muted">{locale === 'uz' ? 'Saralash:' : 'Сортировка:'}</label>
               <Dropdown
                 value={sort}
@@ -229,11 +245,13 @@ export default function SearchPage() {
                 options={[
                   { value: 'relevance', label: locale === 'uz' ? 'Relevanta' : 'По релевантности' },
                   { value: 'newest', label: locale === 'uz' ? 'Yangi' : 'Сначала новые' },
-                  { value: 'price_asc', label: locale === 'uz' ? 'Narx o‘s.' : 'Цена: по возрастанию' },
+                  { value: 'price_asc', label: locale === 'uz' ? 'Narx o\'s.' : 'Цена: по возрастанию' },
                   { value: 'price_desc', label: locale === 'uz' ? 'Narx kamay.' : 'Цена: по убыванию' },
                 ]}
               />
-              <button className="btn-outline" onClick={saveSearch}>{locale === 'uz' ? 'Qidiruvni saqlash' : 'Сохранить поиск'}</button>
+              <button onClick={saveSearch} className="btn-outline" style={{ padding: '8px 16px' }}>
+                {locale === 'uz' ? 'Qidiruvni saqlash' : 'Сохранить поиск'}
+              </button>
             </div>
           </div>
 
