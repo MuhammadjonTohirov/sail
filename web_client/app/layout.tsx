@@ -2,8 +2,7 @@ import './globals.css';
 import type { Metadata } from 'next';
 import React from 'react';
 import ClientNav from './navbar/ClientNav';
-import { appConfig } from '@/config/app.config';
-import { buildThemeStyle } from '@/config/theme';
+import { appConfig, buildThemeStyle } from '@/config';
 
 export const metadata: Metadata = {
   title: {

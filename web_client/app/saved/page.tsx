@@ -1,10 +1,26 @@
 "use client";
 import { useEffect, useState } from 'react';
 import { apiFetch } from '@/lib/api';
+import { appConfig } from '@/config';
 
 type Saved = { id: number; title: string; query: any; is_active: boolean; created_at: string };
 
 export default function SavedPage() {
+  if (!appConfig.features.enableSavedSearches) {
+    return (
+      <div className="container" style={{ padding: '32px 0' }}>
+        <div className="card" style={{ textAlign: 'center', padding: 24 }}>
+          <h1 style={{ fontSize: 20, fontWeight: 600, marginBottom: 12, color: 'var(--fg)' }}>
+            Saved searches disabled
+          </h1>
+          <p style={{ color: 'var(--muted)' }}>
+            This marketplace has disabled saved searches in configuration.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   const [items, setItems] = useState<Saved[]>([]);
   const [error, setError] = useState('');
 

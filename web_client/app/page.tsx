@@ -5,6 +5,7 @@ import { useI18n } from '@/lib/i18n';
 import CategoriesGrid from '@/components/home/CategoriesGrid';
 import ProductCard from '@/components/search/ProductCard';
 import Link from 'next/link';
+import { appConfig } from '@/config';
 
 type Hit = {
   id: string;
@@ -25,7 +26,55 @@ export default function HomePage() {
   const [featuredListings, setFeaturedListings] = useState<Hit[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const { name, tagline, description, features, contact, social } = appConfig;
+  const heroHighlights = [
+    features.enablePromotions && {
+      icon: '⚡️',
+      ru: 'Продвижение объявлений',
+      uz: 'Reklama qilingan eʼlonlar',
+    },
+    features.enableFavorites && {
+      icon: '❤️',
+      ru: 'Список избранного',
+      uz: 'Sevimlilar roʻyxati',
+    },
+    features.enableSavedSearches && {
+      icon: '🔔',
+      ru: 'Сохраненные поиски',
+      uz: 'Saqlangan qidiruvlar',
+    },
+    features.enableChat && {
+      icon: '💬',
+      ru: 'Чат с продавцами',
+      uz: 'Sotuvchilar bilan chat',
+    },
+  ].filter(Boolean) as { icon: string; ru: string; uz: string }[];
+
+  if (heroHighlights.length < 3) {
+    heroHighlights.push(
+      {
+        icon: '📞',
+        ru: `Поддержка: ${contact.phone}`,
+        uz: `Qo'llab-quvvatlash: ${contact.phone}`,
+      },
+      {
+        icon: '✉️',
+        ru: `Email: ${contact.email}`,
+        uz: `Email: ${contact.email}`,
+      },
+    );
+  }
+  const highlights = heroHighlights.slice(0, 3);
+
   const label = (ru: string, uz: string) => locale === 'uz' ? uz : ru;
+  const heroTitle = label(
+    `${name}: Покупайте и продавайте все, что вам нужно`,
+    `${name}: Kerakli narsalarni sotib oling va soting`
+  );
+  const heroSubtitle = label(
+    description || 'Тысячи объявлений в Узбекистане. Найдите то, что ищете!',
+    tagline || "O'zbekistonda minglab e'lonlar. Qidirayotgan narsangizni toping!"
+  );
 
   useEffect(() => {
     (async () => {

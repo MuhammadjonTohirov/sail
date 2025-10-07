@@ -1,9 +1,18 @@
-const API_BASE = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://94.158.51.9:8080';
+import { appConfig } from '@/config';
 
-function currentLocale(): 'ru' | 'uz' {
-  if (typeof window === 'undefined') return 'ru';
+const API_BASE = (appConfig.api.baseUrl || '').replace(/\/$/, '');
+const API_TIMEOUT = appConfig.api.timeout;
+const SUPPORTED_LOCALES = new Set(appConfig.i18n.locales);
+type SupportedLocale = typeof appConfig.i18n.locales[number];
+
+function currentLocale(): SupportedLocale {
+  if (typeof window === 'undefined') return appConfig.i18n.defaultLocale;
   const path = window.location.pathname || '/';
-  return path.startsWith('/uz') ? 'uz' : 'ru';
+  const first = path.split('/').filter(Boolean)[0];
+  if (first && SUPPORTED_LOCALES.has(first as SupportedLocale)) {
+    return first as SupportedLocale;
+  }
+  return appConfig.i18n.defaultLocale;
 }
 
 function getToken(): string | null {
@@ -57,13 +66,24 @@ async function refreshAccessToken(): Promise<string | null> {
 
 export async function apiFetch(path: string, opts: RequestInit = {}, isJson = true) {
   const doFetch = async () => {
+    const controller = typeof AbortController !== 'undefined' ? new AbortController() : null;
+    const timeoutId = API_TIMEOUT ? setTimeout(() => controller?.abort(), API_TIMEOUT) : undefined;
     const headers: Record<string, string> = {
       ...(isJson ? { 'Content-Type': 'application/json' } : {}),
       ...(opts.headers as Record<string, string> | undefined),
     };
     const token = getToken();
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    return fetch(`${API_BASE}${path}`, { ...opts, headers, credentials: 'omit' });
+    try {
+      return await fetch(`${API_BASE}${path}`, {
+        ...opts,
+        headers,
+        credentials: 'omit',
+        signal: opts.signal ?? controller?.signal,
+      });
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
   };
 
   let res = await doFetch();
@@ -148,7 +168,8 @@ export const Listings = {
 export const Search = {
   listings: async (params: Record<string, any>) => {
     const usp = new URLSearchParams();
-    Object.entries(params).forEach(([k, v]) => {
+    const requestParams = { per_page: appConfig.pagination.itemsPerPage, ...params };
+    Object.entries(requestParams).forEach(([k, v]) => {
       if (v === undefined || v === null || v === '') return;
       if (Array.isArray(v)) {
         v.forEach((item) => usp.append(k, String(item)));

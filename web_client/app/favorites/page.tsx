@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n';
 import { Favorites, SavedSearches, RecentlyViewed } from '@/lib/api';
+import { appConfig } from '@/config';
 
 interface FavoriteItem {
   id: number;
@@ -39,7 +40,12 @@ interface SavedSearch {
 
 export default function FavoritesPage() {
   const { locale } = useI18n();
-  const [activeTab, setActiveTab] = useState<'liked' | 'searches' | 'recent'>('liked');
+  const { features, i18n } = appConfig;
+  const enableFavorites = features.enableFavorites;
+  const enableSavedSearches = features.enableSavedSearches;
+  const base = locale === 'uz' ? '/uz' : '';
+  const initialTab: 'liked' | 'searches' | 'recent' = enableFavorites ? 'liked' : enableSavedSearches ? 'searches' : 'recent';
+  const [activeTab, setActiveTab] = useState<'liked' | 'searches' | 'recent'>(initialTab);
 
   // Liked items (from API)
   const [likedItems, setLikedItems] = useState<FavoriteItem[]>([]);
@@ -57,6 +63,11 @@ export default function FavoritesPage() {
 
   // Load liked items
   useEffect(() => {
+    if (!enableFavorites) {
+      setLikedItems([]);
+      setLoadingLiked(false);
+      return;
+    }
     const loadLikedItems = async () => {
       try {
         const data = await Favorites.list();
@@ -70,27 +81,33 @@ export default function FavoritesPage() {
     };
 
     loadLikedItems();
-  }, []);
+  }, [enableFavorites]);
 
   // Load saved searches
   useEffect(() => {
-    if (activeTab === 'searches' && savedSearches.length === 0) {
-      const loadSavedSearches = async () => {
-        setLoadingSearches(true);
-        try {
-          const data = await SavedSearches.list();
-          setSavedSearches(data.results || data || []);
-        } catch (error) {
-          console.error('Failed to load saved searches:', error);
-          setSavedSearches([]);
-        } finally {
-          setLoadingSearches(false);
-        }
-      };
-
-      loadSavedSearches();
+    if (!enableSavedSearches) {
+      setSavedSearches([]);
+      return;
     }
-  }, [activeTab, savedSearches.length]);
+    if (activeTab !== 'searches' || savedSearches.length > 0) {
+      return;
+    }
+
+    const loadSavedSearches = async () => {
+      setLoadingSearches(true);
+      try {
+        const data = await SavedSearches.list();
+        setSavedSearches(data.results || data || []);
+      } catch (error) {
+        console.error('Failed to load saved searches:', error);
+        setSavedSearches([]);
+      } finally {
+        setLoadingSearches(false);
+      }
+    };
+
+    loadSavedSearches();
+  }, [activeTab, savedSearches.length, enableSavedSearches]);
 
   // Load recently visited
   useEffect(() => {
@@ -112,7 +129,16 @@ export default function FavoritesPage() {
     }
   }, [activeTab, recentItems.length]);
 
+  useEffect(() => {
+    if (!enableFavorites && activeTab === 'liked') {
+      setActiveTab(enableSavedSearches ? 'searches' : 'recent');
+    } else if (!enableSavedSearches && activeTab === 'searches') {
+      setActiveTab(enableFavorites ? 'liked' : 'recent');
+    }
+  }, [activeTab, enableFavorites, enableSavedSearches]);
+
   const handleUnlike = async (listingId: number) => {
+    if (!enableFavorites) return;
     try {
       await Favorites.delete(listingId);
       setLikedItems(likedItems.filter((item) => item.listing !== listingId));
@@ -122,6 +148,7 @@ export default function FavoritesPage() {
   };
 
   const handleDeleteSearch = async (id: number) => {
+    if (!enableSavedSearches) return;
     try {
       await SavedSearches.delete(id);
       setSavedSearches(savedSearches.filter((search) => search.id !== id));
@@ -152,8 +179,16 @@ export default function FavoritesPage() {
     }
   };
 
-  const formatPrice = (amount: number, currency: string) => {
-    return new Intl.NumberFormat('ru-RU').format(amount) + ' ' + currency.toLowerCase();
+  const formatPrice = (amount: number) => {
+    try {
+      return new Intl.NumberFormat(locale === 'uz' ? 'uz-UZ' : 'ru-RU', {
+        style: 'currency',
+        currency: i18n.currency,
+        maximumFractionDigits: 0,
+      }).format(amount);
+    } catch {
+      return `${amount} ${i18n.currencySymbol}`;
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -173,7 +208,7 @@ export default function FavoritesPage() {
 
   const renderFavoriteCard = (item: FavoriteItem) => (
     <div key={item.id} className="listing-card">
-      <Link href={`/l/${item.listing}`} className="listing-card-link">
+      <Link href={`${base}/l/${item.listing}`} className="listing-card-link">
         {item.listing_media_urls && item.listing_media_urls.length > 0 ? (
           <div className="listing-card-img" style={{ backgroundImage: `url(${item.listing_media_urls[0]})` }} />
         ) : (
@@ -183,7 +218,7 @@ export default function FavoritesPage() {
         )}
         <div className="listing-card-body">
           <h3 className="listing-card-title">{item.listing_title}</h3>
-          <div className="listing-card-price">{formatPrice(item.listing_price, 'UZS')}</div>
+          <div className="listing-card-price">{formatPrice(item.listing_price)}</div>
           <div className="listing-card-meta">
             {item.listing_location && <span>{item.listing_location}</span>}
             <span>{formatDate(item.created_at)}</span>
@@ -207,7 +242,7 @@ export default function FavoritesPage() {
 
   const renderRecentCard = (item: RecentItem) => (
     <div key={item.id} className="listing-card">
-      <Link href={`/l/${item.listing}`} className="listing-card-link">
+      <Link href={`${base}/l/${item.listing}`} className="listing-card-link">
         {item.listing_media_urls && item.listing_media_urls.length > 0 ? (
           <div className="listing-card-img" style={{ backgroundImage: `url(${item.listing_media_urls[0]})` }} />
         ) : (
@@ -217,7 +252,7 @@ export default function FavoritesPage() {
         )}
         <div className="listing-card-body">
           <h3 className="listing-card-title">{item.listing_title}</h3>
-          <div className="listing-card-price">{formatPrice(item.listing_price, 'UZS')}</div>
+          <div className="listing-card-price">{formatPrice(item.listing_price)}</div>
           <div className="listing-card-meta">
             {item.listing_location && <span>{item.listing_location}</span>}
             <span>{formatDate(item.viewed_at)}</span>
@@ -228,7 +263,7 @@ export default function FavoritesPage() {
   );
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px' }}>
+    <div style={{ maxWidth: 'var(--container-max-width)', margin: '0 auto', padding: '20px' }}>
       <h1 style={{ marginBottom: '32px', fontSize: '32px', fontWeight: 700 }}>
         {label('Избранные объявления', 'Sevimli e\'lonlar')}
       </h1>
@@ -236,36 +271,40 @@ export default function FavoritesPage() {
       {/* Tabs */}
       <div style={{ borderBottom: '2px solid var(--border)', marginBottom: '24px' }}>
         <div style={{ display: 'flex', gap: '0' }}>
-          <button
-            onClick={() => setActiveTab('liked')}
-            style={{
-              padding: '12px 24px',
-              border: 'none',
-              background: 'transparent',
-              borderBottom: activeTab === 'liked' ? '3px solid var(--brand)' : '3px solid transparent',
-              fontWeight: activeTab === 'liked' ? 700 : 400,
-              color: activeTab === 'liked' ? 'var(--brand)' : 'var(--muted)',
-              cursor: 'pointer',
-              marginBottom: '-2px',
-            }}
-          >
-            {label(`Избранные объявления [${likedItems.length}/150]`, `Sevimli e'lonlar [${likedItems.length}/150]`)}
-          </button>
-          <button
-            onClick={() => setActiveTab('searches')}
-            style={{
-              padding: '12px 24px',
-              border: 'none',
-              background: 'transparent',
-              borderBottom: activeTab === 'searches' ? '3px solid var(--brand)' : '3px solid transparent',
-              fontWeight: activeTab === 'searches' ? 700 : 400,
-              color: activeTab === 'searches' ? 'var(--brand)' : 'var(--muted)',
-              cursor: 'pointer',
-              marginBottom: '-2px',
-            }}
-          >
-            {label(`Сохраненные поиски [${savedSearches.length}/50]`, `Saqlangan qidiruvlar [${savedSearches.length}/50]`)}
-          </button>
+          {enableFavorites && (
+            <button
+              onClick={() => setActiveTab('liked')}
+              style={{
+                padding: '12px 24px',
+                border: 'none',
+                background: 'transparent',
+                borderBottom: activeTab === 'liked' ? '3px solid var(--brand)' : '3px solid transparent',
+                fontWeight: activeTab === 'liked' ? 700 : 400,
+                color: activeTab === 'liked' ? 'var(--brand)' : 'var(--muted)',
+                cursor: 'pointer',
+                marginBottom: '-2px',
+              }}
+            >
+              {label('Избранные объявления', `Sevimli e'lonlar`)} <span style={{ marginLeft: 4, fontWeight: 400 }}>({likedItems.length})</span>
+            </button>
+          )}
+          {enableSavedSearches && (
+            <button
+              onClick={() => setActiveTab('searches')}
+              style={{
+                padding: '12px 24px',
+                border: 'none',
+                background: 'transparent',
+                borderBottom: activeTab === 'searches' ? '3px solid var(--brand)' : '3px solid transparent',
+                fontWeight: activeTab === 'searches' ? 700 : 400,
+                color: activeTab === 'searches' ? 'var(--brand)' : 'var(--muted)',
+                cursor: 'pointer',
+                marginBottom: '-2px',
+              }}
+            >
+              {label('Сохраненные поиски', 'Saqlangan qidiruvlar')} <span style={{ marginLeft: 4, fontWeight: 400 }}>({savedSearches.length})</span>
+            </button>
+          )}
           <button
             onClick={() => setActiveTab('recent')}
             style={{
@@ -285,7 +324,7 @@ export default function FavoritesPage() {
       </div>
 
       {/* Clear all button */}
-      {(activeTab === 'liked' && likedItems.length > 0) || (activeTab === 'recent' && recentItems.length > 0) ? (
+      {(activeTab === 'liked' && enableFavorites && likedItems.length > 0) || (activeTab === 'recent' && recentItems.length > 0) ? (
         <div style={{ marginBottom: '20px', textAlign: 'right' }}>
           <button onClick={handleClearAll} className="btn-outline">
             {activeTab === 'liked'
@@ -297,7 +336,7 @@ export default function FavoritesPage() {
       ) : null}
 
       {/* Tab content */}
-      {activeTab === 'liked' && (
+      {activeTab === 'liked' && enableFavorites && (
         <div>
           {loadingLiked ? (
             <div style={{ textAlign: 'center', padding: '60px', color: 'var(--muted)' }}>
@@ -321,7 +360,7 @@ export default function FavoritesPage() {
         </div>
       )}
 
-      {activeTab === 'searches' && (
+      {activeTab === 'searches' && enableSavedSearches && (
         <div>
           {loadingSearches ? (
             <div style={{ textAlign: 'center', padding: '60px', color: 'var(--muted)' }}>
@@ -347,7 +386,13 @@ export default function FavoritesPage() {
                       {search.query.category_name && <span>{search.query.category_name}</span>}
                       {search.query.location_name && <span> • {search.query.location_name}</span>}
                       {(search.query.price_min || search.query.price_max) && (
-                        <span> • {label('Цена:', 'Narxi:')} {search.query.price_min || 0} - {search.query.price_max || '∞'}</span>
+                        <span>
+                          {' '}
+                          • {label('Цена:', 'Narxi:')}{' '}
+                          {search.query.price_min ? `${search.query.price_min.toLocaleString(locale === 'uz' ? 'uz-UZ' : 'ru-RU')} ${i18n.currencySymbol}` : '—'}
+                          {' - '}
+                          {search.query.price_max ? `${search.query.price_max.toLocaleString(locale === 'uz' ? 'uz-UZ' : 'ru-RU')} ${i18n.currencySymbol}` : '∞'}
+                        </span>
                       )}
                     </div>
                     <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>

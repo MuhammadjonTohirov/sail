@@ -4,6 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
 import { Auth } from "@/lib/api";
+import { appConfig } from "@/config";
 
 export default function ClientNav() {
   const pathname = usePathname() || "/";
@@ -13,6 +14,7 @@ export default function ClientNav() {
   const [profileName, setProfileName] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const { features } = appConfig;
 
   const readAuth = () => {
     try {
@@ -77,20 +79,26 @@ export default function ClientNav() {
           <Link href={`${base}/search`}>{t('navSearch')}</Link>
 
           {/* Favorites Link with Heart Icon */}
-          <Link
-            href={`${base}/favorites`}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 4,
-              textDecoration: 'none'
-            }}
-            title={locale === 'uz' ? 'Sevimlilar' : 'Избранное'}
-          >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-            </svg>
-          </Link>
+          {features.enableFavorites && (
+            <Link
+              href={`${base}/favorites`}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 4,
+                textDecoration: 'none'
+              }}
+              title={t('navFavorites')}
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </Link>
+          )}
+
+          {features.enableSavedSearches && (
+            <Link href={`${base}/saved`}>{t('navSaved')}</Link>
+          )}
 
           <Link href={`${base}/post`} className="btn-outline" style={{ padding: 8 }}>{t('navPost')}</Link>
           {authed ? (

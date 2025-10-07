@@ -9,7 +9,7 @@
   margin-bottom: 20px;
 }
 
-/* Attributes Section - OLX Style (Tags/Chips) */
+/* Attributes Section - Tag Chips */
 .detail-attributes {
   margin-top: 24px;
   margin-bottom: 24px;
@@ -20,7 +20,7 @@
   font-weight: 700;
   color: var(--fg);
   margin-bottom: 16px;
-  display: none; /* OLX doesn't show a title */
+  display: none; /* Hidden to match production layout */
 }
 
 .attributes-grid {

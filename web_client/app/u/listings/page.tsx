@@ -107,7 +107,7 @@ export default function MyListings() {
         </svg>
         <div className="text-sm text-blue-900">
           <strong>{label('Обратите внимание', 'E\'tibor bering')}:</strong>{' '}
-          {label('на OLX.UZ нет службы доставки. Все сделки происходят напрямую между покупателем и продавцом.', 'OLX.UZ yetkazib berish xizmati yo\'q. Barcha savdolar to\'g\'ridan-to\'g\'ri xaridor va sotuvchi o\'rtasida sodir bo\'ladi.')}
+          {t('listingsDeliveryNotice')}
         </div>
       </div>
 

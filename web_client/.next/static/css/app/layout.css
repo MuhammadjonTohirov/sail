@@ -1,7 +1,7 @@
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/base.css ***!
   \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-/* OLX-inspired theme variables */
+/* Theme variables resolved from app.config.ts */
 :root {
   --fg: #002F34;
   --bg: #F2F4F5;
@@ -82,13 +82,13 @@ a {
   position: sticky;
   top: 0;
   z-index: 30;
-  background: #fff;
+  background: var(--card-bg);
   border-bottom: 1px solid var(--border);
   padding: 12px 0;
 }
 
 .container {
-  max-width: 1200px;
+  max-width: var(--container-max-width);
   margin: 0 auto;
   padding: 0 16px;
 }
@@ -836,7 +836,7 @@ button.btn-accent {
   \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /* Product and Listing Cards */
 
-/* OLX Product Card */
+/* Marketplace Product Card */
 .olx-product-card {
   display: block;
   background: #fff;
@@ -1560,7 +1560,7 @@ button.btn-accent {
   border-radius: 6px;
 }
 
-/* OLX Search Bar */
+/* Marketplace Search Bar */
 .olx-search-bar {
   display: flex;
   gap: 8px;
@@ -1896,7 +1896,7 @@ button.btn-accent {
   margin-bottom: 20px;
 }
 
-/* Attributes Section - OLX Style (Tags/Chips) */
+/* Attributes Section - Tag Chips */
 .detail-attributes {
   margin-top: 24px;
   margin-bottom: 24px;
@@ -1907,7 +1907,7 @@ button.btn-accent {
   font-weight: 700;
   color: var(--fg);
   margin-bottom: 16px;
-  display: none; /* OLX doesn't show a title */
+  display: none; /* Hidden to match production layout */
 }
 
 .attributes-grid {
@@ -2741,7 +2741,7 @@ button.btn-accent {
   !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/globals.css ***!
   \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
 /*
- * OLX Clone - Global Styles
+ * Marketplace Client - Global Styles (driven by app.config.ts)
  * Modular CSS Organization
  */
 
