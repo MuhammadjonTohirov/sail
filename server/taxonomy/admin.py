@@ -14,9 +14,9 @@ class LocationAdmin(admin.ModelAdmin):
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ("name", "level", "parent", "is_leaf", "order")
+    list_display = ("name", "level", "parent", "icon", "is_leaf", "order")
     list_filter = ("level", "is_leaf")
-    search_fields = ("name", "slug")
+    search_fields = ("name", "slug", "icon")
     autocomplete_fields = ("parent",)
     prepopulated_fields = {"slug": ("name",)}
     ordering = ("order", "name")
@@ -28,4 +28,3 @@ class AttributeAdmin(admin.ModelAdmin):
     list_filter = ("type", "is_indexed")
     search_fields = ("key", "label")
     autocomplete_fields = ("category",)
-

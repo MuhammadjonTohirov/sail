@@ -13,6 +13,15 @@
       "console": "integratedTerminal",
       // interpreterpath: /server/venv/bin/python3.12
       "python": "${workspaceFolder}/server/venv/bin/python3.12"
+    },
+    // run client in web_client folder
+    {
+      "name": "Run Client",
+      "type": "node-terminal",
+      "request": "launch",
+      "command": "npm start dev",
+      "cwd": "${workspaceFolder}/web_client",
+      "console": "integratedTerminal"
     }
   ]
 }

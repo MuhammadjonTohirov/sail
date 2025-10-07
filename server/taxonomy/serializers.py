@@ -37,6 +37,8 @@ class CategoryNodeSerializer(serializers.Serializer):
     slug = serializers.CharField()
     is_leaf = serializers.BooleanField()
     order = serializers.IntegerField()
+    icon = serializers.CharField(required=False, allow_blank=True)
+    icon_url = serializers.CharField(required=False, allow_blank=True)
     children = serializers.ListField(child=serializers.DictField(), allow_empty=True)
 
 
@@ -46,7 +48,7 @@ class LocationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Location
-        fields = ["id", "name", "slug", "kind", "lat", "lon", "has_children", "parent"]
+        fields = ["id", "name", "name_ru", "name_uz", "slug", "kind", "lat", "lon", "has_children", "parent"]
 
     def get_has_children(self, obj):  # pragma: no cover
         return obj.children.exists()

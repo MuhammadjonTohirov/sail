@@ -20,9 +20,13 @@
 
 body {
   margin: 0;
-  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica Neue, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  font-family: var(--font-sans);
   color: var(--fg);
   background: var(--bg);
+}
+
+code, pre {
+  font-family: var(--font-mono);
 }
 
 /* Typography */

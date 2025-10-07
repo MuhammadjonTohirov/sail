@@ -37,6 +37,8 @@ class CategoriesTreeView(APIView):
                         "id": c.id,
                         "name": (c.name_uz if lang == "uz" else c.name_ru) or c.name,
                         "slug": c.slug,
+                        "icon": c.icon,
+                        "icon_url": (request.build_absolute_uri(c.icon_image.url) if c.icon_image else ""),
                         "is_leaf": c.is_leaf,
                         "order": c.order,
                         "children": [],
@@ -56,6 +58,8 @@ class CategoriesTreeView(APIView):
                 "id": c.id,
                 "name": (c.name_uz if lang == "uz" else c.name_ru) or c.name,
                 "slug": c.slug,
+                "icon": c.icon,
+                "icon_url": (request.build_absolute_uri(c.icon_image.url) if c.icon_image else ""),
                 "is_leaf": c.is_leaf,
                 "order": c.order,
                 "children": [],
@@ -82,7 +86,17 @@ class CategoryAttributesView(APIView):
 
     def get(self, request, pk: int):
         lang = _lang_from_request(request)
-        attrs = Attribute.objects.filter(category_id=pk).order_by("key")
+        # Collect this category and its ancestors to expose inherited attributes
+        try:
+            cat = Category.objects.get(pk=pk)
+        except Category.DoesNotExist:
+            return Response([], status=200)
+        ids = []
+        cur = cat
+        while cur is not None:
+            ids.append(cur.id)
+            cur = cur.parent  # type: ignore[attr-defined]
+        attrs = Attribute.objects.filter(category_id__in=ids).order_by("key")
         return Response(AttributeSerializer(attrs, many=True, context={"request": request, "lang": lang}).data)
 
 

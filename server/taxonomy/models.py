@@ -16,8 +16,8 @@ class Location(models.Model):
     )
     kind = models.CharField(max_length=16, choices=Kind.choices)
     name = models.CharField(max_length=255)
-    name_ru = models.CharField(max_length=255, blank=True, default="")
-    name_uz = models.CharField(max_length=255, blank=True, default="")
+    name_ru = models.CharField(max_length=255, blank=True, null=True)
+    name_uz = models.CharField(max_length=255, blank=True, null=True)
     slug = models.SlugField(max_length=255)
     lat = models.FloatField(null=True, blank=True)
     lon = models.FloatField(null=True, blank=True)
@@ -46,6 +46,10 @@ class Category(models.Model):
     name_ru = models.CharField(max_length=255, blank=True, default="")
     name_uz = models.CharField(max_length=255, blank=True, default="")
     slug = models.SlugField(max_length=255, unique=True)
+    # Optional UI icon identifier (emoji or icon font key)
+    icon = models.CharField(max_length=64, blank=True, default="")
+    # Optional image icon for richer UI
+    icon_image = models.ImageField(upload_to="category_icons/", null=True, blank=True)
     is_leaf = models.BooleanField(default=False)
     order = models.PositiveIntegerField(default=0)
 

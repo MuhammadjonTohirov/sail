@@ -22,6 +22,15 @@ class Listing(models.Model):
         NEW = "new", "New"
         USED = "used", "Used"
 
+    class DealType(models.TextChoices):
+        SELL = "sell", "Sell"
+        EXCHANGE = "exchange", "Exchange"
+        FREE = "free", "Free"
+
+    class SellerType(models.TextChoices):
+        PERSON = "person", "Person"
+        BUSINESS = "business", "Business"
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="listings")
     category = models.ForeignKey(Category, on_delete=models.PROTECT, related_name="listings")
     location = models.ForeignKey(Location, on_delete=models.PROTECT, related_name="listings")
@@ -30,6 +39,9 @@ class Listing(models.Model):
     price_amount = models.DecimalField(max_digits=12, decimal_places=2, default=Decimal("0"))
     price_currency = models.CharField(max_length=3, default="UZS")
     condition = models.CharField(max_length=16, choices=Condition.choices, default=Condition.USED)
+    deal_type = models.CharField(max_length=16, choices=DealType.choices, default=DealType.SELL)
+    seller_type = models.CharField(max_length=16, choices=SellerType.choices, default=SellerType.PERSON)
+    is_price_negotiable = models.BooleanField(default=False)
     status = models.CharField(max_length=20, choices=Status.choices, default=Status.ACTIVE)
     created_at = models.DateTimeField(auto_now_add=True)
     refreshed_at = models.DateTimeField(default=timezone.now)
@@ -82,4 +94,3 @@ class ListingMedia(models.Model):
 
     class Meta:
         ordering = ["order", "id"]
-

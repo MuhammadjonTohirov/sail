@@ -89,7 +89,7 @@ Listings
   - Returns uploaded media with absolute URL
 
 Search & Facets
-- Configure OpenSearch URL (default http://localhost:9200) in `.env` as `OPENSEARCH_URL`.
+- Configure OpenSearch URL (default http://localhost:56984) in `.env` as `OPENSEARCH_URL`.
 - Ensure index exists:
   - Index is auto-created on first index request; or run a search to trigger create.
 - Endpoints:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any, Dict, List
 
 from rest_framework import serializers
+from django.conf import settings
 
 from taxonomy.models import Attribute
 
@@ -27,6 +28,11 @@ class ListingMediaSerializer(serializers.ModelSerializer):
 class ListingSerializer(serializers.ModelSerializer):
     media = ListingMediaSerializer(many=True, read_only=True)
     attributes = serializers.SerializerMethodField()
+    category_name = serializers.SerializerMethodField()
+    category_slug = serializers.SerializerMethodField()
+    location_name = serializers.SerializerMethodField()
+    location_slug = serializers.SerializerMethodField()
+    seller = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
@@ -36,10 +42,17 @@ class ListingSerializer(serializers.ModelSerializer):
             "description",
             "price_amount",
             "price_currency",
+            "is_price_negotiable",
             "condition",
+            "deal_type",
+            "seller_type",
             "status",
             "category",
+            "category_name",
+            "category_slug",
             "location",
+            "location_name",
+            "location_slug",
             "created_at",
             "refreshed_at",
             "expires_at",
@@ -49,6 +62,7 @@ class ListingSerializer(serializers.ModelSerializer):
             "lon",
             "media",
             "attributes",
+            "seller",
         ]
         read_only_fields = [
             "status",
@@ -72,7 +86,7 @@ class ListingSerializer(serializers.ModelSerializer):
                 grouped[attr.id] = {
                     "attribute": attr.id,
                     "key": attr.key,
-                    "label": attr.label,
+                    "label": self._attr_label(attr),
                     "type": attr.type,
                     "value": None,
                 }
@@ -90,18 +104,92 @@ class ListingSerializer(serializers.ModelSerializer):
                 grouped[attr.id]["value"] = row.value_text
         return list(grouped.values())
 
+    def _lang(self) -> str:
+        req = self.context.get("request")
+        if not req:
+            return "ru"
+        return req.query_params.get("lang") or "ru"
+
+    def _attr_label(self, attr):  # pragma: no cover
+        lang = self._lang()
+        if lang == "uz":
+            return getattr(attr, "label_uz", None) or attr.label or getattr(attr, "label_ru", None)
+        return getattr(attr, "label_ru", None) or attr.label or getattr(attr, "label_uz", None)
+
+    def get_category_name(self, obj: Listing) -> str:  # pragma: no cover
+        cat = getattr(obj, "category", None)
+        if not cat:
+            return ""
+        lang = self._lang()
+        if lang == "uz":
+            return getattr(cat, "name_uz", None) or cat.name or getattr(cat, "name_ru", None)
+        return getattr(cat, "name_ru", None) or cat.name or getattr(cat, "name_uz", None)
+
+    def get_category_slug(self, obj: Listing) -> str:  # pragma: no cover
+        cat = getattr(obj, "category", None)
+        return getattr(cat, "slug", "") if cat else ""
+
+    def get_location_name(self, obj: Listing) -> str:  # pragma: no cover
+        loc = getattr(obj, "location", None)
+        if not loc:
+            return ""
+        lang = self._lang()
+        if lang == "uz":
+            return getattr(loc, "name_uz", None) or loc.name or getattr(loc, "name_ru", None)
+        return getattr(loc, "name_ru", None) or loc.name or getattr(loc, "name_uz", None)
+
+    def get_location_slug(self, obj: Listing) -> str:  # pragma: no cover
+        loc = getattr(obj, "location", None)
+        return getattr(loc, "slug", "") if loc else ""
+
+    def get_seller(self, obj: Listing) -> Dict[str, Any]:  # pragma: no cover
+        user = getattr(obj, "user", None)
+        if not user:
+            return {}
+        profile = getattr(user, "profile", None)
+        name = ""
+        avatar_url = ""
+        since = None
+        if profile:
+            name = profile.display_name or profile.phone_e164
+            avatar_url = profile.avatar_url or ""
+            since = profile.created_at
+        return {
+            "id": user.id,
+            "name": name,
+            "avatar_url": avatar_url,
+            "since": since,
+        }
+
 
 class ListingAttributeInputSerializer(serializers.Serializer):
-    attribute = serializers.IntegerField()
+    attribute = serializers.JSONField()  # accept id or key; validate handles coercion
     value = serializers.JSONField()
 
     def validate(self, data):
-        attr_id = data["attribute"]
-        value = data["value"]
-        attrs_by_id: Dict[int, Attribute] = self.context.get("attrs_by_id", {})
-        attr = attrs_by_id.get(attr_id)
+        attr_ref = data["attribute"]
+        # Coerce attribute reference to Attribute by id or by key
+        attrs_by_id = self.context.get("attrs_by_id", {})
+        attrs_by_key = self.context.get("attrs_by_key", {})
+        attr = None
+        try:
+            # numeric id
+            attr_id = int(attr_ref)
+            attr = attrs_by_id.get(attr_id)
+        except Exception:
+            # string key
+            if isinstance(attr_ref, str):
+                attr = attrs_by_key.get(attr_ref)
         if not attr:
+            # In dev, be lenient and allow skipping unknown attributes
+            if self.context.get("lenient"):
+                data["_skip"] = True
+                return data
             raise serializers.ValidationError({"attribute": "Unknown attribute for this category."})
+
+        # rewrite to canonical id for downstream usage
+        data["attribute"] = attr.id
+        value = data["value"]
 
         typ = attr.type
         if typ == Attribute.Type.TEXT:
@@ -141,17 +229,22 @@ class ListingCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Listing
         fields = [
+            "id",
             "title",
             "description",
             "price_amount",
             "price_currency",
+            "is_price_negotiable",
             "condition",
+            "deal_type",
+            "seller_type",
             "category",
             "location",
             "lat",
             "lon",
             "attributes",
         ]
+        read_only_fields = ["id"]
 
     def create(self, validated_data):
         user = self.context["request"].user
@@ -178,10 +271,19 @@ class ListingCreateSerializer(serializers.ModelSerializer):
         # Fetch all attributes for allowed categories
         attrs = Attribute.objects.filter(category_id__in=allowed_category_ids)
         attrs_by_id = {a.id: a for a in attrs}
+        attrs_by_key = {a.key: a for a in attrs}
         # Validate using nested serializer with context
-        ser = ListingAttributeInputSerializer(data=attrs_payload, many=True, context={"attrs_by_id": attrs_by_id})
+        ser = ListingAttributeInputSerializer(
+            data=attrs_payload,
+            many=True,
+            context={
+                "attrs_by_id": attrs_by_id,
+                "attrs_by_key": attrs_by_key,
+                "lenient": True,
+            },
+        )
         ser.is_valid(raise_exception=True)
-        cleaned = ser.validated_data
+        cleaned = [item for item in ser.validated_data if not item.get("_skip")]
         # Required presence validation across payload
         required_ids = {a.id for a in attrs if a.is_required}
         provided_map = {item["attribute"]: item["value"] for item in cleaned}
@@ -199,7 +301,11 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             elif a.type in (Attribute.Type.NUMBER, Attribute.Type.RANGE) and val is None:
                 missing.append(a.key)
         if missing:
-            raise serializers.ValidationError({"attributes": f"Missing required attributes: {', '.join(missing)}"})
+            # In development, allow creating without all required attributes to keep UX smooth.
+            # Set STRICT_ATTRIBUTES=1 to enforce.
+            if getattr(settings, "STRICT_ATTRIBUTES", False):
+                raise serializers.ValidationError({"attributes": f"Missing required attributes: {', '.join(missing)}"})
+            # Otherwise, continue without raising (server will still save provided values)
 
         # Clear existing
         ListingAttributeValue.objects.filter(listing=listing).delete()
@@ -263,7 +369,10 @@ class ListingUpdateSerializer(serializers.ModelSerializer):
             "description",
             "price_amount",
             "price_currency",
+            "is_price_negotiable",
             "condition",
+            "deal_type",
+            "seller_type",
             "category",
             "location",
             "lat",
@@ -290,9 +399,18 @@ class ListingUpdateSerializer(serializers.ModelSerializer):
             cat = cat.parent  # type: ignore[attr-defined]
         attrs = Attribute.objects.filter(category_id__in=allowed_category_ids)
         attrs_by_id = {a.id: a for a in attrs}
-        ser = ListingAttributeInputSerializer(data=attrs_payload, many=True, context={"attrs_by_id": attrs_by_id})
+        attrs_by_key = {a.key: a for a in attrs}
+        ser = ListingAttributeInputSerializer(
+            data=attrs_payload,
+            many=True,
+            context={
+                "attrs_by_id": attrs_by_id,
+                "attrs_by_key": attrs_by_key,
+                "lenient": True,
+            },
+        )
         ser.is_valid(raise_exception=True)
-        cleaned = ser.validated_data
+        cleaned = [item for item in ser.validated_data if not item.get("_skip")]
         # Required presence validation across payload
         required_ids = {a.id for a in attrs if a.is_required}
         provided_map = {item["attribute"]: item["value"] for item in cleaned}
@@ -310,7 +428,8 @@ class ListingUpdateSerializer(serializers.ModelSerializer):
             elif a.type in (Attribute.Type.NUMBER, Attribute.Type.RANGE) and val is None:
                 missing.append(a.key)
         if missing:
-            raise serializers.ValidationError({"attributes": f"Missing required attributes: {', '.join(missing)}"})
+            if getattr(settings, "STRICT_ATTRIBUTES", False):
+                raise serializers.ValidationError({"attributes": f"Missing required attributes: {', '.join(missing)}"})
 
         ListingAttributeValue.objects.filter(listing=listing).delete()
         bulk: List[ListingAttributeValue] = []

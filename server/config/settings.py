@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     "listings",
     "searchapp",
     "savedsearches",
+    "favorites",
     "uploads",
     "moderation",
 ]
@@ -128,16 +129,17 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
-    "DEFAULT_THROTTLE_CLASSES": (
-        "rest_framework.throttling.ScopedRateThrottle",
-        "rest_framework.throttling.UserRateThrottle",
-        "rest_framework.throttling.AnonRateThrottle",
-    ),
-    "DEFAULT_THROTTLE_RATES": {
-        "otp": "5/minute",
-        "user": "1000/day",
-        "anon": "200/day",
-    },
+    # Throttling disabled for development
+    # "DEFAULT_THROTTLE_CLASSES": (
+    #     "rest_framework.throttling.ScopedRateThrottle",
+    #     "rest_framework.throttling.UserRateThrottle",
+    #     "rest_framework.throttling.AnonRateThrottle",
+    # ),
+    # "DEFAULT_THROTTLE_RATES": {
+    #     "otp": "5/minute",
+    #     "user": "1000/day",
+    #     "anon": "200/day",
+    # },
 }
 
 # OpenSearch

@@ -37,6 +37,8 @@ def mapping_body() -> Dict[str, Any]:
                 "description": {"type": "text", "analyzer": "folding"},
                 "category_path": {"type": "keyword"},
                 "location_path": {"type": "keyword"},
+                "location_name_ru": {"type": "keyword"},
+                "location_name_uz": {"type": "keyword"},
                 "price": {"type": "double"},
                 "currency": {"type": "keyword"},
                 "condition": {"type": "keyword"},
@@ -85,6 +87,9 @@ def build_document(listing: Listing) -> Dict[str, Any]:
         loc_path.append(loc.slug)
         loc = loc.parent  # type: ignore[attr-defined]
     loc_path.reverse()
+    # Location names (ru/uz) for display in search cards
+    loc_display_ru = listing.location.name_ru or listing.location.name or ""
+    loc_display_uz = listing.location.name_uz or listing.location.name or ""
 
     # Attributes
     attr_rows = (
@@ -114,6 +119,8 @@ def build_document(listing: Listing) -> Dict[str, Any]:
         "description": listing.description,
         "category_path": cat_path,
         "location_path": loc_path,
+        "location_name_ru": loc_display_ru,
+        "location_name_uz": loc_display_uz,
         "price": float(listing.price_amount or 0),
         "currency": listing.price_currency,
         "condition": listing.condition,

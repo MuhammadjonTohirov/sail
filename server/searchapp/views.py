@@ -39,12 +39,19 @@ class ListingSearchView(APIView):
     def get(self, request):
         client = get_client()
         if not client:
-            return Response({"results": [], "total": 0, "note": "OpenSearch not configured"})
+            return Response({"results": [], "total": 0, "note": "Search backend not configured"}, status=200)
 
-        # Ensure index exists; ignore errors (we'll still try search and catch below)
+        # Quick connectivity guard to avoid noisy connection errors in dev
+        try:  # pragma: no cover
+            if not client.ping():
+                return Response({"results": [], "total": 0, "note": "Search backend unavailable (ping failed)"}, status=200)
+        except Exception:  # pragma: no cover
+            return Response({"results": [], "total": 0, "note": "Search backend unavailable"}, status=200)
+
+        # Ensure index exists; ignore errors (still attempt a search)
         try:  # pragma: no cover
             ensure_index()
-        except Exception as e:  # pragma: no cover
+        except Exception:  # pragma: no cover
             pass
 
         q = request.query_params.get("q")
