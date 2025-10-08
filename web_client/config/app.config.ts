@@ -130,7 +130,7 @@ export const appConfig = {
 
     // Spacing scale (multiplier for Tailwind spacing)
     spacing: {
-      containerMaxWidth: '1280px',
+      containerMaxWidth: '1200px',
       headerHeight: '64px',
       footerHeight: 'auto',
     },

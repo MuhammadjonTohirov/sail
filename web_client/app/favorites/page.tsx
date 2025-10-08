@@ -263,7 +263,7 @@ export default function FavoritesPage() {
   );
 
   return (
-    <div style={{ maxWidth: 'var(--container-max-width)', margin: '0 auto', padding: '20px' }}>
+    <div className="page-section page-section--padded" style={{ paddingTop: 0 }}>
       <h1 style={{ marginBottom: '32px', fontSize: '32px', fontWeight: 700 }}>
         {label('Избранные объявления', 'Sevimli e\'lonlar')}
       </h1>

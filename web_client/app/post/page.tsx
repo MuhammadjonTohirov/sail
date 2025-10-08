@@ -8,6 +8,7 @@ import CategoryPicker from '@/components/ui/CategoryPicker';
 import LocationPicker from '@/components/ui/LocationPicker';
 import MultiDropdown from '@/components/ui/MultiDropdown';
 import AttributesForm from '@/components/listing/AttributesForm';
+import { appConfig } from '@/config';
 
 type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; icon?: string; children: CategoryNode[] };
 type Attr = { id: number; key: string; label: string; type: string; unit?: string; options?: string[]; is_required?: boolean; min_number?: number; max_number?: number };
@@ -17,6 +18,11 @@ export default function PostPage() {
   const { locale } = useI18n();
   const base = locale === 'uz' ? '/uz' : '';
   const router = useRouter();
+  const { upload, i18n: configI18n } = appConfig;
+  const maxImages = upload.maxImages;
+  const maxFileSize = upload.maxFileSize;
+  const maxFileSizeMb = Math.round(maxFileSize / (1024 * 1024));
+  const currencyOptions = Array.from(new Set([configI18n.currency, 'UZS', 'USD'].filter(Boolean))) as string[];
 
   const [cats, setCats] = useState<CategoryNode[]>([]);
   const [selectedCat, setSelectedCat] = useState<number | null>(null);
@@ -30,7 +36,7 @@ export default function PostPage() {
 
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
-  const [priceCurrency, setPriceCurrency] = useState<'UZS' | 'USD'>('UZS');
+  const [priceCurrency, setPriceCurrency] = useState<string>(configI18n.currency);
   const [negotiable, setNegotiable] = useState<boolean>(false);
   const [dealType, setDealType] = useState<'sell' | 'exchange' | 'free'>('sell');
   const [sellerType, setSellerType] = useState<'person' | 'business'>('person');
@@ -70,8 +76,33 @@ export default function PostPage() {
   }, [cats]);
 
   const onPickFiles = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const list = Array.from(e.target.files || []).slice(0, 12 - files.length);
-    if (list.length) setFiles(prev => [...prev, ...list]);
+    const incoming = Array.from(e.target.files || []);
+    const availableSlots = Math.max(0, maxImages - files.length);
+    if (!availableSlots) {
+      setError(locale === 'uz'
+        ? `Maksimal ${maxImages} ta rasm yuklashingiz mumkin`
+        : `Можно загрузить не более ${maxImages} фото`);
+      e.currentTarget.value = '';
+      return;
+    }
+    const accepted: File[] = [];
+    const rejected: string[] = [];
+    for (const file of incoming) {
+      if (accepted.length >= availableSlots) break;
+      if (file.size > maxFileSize) {
+        rejected.push(file.name);
+        continue;
+      }
+      accepted.push(file);
+    }
+    if (accepted.length) {
+      setFiles(prev => [...prev, ...accepted]);
+    }
+    if (rejected.length) {
+      setError(locale === 'uz'
+        ? `Quyidagi fayllar ${maxFileSizeMb} MB dan katta: ${rejected.join(', ')}`
+        : `Файлы превышают ${maxFileSizeMb} МБ: ${rejected.join(', ')}`);
+    }
     e.currentTarget.value = '';
   };
   const removeFile = (idx: number) => setFiles(prev => prev.filter((_, i) => i !== idx));
@@ -131,9 +162,13 @@ export default function PostPage() {
   };
 
   const label = (ru: string, uz: string) => (locale === 'uz' ? uz : ru);
+  const photoNote = label(
+    `Первое фото будет на обложке. Перетаскивайте, чтобы изменить порядок. Максимум ${maxImages} фото до ${maxFileSizeMb} МБ каждое.`,
+    `Birinchi rasm muqovada bo‘ladi. Tartibni o‘zgartirish uchun sudrab o‘tkazing. Maksimal ${maxImages} ta rasm, har biri ${maxFileSizeMb} MB gacha.`
+  );
 
   return (
-    <div>
+    <div className="page-section page-section--padded post-page">
       <h2>{label('Создать объявление', 'E’lon yaratish')}</h2>
       <div className="form-section">
         <div className="form-card">
@@ -161,7 +196,7 @@ export default function PostPage() {
 
         <div className="form-card">
           <h3>{label('Фото', 'Rasmlar')}</h3>
-          <p className="muted" style={{ marginTop: -8 }}>{label('Первое фото будет на обложке. Перетаскивайте, чтобы изменить порядок.', 'Birinchi rasm muqovada bo‘ladi. Tartibni o‘zgartirish uchun sudrab o‘tkazing.')}</p>
+          <p className="muted" style={{ marginTop: -8 }}>{photoNote}</p>
           <div className="photo-grid">
             <label className="photo-tile add">
               <input type="file" accept="image/*" multiple onChange={onPickFiles} style={{ display: 'none' }} />
@@ -173,7 +208,7 @@ export default function PostPage() {
                 <button type="button" className="photo-remove" onClick={() => removeFile(idx)}>×</button>
               </div>
             ))}
-            {Array.from({ length: Math.max(0, 8 - files.length) }).map((_, i) => (
+            {Array.from({ length: Math.max(0, maxImages - files.length) }).map((_, i) => (
               <div key={`ph-${i}`} className="photo-tile placeholder">📷</div>
             ))}
           </div>
@@ -210,8 +245,8 @@ export default function PostPage() {
                   <label>{label('Валюта', 'Valyuta')}</label>
                   <Dropdown
                     value={priceCurrency}
-                    onChange={(v) => setPriceCurrency((v as 'UZS' | 'USD') || 'UZS')}
-                    options={[{ value: 'UZS', label: 'UZS' }, { value: 'USD', label: 'USD' }]}
+                    onChange={(v) => setPriceCurrency((v as string) || configI18n.currency)}
+                    options={currencyOptions.map((value) => ({ value, label: value }))}
                   />
                 </div>
               </div>

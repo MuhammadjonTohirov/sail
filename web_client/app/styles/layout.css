@@ -11,9 +11,42 @@
 }
 
 .container {
+  width: min(100%, var(--container-max-width));
+  margin: 0 auto;
+  padding-left: clamp(16px, 4vw, 48px);
+  padding-right: clamp(16px, 4vw, 48px);
+}
+
+.page-content {
+  flex: 1;
+  width: 100%;
+  padding: 32px 0 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: 0;
+  align-items: stretch;
+}
+
+.page-section {
+  width: 100%;
   max-width: var(--container-max-width);
   margin: 0 auto;
-  padding: 0 16px;
+}
+
+.page-section--padded {
+  padding: 24px 0;
+}
+
+.post-page {
+  width: 100%;
+  max-width: clamp(900px, 70vw, 1200px);
+}
+
+@media (max-width: 768px) {
+  .post-page {
+    max-width: 100%;
+  }
 }
 
 /* Header navigation */
@@ -146,6 +179,116 @@ header nav .nav-link:hover {
   .category-grid {
     grid-template-columns: repeat(2, 1fr);
   }
+}
+
+.footer {
+  margin-top: auto;
+  color: var(--fg);
+  background: var(--card-bg);
+  box-shadow: 0 -1px 0 0 var(--border);
+}
+
+.footer-top {
+  padding: 40px 0;
+}
+
+.footer-grid {
+  display: grid;
+  gap: 32px;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+}
+
+.footer-brand-block {
+  max-width: 320px;
+  display: grid;
+  gap: 8px;
+}
+
+.footer-column {
+  display: grid;
+  gap: 8px;
+}
+
+.footer-brand {
+  font-size: 22px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+.footer-tagline {
+  margin: 0;
+  color: var(--muted);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.footer-heading {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.footer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 15px;
+}
+
+.footer-list a {
+  color: var(--brand);
+  text-decoration: none;
+}
+
+.footer-list a:hover {
+  text-decoration: underline;
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  background: rgba(0, 0, 0, 0.01);
+}
+
+.footer-bottom-inner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  font-size: 13px;
+  color: var(--muted);
+  gap: 12px;
+}
+
+.footer-bottom-inner a {
+  color: var(--brand);
+  text-decoration: none;
+}
+
+.footer-bottom-inner a:hover {
+  text-decoration: underline;
+}
+
+@media (max-width: 640px) {
+  .page-content {
+    padding-bottom: 48px;
+  }
+  .footer-bottom-inner {
+    flex-direction: column;
+    text-align: center;
+  }
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding: 16px 0;
+  font-size: 13px;
+  text-align: center;
+  color: var(--muted);
 }
 
 /* Photo Grid */

@@ -18,7 +18,6 @@ const dict: Record<Locale, Record<string, string>> = {
     navProfile: "Ваш профиль",
     navListings: "Объявления",
     navFavorites: "Избранное",
-    navSaved: "Сохраненные поиски",
     navSettings: "Настройки",
     navLogout: "Выйти",
     switchRU: "RU",
@@ -41,7 +40,6 @@ const dict: Record<Locale, Record<string, string>> = {
     navProfile: "Profilingiz",
     navListings: "E’lonlar",
     navFavorites: "Sevimlilar",
-    navSaved: "Saqlangan qidiruvlar",
     navSettings: "Sozlamalar",
     navLogout: "Chiqish",
     switchRU: "RU",
@@ -57,14 +55,10 @@ const dict: Record<Locale, Record<string, string>> = {
   },
 };
 
-const DEFAULT_LOCALE: Locale =
-  appConfig.i18n.defaultLocale === "uz" ? "uz" : "ru";
-
 export function useI18n() {
   const pathname = usePathname() || "/";
   const first = pathname.split("/").filter(Boolean)[0];
-  const locale: Locale =
-    first === "uz" ? "uz" : first === "ru" ? "ru" : DEFAULT_LOCALE;
+  const locale: Locale = first === "uz" ? "uz" : "ru";
 
   return { t: (k: string) => dict[locale][k] ?? k, locale };
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Fragment } from 'react';
 import { Search, Taxonomy } from '@/lib/api';
 import { useI18n } from '@/lib/i18n';
 import CategoriesGrid from '@/components/home/CategoriesGrid';
@@ -26,7 +26,7 @@ export default function HomePage() {
   const [featuredListings, setFeaturedListings] = useState<Hit[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const { name, tagline, description, features, contact, social } = appConfig;
+  const { name, tagline, description, features, contact } = appConfig;
   const heroHighlights = [
     features.enablePromotions && {
       icon: '⚡️',
@@ -51,18 +51,25 @@ export default function HomePage() {
   ].filter(Boolean) as { icon: string; ru: string; uz: string }[];
 
   if (heroHighlights.length < 3) {
-    heroHighlights.push(
-      {
-        icon: '📞',
-        ru: `Поддержка: ${contact.phone}`,
-        uz: `Qo'llab-quvvatlash: ${contact.phone}`,
-      },
-      {
-        icon: '✉️',
-        ru: `Email: ${contact.email}`,
-        uz: `Email: ${contact.email}`,
-      },
-    );
+    heroHighlights.push({
+      icon: '📞',
+      ru: `Поддержка: ${contact.phone}`,
+      uz: `Qo'llab-quvvatlash: ${contact.phone}`,
+    });
+  }
+  if (heroHighlights.length < 3) {
+    heroHighlights.push({
+      icon: '✉️',
+      ru: `Email: ${contact.email}`,
+      uz: `Email: ${contact.email}`,
+    });
+  }
+  if (heroHighlights.length < 3) {
+    heroHighlights.push({
+      icon: '📍',
+      ru: `Адрес: ${contact.address}`,
+      uz: `Manzil: ${contact.address}`,
+    });
   }
   const highlights = heroHighlights.slice(0, 3);
 
@@ -75,6 +82,9 @@ export default function HomePage() {
     description || 'Тысячи объявлений в Узбекистане. Найдите то, что ищете!',
     tagline || "O'zbekistonda minglab e'lonlar. Qidirayotgan narsangizni toping!"
   );
+  const featuredTitle = features.enablePromotions
+    ? label('Продвигаемые объявления', "Reklama qilingan e'lonlar")
+    : label('Недавние объявления', "So'nggi e'lonlar");
 
   useEffect(() => {
     (async () => {
@@ -105,18 +115,8 @@ export default function HomePage() {
       <div className="hero-section">
         <div className="container">
           <div className="hero-content">
-            <h1 className="hero-title">
-              {label(
-                'Покупайте и продавайте все, что вам нужно',
-                'Kerakli narsalarni sotib oling va soting'
-              )}
-            </h1>
-            <p className="hero-subtitle">
-              {label(
-                'Тысячи объявлений в Узбекистане. Найдите то, что ищете!',
-                'O\'zbekistonda minglab e\'lonlar. Qidirayotgan narsangizni toping!'
-              )}
-            </p>
+            <h1 className="hero-title">{heroTitle}</h1>
+            <p className="hero-subtitle">{heroSubtitle}</p>
 
             {/* Search Bar */}
             <div className="hero-search">
@@ -139,20 +139,15 @@ export default function HomePage() {
 
             {/* Quick Stats */}
             <div className="hero-stats">
-              <div className="stat-item">
-                <div className="stat-number">1000+</div>
-                <div className="stat-label">{label('Активных объявлений', 'Faol e\'lonlar')}</div>
-              </div>
-              <div className="stat-divider"></div>
-              <div className="stat-item">
-                <div className="stat-number">500+</div>
-                <div className="stat-label">{label('Пользователей', 'Foydalanuvchilar')}</div>
-              </div>
-              <div className="stat-divider"></div>
-              <div className="stat-item">
-                <div className="stat-number">24/7</div>
-                <div className="stat-label">{label('Поддержка', 'Qo\'llab-quvvatlash')}</div>
-              </div>
+              {highlights.map((item, idx) => (
+                <Fragment key={`${item.icon}-${idx}`}>
+                  <div className="stat-item">
+                    <div className="stat-number">{item.icon}</div>
+                    <div className="stat-label">{label(item.ru, item.uz)}</div>
+                  </div>
+                  {idx < highlights.length - 1 && <div className="stat-divider"></div>}
+                </Fragment>
+              ))}
             </div>
           </div>
         </div>
@@ -177,9 +172,7 @@ export default function HomePage() {
       <section className="py-8 bg-gray-50">
         <div className="container">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-gray-900">
-              {label('Недавние объявления', 'So\'nggi e\'lonlar')}
-            </h2>
+            <h2 className="text-2xl font-bold text-gray-900">{featuredTitle}</h2>
             <Link href={`${base}/search`} className="text-[#23E5DB] hover:text-[#1dd4cb] text-sm font-medium">
               {label('Смотреть все →', 'Hammasini ko\'rish →')}
             </Link>

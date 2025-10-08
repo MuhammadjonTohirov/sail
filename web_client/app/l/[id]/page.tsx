@@ -249,7 +249,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
 
       <aside className="space-y-3">
         {/* Price & Contact Card */}
-        <div className="sidebar-card sticky" style={{ top: 80 }}>
+        <div className="sidebar-card">
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2 text-xs text-gray-500">
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import Dropdown from '@/components/ui/Dropdown';
 import CategoryPicker from '@/components/ui/CategoryPicker';
 import ProductCard from '@/components/search/ProductCard';
+import { appConfig } from '@/config';
 
 type Hit = { id: string; title: string; price?: number; currency?: string; media_urls?: string[]; location_name_ru?: string; location_name_uz?: string; refreshed_at?: string };
 type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; icon?: string; children: CategoryNode[] };
@@ -31,6 +32,8 @@ export default function SearchPage() {
   const [results, setResults] = useState<Hit[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const { features, pagination } = appConfig;
+  const perPage = pagination.itemsPerPage;
 
   useEffect(() => { (async () => { setCategoryTree(await Taxonomy.categories()); })(); }, []);
   // No dedicated "my listings" merge here — results come from search backend
@@ -53,7 +56,7 @@ export default function SearchPage() {
   const run = async () => {
     setLoading(true);
     try {
-      const params: Record<string, any> = { q, min_price: minPrice, max_price: maxPrice, sort, per_page: 20 };
+      const params: Record<string, any> = { q, min_price: minPrice, max_price: maxPrice, sort, per_page: perPage };
       if (selectedCategory) params.category_slug = selectedCategory.slug;
       for (const a of attributes) {
         const v = attrValues[a.key];
@@ -83,6 +86,7 @@ export default function SearchPage() {
   useEffect(() => { run(); /* refresh on sort change */ }, [sort]);
 
   const saveSearch = async () => {
+    if (!features.enableSavedSearches) return;
     const title = selectedCategoryPath || q || (locale === 'uz' ? 'Qidiruv' : 'Поиск');
     const query = {
       params: {
@@ -249,9 +253,11 @@ export default function SearchPage() {
                   { value: 'price_desc', label: locale === 'uz' ? 'Narx kamay.' : 'Цена: по убыванию' },
                 ]}
               />
-              <button onClick={saveSearch} className="btn-outline" style={{ padding: '8px 16px' }}>
-                {locale === 'uz' ? 'Qidiruvni saqlash' : 'Сохранить поиск'}
-              </button>
+              {features.enableSavedSearches && (
+                <button onClick={saveSearch} className="btn-outline" style={{ padding: '8px 16px' }}>
+                  {locale === 'uz' ? 'Qidiruvni saqlash' : 'Сохранить поиск'}
+                </button>
+              )}
             </div>
           </div>
 

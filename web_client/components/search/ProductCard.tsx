@@ -71,8 +71,8 @@ export default function ProductCard({ hit, href, locale = 'ru' }: { hit: Product
         )}
 
         {/* Favorite Button - positioned absolutely in top right */}
-        <div style={{ position: 'absolute', top: '8px', right: '8px', zIndex: 10 }}>
-          <FavoriteButton listingId={parseInt(hit.id)} size="sm" />
+        <div style={{ position: 'absolute', top: '10px', right: '10px', zIndex: 10 }}>
+          <FavoriteButton listingId={parseInt(hit.id)} size="md" />
         </div>
       </div>
 

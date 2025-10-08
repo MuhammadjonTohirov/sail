@@ -40,12 +40,12 @@ export function FavoriteButton({
   };
 
   const sizeMap = {
-    sm: 16,
-    md: 20,
-    lg: 24,
-  };
+    sm: { icon: 18, button: 36 },
+    md: { icon: 20, button: 40 },
+    lg: { icon: 24, button: 46 },
+  } as const;
 
-  const iconSize = sizeMap[size];
+  const { icon: iconSize, button: buttonSize } = sizeMap[size] || sizeMap.md;
 
   if (variant === 'button') {
     return (
@@ -76,16 +76,17 @@ export function FavoriteButton({
       className={`favorite-icon ${isLiked ? 'favorite-icon-active' : ''} ${className}`}
       aria-label={isLiked ? 'Remove from favorites' : 'Add to favorites'}
       style={{
-        background: 'rgba(255, 255, 255, 0.9)',
+        background: 'rgba(255, 255, 255, 0.95)',
         border: 'none',
         borderRadius: '50%',
-        width: iconSize + 16,
-        height: iconSize + 16,
+        width: buttonSize,
+        height: buttonSize,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
         cursor: 'pointer',
         transition: 'all 0.2s',
+        boxShadow: '0 2px 6px rgba(0,0,0,0.12)',
       }}
     >
       <svg
