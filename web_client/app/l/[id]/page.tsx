@@ -1,14 +1,19 @@
 "use client";
-import { Listings, apiFetch } from '@/lib/api';
+import { Listings, apiFetch, ChatApi } from '@/lib/api';
 import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 import { useRouter } from 'next/navigation';
 import { FavoriteButton } from '@/components/FavoriteButton';
 import { RecentlyViewedTracker } from '@/components/RecentlyViewedTracker';
+import { ReportModal } from '@/components/listing/ReportModal';
+import ChatOverlay from '@/components/chat/ChatOverlay';
+import type { ChatThread } from '@/domain/chat';
+import { Console } from 'console';
 
 export default function ListingDetail({ params }: { params: { id: string } }) {
-  const { locale } = useI18n();
+  const { t, locale } = useI18n();
   const router = useRouter();
+  const base = locale === 'uz' ? '/uz' : '';
   const id = Number(params.id);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -16,13 +21,17 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
   const [idx, setIdx] = useState(0);
   const [isThumbsScrolling, setThumbsScrolling] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
-  const [reportReason, setReportReason] = useState('');
   const [reportMsg, setReportMsg] = useState('');
-  const [reporting, setReporting] = useState(false);
+  const [reportModalOpen, setReportModalOpen] = useState(false);
   // drag-to-swipe state must be defined before any early returns
   const [drag, setDrag] = useState<{startX:number, moved:boolean}|null>(null);
   const [sellerListings, setSellerListings] = useState<any[]>([]);
   const [loadingSellerListings, setLoadingSellerListings] = useState(false);
+  const [chatOpen, setChatOpen] = useState(false);
+  const [chatLoading, setChatLoading] = useState(false);
+  const [chatThread, setChatThread] = useState<ChatThread | null>(null);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const [viewerId, setViewerId] = useState<number | null>(null);
 
   useEffect(() => {
     (async () => {
@@ -31,12 +40,39 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
       try {
         setData(await Listings.detail(id));
       } catch (e: any) {
-        setError(e.message || (locale === 'uz' ? 'E\'lon topilmadi' : 'Объявление не найдено'));
+        setError(e.message || t('listing.notFound'));
       } finally {
         setLoading(false);
       }
     })();
   }, [id, locale]);
+
+  useEffect(() => {
+    setChatOpen(false);
+    setChatThread(null);
+    setChatError(null);
+  }, [id]);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const readProfile = () => {
+      try {
+        const raw = localStorage.getItem('profile');
+        if (!raw) {
+          setViewerId(null);
+          return;
+        }
+        const parsed = JSON.parse(raw);
+        const uid = parsed?.user_id ?? parsed?.id ?? null;
+        setViewerId(typeof uid === 'number' ? uid : null);
+      } catch {
+        setViewerId(null);
+      }
+    };
+    readProfile();
+    window.addEventListener('auth-changed', readProfile);
+    return () => window.removeEventListener('auth-changed', readProfile);
+  }, []);
 
   // Fetch seller's other listings
   useEffect(() => {
@@ -58,16 +94,20 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
   const chips = useMemo(() => {
     const arr: { label: string }[] = [];
     if (!data) return arr;
-    arr.push({ label: data.seller_type === 'business' ? (locale==='uz'?'Biznes':'Бизнес') : (locale==='uz'?'Jismoniy shaxs':'Частное лицо') });
-    arr.push({ label: (locale==='uz'?'Holati: ':'Состояние: ') + (data.condition === 'new' ? (locale==='uz'?'Yangi':'Новый') : (locale==='uz'?'B/u':'Б/у')) });
+    arr.push({ label: data.seller_type === 'business' ? t('listing.sellerTypeBusiness') : t('listing.sellerTypePrivate') });
+    arr.push({ label: t('listing.conditionLabel') + (data.condition === 'new' ? t('listing.conditionNew') : t('listing.conditionUsed')) });
     (data.attributes || []).forEach((a: any) => {
       const v = Array.isArray(a.value) ? a.value.join(', ') : String(a.value ?? '');
       if (v) arr.push({ label: `${a.label}: ${v}` });
     });
     return arr;
-  }, [data, locale]);
+  }, [data, locale, t]);
 
-  const label = (ru: string, uz: string) => locale === 'uz' ? uz : ru;
+  useEffect(() => {
+    if (!reportMsg) return;
+    const timer = setTimeout(() => setReportMsg(''), 4000);
+    return () => clearTimeout(timer);
+  }, [reportMsg]);
 
   // Loading state
   if (loading) {
@@ -81,7 +121,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <p className="text-gray-600">{label('Загрузка...', 'Yuklanmoqda...')}</p>
+                <p className="text-gray-600">{t('listing.loading')}</p>
               </div>
             </div>
           </div>
@@ -103,15 +143,15 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
             <h2 className="text-xl font-bold text-gray-900 mb-2">
-              {label('Объявление не найдено', 'E\'lon topilmadi')}
+              {t('listing.notFound')}
             </h2>
-            <p className="text-gray-600 mb-4">{error || label('Страница не существует или была удалена', 'Sahifa mavjud emas yoki o\'chirilgan')}</p>
+            <p className="text-gray-600 mb-4">{error || t('listing.notFoundDescription')}</p>
           </div>
           <button
             onClick={() => router.push('/search')}
             className="btn-accent"
           >
-            {label('Вернуться к поиску', 'Qidiruvga qaytish')}
+            {t('listing.backToSearch')}
           </button>
         </div>
       </div>
@@ -119,6 +159,57 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
   }
   const media = data.media || [];
   const current = media[idx] ? media[idx].image_url : '';
+  const primaryImage = media[0]?.image_url || current || '';
+
+  const isOwnListing = viewerId != null && viewerId === data.seller.id;
+
+  const chatListingSummary = {
+    id,
+    title: data.title,
+    priceAmount: data.price_amount,
+    priceCurrency: data.price_currency,
+    thumbnailUrl: primaryImage,
+    sellerName: data.user?.display_name || data.user?.phone_e164 || undefined,
+  };
+
+  const handleChatClick = async () => {
+    if (typeof window === 'undefined') return;
+    if (isOwnListing) return;
+    const token = localStorage.getItem('access_token');
+    if (!token) {
+      router.push(locale === 'uz' ? '/uz/auth/otp' : '/auth/otp');
+      return;
+    }
+    if (chatThread && chatThread.listing.listingId === id) {
+      setChatError(null);
+      setChatOpen(true);
+      return;
+    }
+
+    setChatOpen(true);
+    setChatLoading(true);
+    setChatError(null);
+    try {
+      const threads = await ChatApi.listThreads();
+      const existing = threads.find((t) => t.listing.listingId === id) || null;
+      setChatThread(existing);
+    } catch (err) {
+      setChatError(err instanceof Error ? err.message : t('listing.chatLoadError'));
+    } finally {
+      setChatLoading(false);
+    }
+  };
+
+  const handleCloseChat = () => {
+    setChatOpen(false);
+    setChatError(null);
+  };
+
+  const handleThreadChange = (thread: ChatThread) => {
+    setChatThread(thread);
+    setChatError(null);
+    setChatLoading(false);
+  };
 
   const prev = () => setIdx((i) => (i - 1 + media.length) % Math.max(media.length, 1));
   const next = () => setIdx((i) => (i + 1) % Math.max(media.length, 1));
@@ -138,7 +229,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
                 </svg>
-                <span>{label('Продвигаемое', 'Targ\'ib qilinadigan')}</span>
+                <span>{t('listing.promoted')}</span>
               </div>
             )}
 
@@ -154,7 +245,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
                   <svg className="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
-                  <span className="text-gray-400 mt-2">{label('Нет изображения', 'Rasm yo\'q')}</span>
+                  <span className="text-gray-400 mt-2">{t('listing.noImage')}</span>
                 </div>
               )}
               {media.length > 1 && (
@@ -182,11 +273,11 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
         <div className="card" style={{ marginTop: 12 }}>
           <div className="breadcrumbs mb-4">
             <a href={locale === 'uz' ? '/uz' : '/'} className="breadcrumb-link">
-              {label('Главная', 'Bosh sahifa')}
+              {t('listing.home')}
             </a>
             <span className="breadcrumb-sep">›</span>
             <a href={`${locale === 'uz' ? '/uz' : ''}/search`} className="breadcrumb-link">
-              {data.category_name || label('Все категории', 'Barcha kategoriyalar')}
+              {data.category_name || t('listing.allCategories')}
             </a>
             <span className="breadcrumb-sep">›</span>
             <span className="breadcrumb-current">{data.title}</span>
@@ -196,7 +287,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
 
           {chips.length > 0 && (
             <div className="detail-attributes">
-              <h3 className="attributes-title">{label('Характеристики', 'Xususiyatlar')}</h3>
+              <h3 className="attributes-title">{t('listing.characteristics')}</h3>
               <div className="attributes-grid">
                 {chips.map((c, i) => (
                   <div key={i} className="attribute-row">
@@ -208,40 +299,28 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
           )}
 
           <div className="detail-section">
-            <h3 className="section-title">{label('Описание', 'Ta\'rif')}</h3>
+            <h3 className="section-title">{t('listing.description')}</h3>
             <p className="description-text">
-              {data.description || <span className="text-gray-400">{label('Описание отсутствует', 'Tavsif yo\'q')}</span>}
+              {data.description || <span className="text-gray-400">{t('listing.noDescription')}</span>}
             </p>
           </div>
 
           <div className="border-t mt-6 pt-4">
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-3">
               <span className="text-xs text-gray-400">ID: {data.id}</span>
-              <button
-                className="text-sm text-gray-500 hover:text-red-500 transition-colors flex items-center gap-2"
-                onClick={async () => {
-                  if (reporting) return;
-                  setReporting(true);
-                  try {
-                    await apiFetch('/api/v1/reports', {
-                      method: 'POST',
-                      body: JSON.stringify({ listing: id, reason_code: 'spam', notes: '' })
-                    });
-                    setReportMsg(label('Жалоба отправлена', 'Shikoyat yuborildi'));
-                  } catch {
-                    setReportMsg(label('Не удалось отправить', 'Yuborib bo\'lmadi'));
-                  } finally {
-                    setReporting(false);
-                    setTimeout(() => setReportMsg(''), 3000);
-                  }
-                }}
-                disabled={reporting || !!reportMsg}
-              >
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
-                </svg>
-                {reportMsg || label('Пожаловаться', 'Shikoyat qilish')}
-              </button>
+              <div className="flex items-center gap-3">
+                {reportMsg && <span className="text-xs text-green-600">{reportMsg}</span>}
+                <button
+                  className="text-sm hover:text-red-500 transition-colors flex items-center gap-2"
+                  onClick={() => setReportModalOpen(true)}
+                  disabled={reportModalOpen}
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
+                  </svg>
+                  {t('listing.report')}
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -274,25 +353,41 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
                   </svg>
-                  {label('Цена договорная', 'Narx kelishilgan')}
+                  {t('listing.priceNegotiable')}
                 </div>
               )}
             </div>
           ) : (
             <div className="price-block mb-4">
               <div className="text-3xl font-bold text-green-600">
-                {label('Бесплатно', 'Bepul')}
+                {t('listing.free')}
               </div>
             </div>
           )}
 
           <div className="btn-row space-y-3">
-            <button className="w-full bg-[#23E5DB] hover:bg-[#1dd4cb] text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-              {label('Написать сообщение', 'Xabar yozish')}
+            <button
+              onClick={handleChatClick}
+              disabled={isOwnListing || chatLoading}
+              className={`w-full bg-[#23E5DB] hover:bg-[#1dd4cb] text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 ${isOwnListing || chatLoading ? 'opacity-70 cursor-not-allowed' : ''}`}
+            >
+              {chatLoading ? (
+                <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              )}
+              {t('listing.sendMessage')}
             </button>
+            {isOwnListing && (
+              <p className="text-xs text-gray-500 text-center">
+                {t('listing.ownListing')}
+              </p>
+            )}
 
             <button
               className="w-full bg-white border-2 border-gray-300 hover:border-[#23E5DB] text-gray-900 font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
@@ -304,7 +399,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
               {showPhone ? (
                 data.contact_phone_masked || data.user?.phone_e164 || '—'
               ) : (
-                label('Показать телефон', 'Telefonni ko\'rsatish')
+                t('listing.showPhone')
               )}
             </button>
           </div>
@@ -316,7 +411,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
             </svg>
-            {label('Продавец', 'Sotuvchi')}
+            {t('listing.seller')}
           </div>
           <div className="seller-info">
             <div className="seller-avatar">
@@ -324,28 +419,28 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
             </div>
             <div className="seller-details">
               <div className="seller-name">
-                {data.user?.display_name || label('Пользователь', 'Foydalanuvchi')}
+                {data.user?.display_name || t('listing.user')}
               </div>
               <div className="seller-meta">
-                {label('На сайте с', 'Saytda')} {new Date(data.created_at).toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', { year: 'numeric', month: 'short' })}
+                {t('listing.onSiteSince')} {new Date(data.created_at).toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', { year: 'numeric', month: 'short' })}
               </div>
             </div>
           </div>
           <div className="seller-stats">
             <div className="stat-box">
               <div className="stat-value">—</div>
-              <div className="stat-name">{label('Объявления', 'E\'lonlar')}</div>
+              <div className="stat-name">{t('listing.listings')}</div>
             </div>
             <div className="stat-box">
               <div className="stat-value">—</div>
-              <div className="stat-name">{label('Отзывы', 'Sharhlar')}</div>
+              <div className="stat-name">{t('listing.reviews')}</div>
             </div>
           </div>
           <button
-            onClick={() => router.push(`/u/${data.user?.id || data.user_id}/listings`)}
+            onClick={() => router.push(`${base}/u/${data.seller?.id || data.user?.id || data.user_id}`)}
             className="w-full btn-outline btn-lg text-sm"
           >
-            {label('Все объявления продавца', 'Sotuvchining barcha e\'lonlari')}
+            {t('listing.sellerAllListings')}
           </button>
         </div>
 
@@ -356,10 +451,10 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
-            {label('Местоположение', 'Manzil')}
+            {t('listing.location')}
           </div>
           <div className="location-name">
-            {data.location_name || data.location || label('Не указано', 'Ko\'rsatilmagan')}
+            {data.location_name || data.location || t('listing.notSpecified')}
           </div>
         </div>
       </aside>
@@ -370,13 +465,13 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
         <div className="related-listings-section">
           <div className="section-header">
             <h2 className="section-heading">
-              {label('Другие объявления продавца', 'Sotuvchining boshqa e\'lonlari')}
+              {t('listing.sellerOtherListings')}
             </h2>
             <a
               href={`${locale === 'uz' ? '/uz' : ''}/u/${data.user_id}/listings`}
               className="view-all-link"
             >
-              {label('Смотреть все', 'Hammasini ko\'rish')} →
+              {t('listing.viewAll')} →
             </a>
           </div>
 
@@ -415,7 +510,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
                       {listing.price_amount > 0 ? (
                         `${Number(listing.price_amount).toLocaleString()} ${listing.price_currency}`
                       ) : (
-                        label('Бесплатно', 'Bepul')
+                        t('listing.free')
                       )}
                     </div>
                     {listing.location_name && (
@@ -432,6 +527,26 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
             </div>
           )}
         </div>
+      )}
+      <ReportModal
+        listingId={id}
+        open={reportModalOpen}
+        locale={locale}
+        onClose={() => setReportModalOpen(false)}
+        onSubmitted={(message) => setReportMsg(message)}
+      />
+
+      {chatOpen && (
+        <ChatOverlay
+          listing={chatListingSummary}
+          thread={chatThread}
+          viewerId={viewerId}
+          loading={chatLoading}
+          error={chatError}
+          onRetry={handleChatClick}
+          onClose={handleCloseChat}
+          onThreadChange={handleThreadChange}
+        />
       )}
     </div>
   );

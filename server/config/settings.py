@@ -38,6 +38,8 @@ INSTALLED_APPS = [
     "favorites",
     "uploads",
     "moderation",
+    "chat",
+    "currency",
 ]
 
 MIDDLEWARE = [
@@ -90,8 +92,22 @@ else:
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": BASE_DIR / "db.sqlite3",
+            "OPTIONS": {
+                "timeout": 20,  # Increase timeout for locked database
+            },
         }
     }
+    # Enable WAL mode for better concurrency with SQLite
+    import sqlite3
+    from django.db.backends.signals import connection_created
+    from django.dispatch import receiver
+
+    @receiver(connection_created)
+    def enable_sqlite_wal_mode(sender, connection, **kwargs):
+        if connection.vendor == 'sqlite':
+            cursor = connection.cursor()
+            cursor.execute('PRAGMA journal_mode=WAL;')
+            cursor.execute('PRAGMA busy_timeout=20000;')  # 20 seconds
 
 LANGUAGE_CODE = os.environ.get("LANGUAGE_CODE", "ru")
 LANGUAGES = (
@@ -145,7 +161,7 @@ REST_FRAMEWORK = {
 # OpenSearch
 OPENSEARCH_URL = os.environ.get("OPENSEARCH_URL", "http://localhost:9200")
 OPENSEARCH_INDEX_PREFIX = os.environ.get("OPENSEARCH_INDEX_PREFIX", "olxclone")
-OPENSEARCH_INDEX_VERSION = int(os.environ.get("OPENSEARCH_INDEX_VERSION", "1"))
+OPENSEARCH_INDEX_VERSION = int(os.environ.get("OPENSEARCH_INDEX_VERSION", "2"))
 
 # Celery (defaults are set in config/celery.py)
 CELERY_TASK_SOFT_TIME_LIMIT = int(os.environ.get("CELERY_TASK_SOFT_TIME_LIMIT", "30"))
@@ -171,3 +187,16 @@ LOGGING = {
     },
     "root": {"handlers": ["console"], "level": "INFO"},
 }
+
+# Chat feature toggles
+CHAT_MAX_ATTACHMENTS_PER_MESSAGE = int(os.environ.get("CHAT_MAX_ATTACHMENTS_PER_MESSAGE", "5"))
+_chat_attachment_prefixes = [
+    p.strip()
+    for p in os.environ.get("CHAT_ATTACHMENT_ALLOWED_URL_PREFIXES", "").split(",")
+    if p.strip()
+]
+if not _chat_attachment_prefixes:
+    media_url = str(MEDIA_URL)
+    if media_url.startswith(("http://", "https://")):
+        _chat_attachment_prefixes.append(media_url)
+CHAT_ATTACHMENT_ALLOWED_URL_PREFIXES = _chat_attachment_prefixes

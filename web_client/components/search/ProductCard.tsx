@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { FavoriteButton } from '@/components/FavoriteButton';
+import PriceDisplay from '@/components/PriceDisplay';
 
 export type ProductHit = {
   id: string;
@@ -16,11 +17,17 @@ export type ProductHit = {
   condition?: string;
 };
 
-export default function ProductCard({ hit, href, locale = 'ru' }: { hit: ProductHit; href: string; locale?: 'ru' | 'uz' }) {
+interface ProductCardProps {
+  hit: ProductHit;
+  href: string;
+  locale?: 'ru' | 'uz';
+  viewMode?: 'grid' | 'list';
+}
+
+export default function ProductCard({ hit, href, locale = 'ru', viewMode = 'grid' }: ProductCardProps) {
   const [imageError, setImageError] = useState(false);
 
   const img = hit.media_urls?.[0];
-  const price = hit.price !== undefined ? new Intl.NumberFormat(locale === 'uz' ? 'uz-UZ' : 'ru-RU').format(Number(hit.price)) : '';
   const loc = locale === 'uz' ? (hit.location_name_uz || '') : (hit.location_name_ru || '');
 
   // Format date to show relative time or date
@@ -39,8 +46,10 @@ export default function ProductCard({ hit, href, locale = 'ru' }: { hit: Product
 
   const timeAgo = hit.refreshed_at ? getTimeAgo(hit.refreshed_at) : '';
 
+  const cardClassName = `olx-product-card ${viewMode === 'list' ? 'list-view' : ''}`;
+
   return (
-    <Link href={href} className="olx-product-card">
+    <Link href={href} className={cardClassName}>
       <div className="relative">
         {/* Image */}
         <div className="product-card-image">
@@ -79,10 +88,12 @@ export default function ProductCard({ hit, href, locale = 'ru' }: { hit: Product
       {/* Content */}
       <div className="product-card-content">
         {/* Price */}
-        {price ? (
-          <div className="product-card-price">
-            {price} {hit.currency === 'UZS' ? (locale === 'uz' ? 'so\'m' : 'сум') : hit.currency}
-          </div>
+        {hit.price !== undefined && hit.price > 0 ? (
+          <PriceDisplay
+            amount={hit.price}
+            currency={hit.currency || 'UZS'}
+            className="product-card-price"
+          />
         ) : (
           <div className="product-card-price text-green-600">
             {locale === 'uz' ? 'Bepul' : 'Бесплатно'}

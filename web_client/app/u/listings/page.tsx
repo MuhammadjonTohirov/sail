@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 import Dropdown from '@/components/ui/Dropdown';
 import CategoryPicker from '@/components/ui/CategoryPicker';
+import { appConfig } from '@/config';
 
 type CatNode = { id: number; name: string; slug: string; is_leaf: boolean; children?: CatNode[] };
 
@@ -67,7 +68,6 @@ export default function MyListings() {
     return c;
   }, [items]);
 
-  const label = (ru: string, uz: string) => locale === 'uz' ? uz : ru;
   const [loading, setLoading] = useState(false);
 
   if (error) {
@@ -87,7 +87,7 @@ export default function MyListings() {
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-gray-900">
-          {label('Мои объявления', 'Mening e\'lonlarim')}
+          {t('myListings.pageTitle')}
         </h1>
         <a
           href={`${base}/post`}
@@ -96,7 +96,7 @@ export default function MyListings() {
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
-          {label('Добавить объявление', 'E\'lon qo\'shish')}
+          {t('myListings.addListing')}
         </a>
       </div>
 
@@ -106,8 +106,8 @@ export default function MyListings() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
         <div className="text-sm text-blue-900">
-          <strong>{label('Обратите внимание', 'E\'tibor bering')}:</strong>{' '}
-          {t('listingsDeliveryNotice')}
+          <strong>{t('myListings.noticeBold')}:</strong>{' '}
+          {t('myListings.noticeText', { brand: appConfig.name })}
         </div>
       </div>
 
@@ -117,19 +117,19 @@ export default function MyListings() {
           className={`tab ${tab==='active'?'is-active':''}`}
           onClick={() => setTab('active')}
         >
-          {label('Активные', 'Faol')} ({counts.active})
+          {t('myListings.tabActive')} ({counts.active})
         </button>
         <button
           className={`tab ${tab==='pending_review'?'is-active':''}`}
           onClick={() => setTab('pending_review')}
         >
-          {label('На модерации', 'Moderatsiyada')} ({counts.pending_review})
+          {t('myListings.tabPendingReview')} ({counts.pending_review})
         </button>
         <button
           className={`tab ${tab==='inactive'?'is-active':''}`}
           onClick={() => setTab('inactive')}
         >
-          {label('Неактивные', 'Faol emas')} ({counts.inactive})
+          {t('myListings.tabInactive')} ({counts.inactive})
         </button>
       </div>
 
@@ -139,7 +139,7 @@ export default function MyListings() {
           <div className="flex-1 min-w-[250px]">
             <input
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#23E5DB] focus:ring-2 focus:ring-[#23E5DB] focus:ring-opacity-20"
-              placeholder={label('Искать по заголовку или ID...', 'Sarlavha yoki ID bo\'yicha qidirish...')}
+              placeholder={t('myListings.searchPlaceholder')}
               value={q}
               onChange={e => setQ(e.target.value)}
             />
@@ -149,7 +149,7 @@ export default function MyListings() {
             className="px-4 py-2 border border-gray-300 rounded-lg hover:border-[#23E5DB] transition-colors"
             onClick={() => setCatPickerOpen(true)}
           >
-            {catId ? catPath : label('Все категории', 'Barcha kategoriyalar')}
+            {catId ? catPath : t('myListings.allCategories')}
           </button>
 
           {catId && (
@@ -157,7 +157,7 @@ export default function MyListings() {
               className="px-4 py-2 text-sm text-[#23E5DB] hover:text-[#1dd4cb]"
               onClick={() => { setCatId(''); setCatPath(''); }}
             >
-              {label('Сбросить', 'Tozalash')}
+              {t('myListings.resetFilter')}
             </button>
           )}
 
@@ -165,10 +165,10 @@ export default function MyListings() {
             value={sort}
             onChange={(v) => setSort(v)}
             options={[
-              { value: 'newest', label: label('Самые новые', 'Eng yangi') },
-              { value: 'oldest', label: label('Самые старые', 'Eng eski') },
-              { value: 'price_asc', label: label('Цена: по возр.', 'Narx: o\'sish') },
-              { value: 'price_desc', label: label('Цена: по убыв.', 'Narx: kamayish') },
+              { value: 'newest', label: t('myListings.sortNewest') },
+              { value: 'oldest', label: t('myListings.sortOldest') },
+              { value: 'price_asc', label: t('myListings.sortPriceAsc') },
+              { value: 'price_desc', label: t('myListings.sortPriceDesc') },
             ]}
           />
         </div>
@@ -186,14 +186,14 @@ export default function MyListings() {
         <div className="bg-white rounded-lg border border-gray-200 p-12 text-center">
           <div className="text-6xl mb-4">📦</div>
           <h3 className="text-xl font-semibold text-gray-900 mb-2">
-            {label('Нет объявлений', 'E\'lonlar yo\'q')}
+            {t('myListings.noListings')}
           </h3>
           <p className="text-gray-600 mb-6">
             {tab === 'active'
-              ? label('У вас пока нет активных объявлений', 'Sizda hali faol e\'lonlar yo\'q')
+              ? t('myListings.noActiveListings')
               : tab === 'pending_review'
-              ? label('Нет объявлений на модерации', 'Moderatsiyada e\'lonlar yo\'q')
-              : label('Нет неактивных объявлений', 'Faol bo\'lmagan e\'lonlar yo\'q')
+              ? t('myListings.noPendingListings')
+              : t('myListings.noInactiveListings')
             }
           </p>
           <a
@@ -203,7 +203,7 @@ export default function MyListings() {
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            {label('Создать объявление', 'E\'lon yaratish')}
+            {t('myListings.createListing')}
           </a>
         </div>
       ) : (
@@ -227,7 +227,7 @@ export default function MyListings() {
                   <h3 className="listing-title">{l.title}</h3>
                 </a>
                 <div className="listing-price">
-                  {l.price_amount} {l.price_currency === 'UZS' ? (locale === 'uz' ? 'so\'m' : 'сум') : l.price_currency}
+                  {l.price_amount} {l.price_currency === 'UZS' ? t('myListings.currencySom') : l.price_currency}
                 </div>
                 <div className="listing-meta">
                   <span>ID: {l.id}</span>
@@ -235,9 +235,9 @@ export default function MyListings() {
                   <span>{new Date(l.created_at).toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU')}</span>
                   <span>•</span>
                   <span className={`status-badge status-${l.status}`}>
-                    {l.status === 'active' ? label('Активно', 'Faol') :
-                     l.status === 'pending_review' ? label('На проверке', 'Tekshirilmoqda') :
-                     label('Неактивно', 'Faol emas')}
+                    {l.status === 'active' ? t('myListings.statusActive') :
+                     l.status === 'pending_review' ? t('myListings.statusPendingReview') :
+                     t('myListings.statusInactive')}
                   </span>
                 </div>
               </div>
@@ -246,31 +246,18 @@ export default function MyListings() {
                 <button
                   className="action-btn primary"
                   onClick={() => bump(l.id)}
-                  title={label('Обновить объявление', 'E\'lonni yangilash')}
+                  title={t('myListings.bumpTooltip')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                   </svg>
-                  {label('Поднять', 'Ko\'tarish')}
+                  {t('myListings.bumpButton')}
                 </button>
-
-                <label className="action-btn secondary" title={label('Добавить фото', 'Rasm qo\'shish')}>
-                  <input
-                    type="file"
-                    className="hidden"
-                    accept="image/*"
-                    onChange={e => upload(l.id, e.target.files?.[0] || null)}
-                  />
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                  </svg>
-                  {label('Фото', 'Rasm')}
-                </label>
 
                 <a
                   href={`${base}/post?edit=${l.id}`}
                   className="action-btn secondary"
-                  title={label('Редактировать', 'Tahrirlash')}
+                  title={t('myListings.editTooltip')}
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />

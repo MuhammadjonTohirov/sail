@@ -1,6 +1,6 @@
-/*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/base.css ***!
-  \***********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*****************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/base.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************/
 /* Theme variables resolved from app.config.ts */
 :root {
   --fg: #002F34;
@@ -83,9 +83,9 @@ a {
   border: 0;
 }
 
-/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/layout.css ***!
-  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/layout.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************/
 /* Layout Components */
 
 /* Topbar */
@@ -446,20 +446,35 @@ header nav .nav-link:hover {
 
 .photo-remove {
   position: absolute;
-  top: 6px;
-  right: 6px;
-  background: rgba(0,0,0,0.55);
+  top: 4px;
+  right: 4px;
+  background: rgba(192, 192, 192, 0.55);
   color: #fff;
   border: 0;
-  width: 24px;
-  height: 24px;
   border-radius: 999px;
   cursor: pointer;
 }
 
-/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/forms.css ***!
-  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.photo-main-badge {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background: var(--brand);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 2;
+  pointer-events: none;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/*!******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/forms.css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************/
 /* Form Elements */
 
 /* Inputs */
@@ -631,9 +646,9 @@ button.btn-accent {
   }
 }
 
-/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/modals.css ***!
-  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/modals.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************/
 /* Modals and Dropdowns */
 
 /* Modal */
@@ -943,6 +958,215 @@ button.btn-accent {
   border-radius: 3px;
 }
 
+/* Report Modal */
+.report-modal {
+  z-index: 110;
+}
+
+.report-modal__dialog {
+  width: min(480px, calc(100vw - 32px));
+  padding-bottom: 0;
+}
+
+.report-modal__header {
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+}
+
+.report-modal__header-side {
+  display: flex;
+  align-items: center;
+}
+
+.report-modal__title {
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.report-modal__body {
+  padding: 0 24px 24px;
+}
+
+.report-modal__footer {
+  border-top: 1px solid var(--border);
+  padding: 16px 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: flex-end;
+  background: #fafafa;
+}
+
+.report-modal__icon-btn {
+  border: none;
+  background: none;
+  cursor: pointer;
+  border-radius: 50%;
+  padding: 8px;
+  transition: background 0.2s ease;
+}
+
+.report-modal__icon-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.report-modal__placeholder {
+  padding: 24px 0;
+  text-align: center;
+  color: var(--muted);
+  display: grid;
+  grid-gap: 12px;
+  gap: 12px;
+  justify-items: center;
+}
+
+.report-modal__retry {
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.2s ease;
+}
+
+.report-modal__retry:hover {
+  border-color: var(--accent);
+}
+
+.report-options {
+  display: grid;
+  grid-gap: 12px;
+  gap: 12px;
+}
+
+.report-option {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  background: #fff;
+  text-align: left;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.report-option:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.report-option__text {
+  display: grid;
+  grid-gap: 6px;
+  gap: 6px;
+}
+
+.report-option__title {
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--fg);
+}
+
+.report-option__desc {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.report-form {
+  display: grid;
+  grid-gap: 16px;
+  gap: 16px;
+}
+
+.report-form__summary {
+  display: grid;
+  grid-gap: 6px;
+  gap: 6px;
+}
+
+.report-form__title {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.report-form__desc {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+.report-form__label {
+  display: grid;
+  grid-gap: 8px;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--fg);
+}
+
+.report-form__label textarea {
+  resize: vertical;
+  min-height: 120px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  padding: 12px;
+  font-family: inherit;
+  font-size: 14px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.report-form__label textarea:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(35, 229, 219, 0.15);
+}
+
+.report-form__counter {
+  font-size: 12px;
+  color: var(--muted);
+  text-align: right;
+}
+
+.report-form__error {
+  font-size: 13px;
+  color: #dc2626;
+}
+
+.report-modal__primary,
+.report-modal__secondary {
+  border-radius: 8px;
+  padding: 10px 18px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.report-modal__secondary {
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.report-modal__secondary:hover {
+  border-color: var(--accent);
+}
+
+.report-modal__primary {
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(14, 165, 233, 0.3);
+}
+
+.report-modal__primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
 .location-item {
   display: flex;
   align-items: center;
@@ -990,9 +1214,9 @@ button.btn-accent {
   color: var(--muted);
 }
 
-/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/cards.css ***!
-  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/cards.css ***!
+  \******************************************************************************************************************************************************************************************************************************************************************/
 /* Product and Listing Cards */
 
 /* Marketplace Product Card */
@@ -1547,9 +1771,9 @@ button.btn-accent {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
-/*!*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/search.css ***!
-  \*************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*******************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/search.css ***!
+  \*******************************************************************************************************************************************************************************************************************************************************************/
 /* Search and Filter Components */
 
 /* Hero Section */
@@ -1894,9 +2118,341 @@ button.btn-accent {
   background: #a8a8a8;
 }
 
-/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/gallery.css ***!
-  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/* Currency Radio Group */
+.currency-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.currency-radio-option {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--card-bg);
+}
+
+.currency-radio-option:hover {
+  border-color: var(--accent);
+  background: var(--color-neutral-100);
+}
+
+.currency-radio-option input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: var(--accent);
+}
+
+.currency-radio-option input[type="radio"]:checked + .currency-radio-label {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.currency-radio-label {
+  font-size: 14px;
+  color: var(--fg);
+  cursor: pointer;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
+  transition: all 0.2s ease;
+}
+
+/* View Toggle Wrapper (for results bar) */
+.view-toggle-wrapper {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0px 0;
+}
+
+.view-toggle-wrapper .view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-neutral-100);
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+/* Sort and View Controls */
+.sort-view-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.sort-dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sort-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.sort-dropdown {
+  position: relative;
+  min-width: 200px;
+}
+
+.sort-select {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--card-bg);
+  font-size: 14px;
+  color: var(--fg);
+  cursor: pointer;
+  -webkit-appearance: none;
+     -moz-appearance: none;
+          appearance: none;
+  transition: all 0.2s ease;
+}
+
+.sort-select:hover {
+  border-color: var(--accent);
+}
+
+.sort-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(35, 229, 219, 0.1);
+}
+
+.dropdown-arrow {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  pointer-events: none;
+}
+
+.view-controls-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.currency-display {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.currency-label {
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.currency-value {
+  font-weight: 600;
+  color: var(--fg);
+}
+
+.currency-code {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Currency Selector - New Design */
+.currency-selector-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.currency-selector-label {
+  font-weight: 500;
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.currency-selector-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  background: var(--card-bg);
+  border: 2px solid var(--accent);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.currency-selector-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(35, 229, 219, 0.3);
+}
+
+.currency-selector-btn:active {
+  transform: translateY(0);
+}
+
+.currency-current {
+  font-weight: 600;
+}
+
+.currency-code-display {
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.currency-swap-icon {
+  color: var(--accent);
+  transition: transform 0.2s ease;
+}
+
+.currency-selector-btn:hover .currency-swap-icon {
+  color: #fff;
+  transform: translateX(2px);
+}
+
+.view-toggle {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--color-neutral-100);
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+
+.view-toggle-btn {
+  padding: 4px;
+  margin-left: 4px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+}
+
+.view-toggle-btn:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.view-toggle-btn.active {
+  background: var(--card-bg);
+  color: var(--fg);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.view-icon {
+  width: 20px;
+  height: 20px;
+}
+
+@media (max-width: 768px) {
+  .sort-view-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sort-dropdown-wrapper {
+    width: 100%;
+  }
+
+  .sort-dropdown {
+    flex: 1 1;
+  }
+
+  .view-controls-right {
+    justify-content: space-between;
+  }
+}
+
+/* List View Styles */
+.grid.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.olx-product-card.list-view {
+  display: grid;
+  grid-template-columns: 180px 1fr;
+  grid-gap: 16px;
+  gap: 16px;
+  min-height: 140px;
+}
+
+.olx-product-card.list-view .product-card-image {
+  width: 180px;
+  height: 140px;
+}
+
+.olx-product-card.list-view .product-card-content {
+  padding: 12px 12px 12px 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.olx-product-card.list-view .product-card-title {
+  font-size: 16px;
+  min-height: auto;
+  -webkit-line-clamp: 3;
+  margin-bottom: 12px;
+}
+
+.olx-product-card.list-view .product-card-price {
+  font-size: 20px;
+  margin-bottom: auto;
+}
+
+@media (max-width: 640px) {
+  .olx-product-card.list-view {
+    grid-template-columns: 120px 1fr;
+    gap: 12px;
+    min-height: 110px;
+  }
+
+  .olx-product-card.list-view .product-card-image {
+    width: 120px;
+    height: 110px;
+  }
+
+  .olx-product-card.list-view .product-card-title {
+    font-size: 14px;
+    -webkit-line-clamp: 2;
+  }
+
+  .olx-product-card.list-view .product-card-price {
+    font-size: 16px;
+  }
+}
+
+/*!********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/gallery.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************/
 /* Gallery and Image Components */
 
 /* Gallery */
@@ -2042,9 +2598,9 @@ button.btn-accent {
   box-shadow: 0 2px 8px rgba(0,47,52,0.3);
 }
 
-/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/listing-detail.css ***!
-  \*********************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!***************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/listing-detail.css ***!
+  \***************************************************************************************************************************************************************************************************************************************************************************/
 /* Listing Detail Page Styles */
 
 /* Detail Typography */
@@ -2305,9 +2861,9 @@ button.btn-accent {
   text-decoration: underline;
 }
 
-/*!*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/navigation.css ***!
-  \*****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!***********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/navigation.css ***!
+  \***********************************************************************************************************************************************************************************************************************************************************************/
 /* Navigation Components */
 
 nav .nav-icon {
@@ -2438,9 +2994,9 @@ nav .nav-icon:focus-visible {
   margin-bottom: 8px;
 }
 
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/favorites.css ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!**********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/favorites.css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************/
 /* Favorite Button Styles */
 .favorite-icon {
   transition: all 0.2s ease;
@@ -2681,9 +3237,540 @@ nav .nav-icon:focus-visible {
   }
 }
 
-/*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/utilities.css ***!
-  \****************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*****************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/chat.css ***!
+  \*****************************************************************************************************************************************************************************************************************************************************************/
+.chat-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: calc(100vh - 160px);
+  padding: 32px 40px 48px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.chat-header h1 {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.chat-header p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+}
+
+.chat-shell {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  grid-gap: 24px;
+  gap: 24px;
+  min-height: 60vh;
+  width: 100%;
+}
+
+.chat-sidebar {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+}
+
+.chat-overlay {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 360px;
+  max-width: calc(100% - 32px);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 16px 32px -12px rgba(0, 0, 0, 0.25);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 60;
+}
+
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.chat-overlay__header,
+.chat-panel__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.chat-overlay__listing,
+.chat-panel__listing {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1 1;
+  min-width: 0;
+}
+
+.chat-overlay__thumb,
+.chat-panel__thumb {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: #f3f4f6;
+  flex-shrink: 0;
+}
+
+.chat-overlay__thumb svg,
+.chat-panel__thumb svg {
+  width: 100%;
+  height: 100%;
+  color: var(--border);
+}
+
+.chat-overlay__thumb--placeholder,
+.chat-panel__thumb--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-overlay__title,
+.chat-panel__title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--fg);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-overlay__subtitle,
+.chat-panel__subtitle {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.chat-overlay__close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: var(--muted);
+  padding: 4px;
+}
+
+.chat-overlay__close:hover {
+  color: var(--fg);
+}
+
+.chat-overlay__body {
+  display: flex;
+  flex-direction: column;
+  min-height: 260px;
+  max-height: 480px;
+}
+
+.chat-panel__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1;
+  min-height: 0;
+}
+
+.chat-overlay__messages,
+.chat-panel__messages {
+  flex: 1 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  background: #f9fafb;
+}
+
+.chat-overlay__history,
+.chat-panel__history {
+  align-self: center;
+  background: none;
+  border: none;
+  color: var(--brand);
+  font-size: 0.85rem;
+  cursor: pointer;
+  margin-bottom: 8px;
+}
+
+.chat-overlay__composer,
+.chat-panel__composer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px 16px;
+  border-top: 1px solid var(--border);
+  background: #fff;
+}
+
+.chat-composer__icon,
+.chat-composer__send {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  color: var(--brand);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.chat-composer__icon:disabled,
+.chat-composer__send:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.chat-composer__icon:hover:not(:disabled),
+.chat-composer__send:hover:not(:disabled) {
+  background: #eff8f7;
+}
+
+.chat-composer__input {
+  flex: 1 1;
+  display: flex;
+}
+
+.chat-composer__input textarea {
+  width: 100%;
+  resize: none;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 10px 12px;
+  font-size: 0.95rem;
+  min-height: 40px;
+}
+
+.chat-composer__input textarea:focus {
+  border-color: var(--brand);
+  box-shadow: 0 0 0 3px rgba(35, 229, 219, 0.2);
+  outline: none;
+}
+
+.chat-composer__spinner {
+  width: 18px;
+  height: 18px;
+  animation: chat-spin 1s linear infinite;
+}
+
+.chat-composer__spinner .path {
+  stroke: var(--brand);
+  stroke-linecap: round;
+}
+
+@keyframes chat-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+
+
+.chat-overlay__pending-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  background: #eef7f6;
+  border: 1px solid rgba(0, 48, 51, 0.12);
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.chat-overlay__pending-name {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.chat-overlay__pending-meta {
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.chat-overlay__pending-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-overlay__pending-remove:hover {
+  color: var(--brand);
+}
+
+.chat-overlay__state {
+  padding: 16px;
+  text-align: center;
+  color: var(--muted);
+}
+
+.chat-overlay__state--error {
+  color: #d14343;
+}
+
+.chat-message {
+  max-width: 80%;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  align-self: flex-start;
+  display: grid;
+  grid-gap: 6px;
+  gap: 6px;
+}
+
+.chat-panel__empty {
+  flex: 1 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  background: #f6f8f9;
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  margin: 16px;
+  padding: 24px;
+}
+
+.chat-message--own {
+  background: var(--brand);
+  color: #003033;
+  align-self: flex-end;
+}
+
+.chat-message__text {
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.chat-message__attachments {
+  display: grid;
+  grid-gap: 6px;
+  gap: 6px;
+}
+
+.chat-message__attachment {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(0, 48, 51, 0.08);
+}
+
+.chat-message--own .chat-message__attachment {
+  background: rgba(255, 255, 255, 0.15);
+  color: inherit;
+}
+
+.chat-message__attachment-info {
+  display: grid;
+  grid-gap: 2px;
+  gap: 2px;
+  font-size: 0.78rem;
+}
+
+.chat-message__attachment-name {
+  font-weight: 600;
+}
+
+.chat-message__attachment-meta {
+  font-size: 0.72rem;
+  opacity: 0.75;
+}
+
+.chat-message__attachment-download {
+  color: inherit;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chat-message__attachment-download:hover {
+  opacity: 0.8;
+}
+
+.chat-message__meta {
+  font-size: 0.7rem;
+  color: inherit;
+  opacity: 0.7;
+  text-align: right;
+}
+
+@media (max-width: 768px) {
+  .chat-overlay {
+    right: 12px;
+    left: 12px;
+    bottom: 12px;
+    width: auto;
+    max-width: none;
+  }
+}
+
+@media (max-width: 1024px) {
+  .chat-page {
+    padding: 24px;
+  }
+}
+
+@media (max-width: 640px) {
+  .chat-page {
+    padding: 16px;
+  }
+
+  .chat-shell {
+    gap: 16px;
+  }
+}
+
+.chat-main {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 60vh;
+  padding: 12px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 960px) {
+  .chat-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .chat-sidebar {
+    order: 2;
+  }
+
+  .chat-main {
+    order: 1;
+  }
+}
+
+/*!************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/thread-list.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************/
+.thread-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.thread-list__item {
+  width: 100%;
+  text-align: left;
+  background: #fff;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  display: grid;
+  grid-gap: 6px;
+  gap: 6px;
+  transition: background 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.thread-list__item:hover {
+  background: #f4f8f9;
+  border-color: rgba(0, 48, 51, 0.16);
+  box-shadow: 0 1px 4px rgba(0, 48, 51, 0.08);
+}
+
+.thread-list__item.is-active {
+  background: #e6f8f6;
+  border-color: var(--brand);
+  box-shadow: 0 0 0 1px rgba(35, 229, 219, 0.5);
+}
+
+.thread-list__title {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--fg);
+}
+
+.thread-list__subtitle {
+  font-size: 0.82rem;
+  color: var(--muted);
+  max-height: 2.4em;
+  overflow: hidden;
+}
+
+.thread-list__badge {
+  justify-self: start;
+  display: inline-flex;
+  min-width: 24px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--brand);
+  color: #fff;
+  font-size: 0.75rem;
+  font-weight: 600;
+  align-items: center;
+  justify-content: center;
+}
+
+.thread-list__state {
+  padding: 32px 24px;
+  text-align: center;
+  color: var(--muted);
+  display: grid;
+  grid-gap: 4px;
+  gap: 4px;
+}
+
+.thread-list__state--error {
+  color: #d14343;
+}
+
+.thread-list__state-sub {
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+/*!**********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/styles/utilities.css ***!
+  \**********************************************************************************************************************************************************************************************************************************************************************/
 /* Utility Classes */
 
 /* Display */
@@ -2946,9 +4033,9 @@ nav .nav-icon:focus-visible {
   .lg\:hidden { display: none; }
 }
 
-/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/.pnpm/next@14.2.5_react-dom@18.2.0_react@18.2.0__react@18.2.0/node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/globals.css ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+/*!*************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[12].use[3]!./app/globals.css ***!
+  \*************************************************************************************************************************************************************************************************************************************************************/
 /*
  * Marketplace Client - Global Styles (driven by app.config.ts)
  * Modular CSS Organization
@@ -2973,6 +4060,8 @@ nav .nav-icon:focus-visible {
 /* Navigation components */
 
 /* Favorites and filters */
+
+/* Chat */
 
 /* Utility classes */
 

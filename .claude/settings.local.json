@@ -15,7 +15,15 @@
       "Bash(find:*)",
       "Bash(python test:*)",
       "Bash(python3:*)",
-      "Bash(npm install:*)"
+      "Bash(npm install:*)",
+      "Bash(python -m json.tool)",
+      "Bash(npm run build:*)",
+      "Bash(npx eslint:*)",
+      "Bash(cat:*)",
+      "Bash(git checkout:*)",
+      "Bash(npx tsc:*)",
+      "Bash(xargs:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

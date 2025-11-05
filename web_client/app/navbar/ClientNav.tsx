@@ -98,7 +98,7 @@ export default function ClientNav() {
   return (
     <header className="topbar">
       <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link href={isUZ ? '/uz' : '/'}>{t('brand')}</Link>
+        <Link href={isUZ ? '/uz' : '/'}>{appConfig.name}</Link>
         <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           <Link
             href={`${base}/search`}
@@ -144,8 +144,8 @@ export default function ClientNav() {
               onClick={onProfileClick}
               aria-haspopup={authed ? 'menu' : undefined}
               aria-expanded={authed ? menuOpen : undefined}
-              title={authed ? t('navProfile') : t('navAuth')}
-              aria-label={authed ? t('navProfile') : t('navAuth')}
+              title={authed ? t('nav.profile') : t('nav.auth')}
+              aria-label={authed ? t('nav.profile') : t('nav.auth')}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...profileIconProps}>
                 <circle cx="12" cy="8" r="4" />
@@ -154,19 +154,20 @@ export default function ClientNav() {
             </button>
             {authed && menuOpen && (
               <div className="dropdown-menu" role="menu">
-                <div className="menu-header">{profileName || t('navProfile')}</div>
-                <a className="menu-item" href={`${base}/u/listings`}>{t('navListings')}</a>
-                <a className="menu-item" href={`${base}/u/settings`}>{t('navSettings')}</a>
+                <div className="menu-header">{profileName || t('nav.profile')}</div>
+                <a className="menu-item" href={`${base}/u/listings`}>{t('nav.listings')}</a>
+                <a className="menu-item" href={`${base}/chat`}>{t('nav.chats')}</a>
+                <a className="menu-item" href={`${base}/u/settings`}>{t('nav.settings')}</a>
                 <div className="menu-sep" />
                 <button className="menu-item" onClick={() => { Auth.logout(); setMenuOpen(false); router.push(base || '/'); }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 0 }}>
-                  {t('navLogout')}
+                  {t('nav.logout')}
                 </button>
               </div>
             )}
           </div>
           <span className="muted" style={{ margin: '0 6px' }}>|</span>
-          <Link href={ruHref} aria-current={locale === 'ru' ? 'true' : undefined}>{t('switchRU')}</Link>
-          <Link href={uzHref} aria-current={locale === 'uz' ? 'true' : undefined}>{t('switchUZ')}</Link>
+          <Link href={ruHref} aria-current={locale === 'ru' ? 'true' : undefined}>{t('lang.switchRU')}</Link>
+          <Link href={uzHref} aria-current={locale === 'uz' ? 'true' : undefined}>{t('lang.switchUZ')}</Link>
         </nav>
       </div>
     </header>

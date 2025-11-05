@@ -40,6 +40,7 @@ def mapping_body() -> Dict[str, Any]:
                 "location_name_ru": {"type": "keyword"},
                 "location_name_uz": {"type": "keyword"},
                 "price": {"type": "double"},
+                "price_normalized": {"type": "double"},
                 "currency": {"type": "keyword"},
                 "condition": {"type": "keyword"},
                 "geo": {"type": "geo_point"},
@@ -113,6 +114,13 @@ def build_document(listing: Listing) -> Dict[str, Any]:
     media = ListingMedia.objects.filter(listing=listing).order_by("order", "id")[:5]
     media_urls = [m.image.url for m in media if m.image]
 
+    # Normalize price to base currency (UZS) for consistent sorting
+    from currency.services import CurrencyService
+
+    price_normalized = float(
+        CurrencyService.normalize_price_to_base(listing.price_amount or 0, listing.price_currency)
+    )
+
     doc = {
         "id": str(listing.id),
         "title": listing.title,
@@ -122,6 +130,7 @@ def build_document(listing: Listing) -> Dict[str, Any]:
         "location_name_ru": loc_display_ru,
         "location_name_uz": loc_display_uz,
         "price": float(listing.price_amount or 0),
+        "price_normalized": price_normalized,
         "currency": listing.price_currency,
         "condition": listing.condition,
         "geo": {"lat": listing.lat, "lon": listing.lon} if listing.lat and listing.lon else None,

@@ -33,5 +33,9 @@
 /* Favorites and filters */
 @import './styles/favorites.css';
 
+/* Chat */
+@import './styles/chat.css';
+@import './styles/thread-list.css';
+
 /* Utility classes */
 @import './styles/utilities.css';

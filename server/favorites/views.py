@@ -112,6 +112,9 @@ class RecentlyViewedListingTrackView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request, listing_id: int):
+        import time
+        from django.db import OperationalError
+
         try:
             listing = Listing.objects.get(id=listing_id)
         except Listing.DoesNotExist:
@@ -120,25 +123,43 @@ class RecentlyViewedListingTrackView(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        if request.user.is_authenticated:
-            # For authenticated users
-            obj, created = RecentlyViewedListing.objects.update_or_create(
-                user=request.user,
-                listing=listing,
-                defaults={"session_key": None}
-            )
-        else:
-            # For anonymous users, use session
-            if not request.session.session_key:
-                request.session.create()
+        # Retry logic for database locks (SQLite)
+        max_retries = 3
+        retry_delay = 0.1  # Start with 100ms
 
-            obj, created = RecentlyViewedListing.objects.update_or_create(
-                session_key=request.session.session_key,
-                listing=listing,
-                defaults={"user": None}
-            )
+        for attempt in range(max_retries):
+            try:
+                if request.user.is_authenticated:
+                    # For authenticated users
+                    obj, created = RecentlyViewedListing.objects.update_or_create(
+                        user=request.user,
+                        listing=listing,
+                        defaults={"session_key": None}
+                    )
+                else:
+                    # For anonymous users, use session
+                    if not request.session.session_key:
+                        request.session.create()
 
-        return Response({"tracked": True}, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
+                    obj, created = RecentlyViewedListing.objects.update_or_create(
+                        session_key=request.session.session_key,
+                        listing=listing,
+                        defaults={"user": None}
+                    )
+
+                return Response(
+                    {"tracked": True},
+                    status=status.HTTP_201_CREATED if created else status.HTTP_200_OK
+                )
+
+            except OperationalError as e:
+                if "database is locked" in str(e) and attempt < max_retries - 1:
+                    # Wait and retry with exponential backoff
+                    time.sleep(retry_delay)
+                    retry_delay *= 2  # Double the delay for next attempt
+                else:
+                    # Last attempt or different error - raise it
+                    raise
 
 
 class RecentlyViewedListingClearView(APIView):

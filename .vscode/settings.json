@@ -1,3 +1,13 @@
 {
-    "chatgpt.openOnStartup": true
+    "chatgpt.openOnStartup": true,
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "sqlite",
+            "group": "sqlite",
+            "database": "${workspaceFolder:olx_clone}/server/db.sqlite3"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
 }

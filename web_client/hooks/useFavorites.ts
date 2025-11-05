@@ -1,18 +1,17 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Favorites } from '@/lib/api';
+import { FavoritesRepositoryImpl } from '../data/repositories/FavoritesRepositoryImpl';
+import { ListFavoritesUseCase } from '../domain/usecases/favorites/ListFavoritesUseCase';
+import { ToggleFavoriteUseCase } from '../domain/usecases/favorites/ToggleFavoriteUseCase';
+import { RemoveFavoriteUseCase } from '../domain/usecases/favorites/RemoveFavoriteUseCase';
+import type { Favorite } from '../domain/models/Favorite';
 
-interface FavoriteItem {
-  id: number;
-  listing: number;
-  listing_title: string;
-  listing_price: number;
-  listing_location: string;
-  listing_media_urls: string[];
-  created_at: string;
-}
+const repository = new FavoritesRepositoryImpl();
+const listFavoritesUseCase = new ListFavoritesUseCase(repository);
+const toggleFavoriteUseCase = new ToggleFavoriteUseCase(repository);
+const removeFavoriteUseCase = new RemoveFavoriteUseCase(repository);
 
 export function useFavorites() {
-  const [favorites, setFavorites] = useState<FavoriteItem[]>([]);
+  const [favorites, setFavorites] = useState<Favorite[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -20,8 +19,8 @@ export function useFavorites() {
     try {
       setLoading(true);
       setError(null);
-      const data = await Favorites.list();
-      setFavorites(data || []);
+      const data = await listFavoritesUseCase.execute();
+      setFavorites(data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load favorites');
       setFavorites([]);
@@ -36,14 +35,14 @@ export function useFavorites() {
 
   const toggleFavorite = useCallback(async (listingId: number) => {
     try {
-      const result = await Favorites.toggle(listingId);
+      const result = await toggleFavoriteUseCase.execute(listingId);
 
       if (result.favorited) {
         // Reload to get full listing data
         await loadFavorites();
       } else {
         // Remove from local state
-        setFavorites(prev => prev.filter(item => item.listing !== listingId));
+        setFavorites(prev => prev.filter(item => item.listingId !== listingId));
       }
 
       return result.favorited;
@@ -54,15 +53,15 @@ export function useFavorites() {
 
   const removeFavorite = useCallback(async (listingId: number) => {
     try {
-      await Favorites.delete(listingId);
-      setFavorites(prev => prev.filter(item => item.listing !== listingId));
+      await removeFavoriteUseCase.execute(listingId);
+      setFavorites(prev => prev.filter(item => item.listingId !== listingId));
     } catch (err) {
       throw new Error(err instanceof Error ? err.message : 'Failed to remove favorite');
     }
   }, []);
 
   const isFavorite = useCallback((listingId: number) => {
-    return favorites.some(item => item.listing === listingId);
+    return favorites.some(item => item.listingId === listingId);
   }, [favorites]);
 
   return {

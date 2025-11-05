@@ -18,6 +18,8 @@ urlpatterns = [
     path("api/v1/", include("favorites.api_urls")),
     path("api/v1/", include("uploads.api_urls")),
     path("api/v1/", include("moderation.api_urls")),
+    path("api/v1/", include("chat.api_urls")),
+    path("api/v1/", include("currency.api_urls")),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
 ]

@@ -33,6 +33,7 @@ class ListingSerializer(serializers.ModelSerializer):
     location_name = serializers.SerializerMethodField()
     location_slug = serializers.SerializerMethodField()
     seller = serializers.SerializerMethodField()
+    price_normalized = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
@@ -63,6 +64,7 @@ class ListingSerializer(serializers.ModelSerializer):
             "media",
             "attributes",
             "seller",
+            "price_normalized",
         ]
         read_only_fields = [
             "status",
@@ -71,6 +73,7 @@ class ListingSerializer(serializers.ModelSerializer):
             "expires_at",
             "quality_score",
             "contact_phone_masked",
+            "price_normalized",
         ]
 
     def get_attributes(self, obj: Listing) -> List[Dict[str, Any]]:  # pragma: no cover
@@ -160,6 +163,18 @@ class ListingSerializer(serializers.ModelSerializer):
             "avatar_url": avatar_url,
             "since": since,
         }
+
+    def get_price_normalized(self, obj: Listing) -> float:  # pragma: no cover
+        """Return price normalized to base currency (UZS) for consistent sorting"""
+        from currency.services import CurrencyService
+
+        if obj.price_amount is None or obj.price_amount == 0:
+            return 0.0
+
+        normalized = CurrencyService.normalize_price_to_base(
+            obj.price_amount, obj.price_currency
+        )
+        return float(normalized)
 
 
 class ListingAttributeInputSerializer(serializers.Serializer):
@@ -255,7 +270,7 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             phone = user.profile.phone_e164
         else:
             phone = user.username
-        listing.contact_phone_masked = phone[:4] + "****" + phone[-2:]
+        listing.contact_phone_masked = phone #phone[:4] + "****" + phone[-2:]
         listing.save(update_fields=["contact_phone_masked"])
         if attrs_payload:
             self._save_attributes(listing, attrs_payload)
@@ -379,6 +394,51 @@ class ListingUpdateSerializer(serializers.ModelSerializer):
             "lon",
             "attributes",
         ]
+
+    def validate(self, data):
+        """Validate attributes against the target category (new or existing)"""
+        attrs_payload = data.get("attributes")
+        if not attrs_payload:
+            return data
+
+        # Determine which category to validate against
+        # Use the new category if provided, otherwise use the instance's current category
+        instance = self.instance
+        category_id = data.get("category")
+        if category_id is None and instance:
+            category_id = instance.category_id
+
+        if not category_id:
+            return data
+
+        # Get allowed attributes for this category and its ancestors
+        allowed_category_ids = set()
+        from taxonomy.models import Category
+        cat = Category.objects.filter(pk=category_id).first()
+        while cat:
+            allowed_category_ids.add(cat.id)
+            cat = cat.parent
+
+        # Fetch all attributes for allowed categories
+        attrs = Attribute.objects.filter(category_id__in=allowed_category_ids)
+        attrs_by_id = {a.id: a for a in attrs}
+        attrs_by_key = {a.key: a for a in attrs}
+
+        # Validate using nested serializer with context
+        ser = ListingAttributeInputSerializer(
+            data=attrs_payload,
+            many=True,
+            context={
+                "attrs_by_id": attrs_by_id,
+                "attrs_by_key": attrs_by_key,
+                "lenient": True,
+            },
+        )
+        ser.is_valid(raise_exception=True)
+
+        # Replace with validated data (with _skip markers)
+        data["attributes"] = ser.validated_data
+        return data
 
     def update(self, instance: Listing, validated_data):
         attrs_payload = validated_data.pop("attributes", None)

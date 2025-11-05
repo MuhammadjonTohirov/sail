@@ -18,6 +18,7 @@ from .serializers import (
     OTPRequestSerializer,
     OTPVerifySerializer,
     ProfileSerializer,
+    ProfileUpdateSerializer,
 )
 
 
@@ -124,3 +125,39 @@ class MeView(APIView):
         except Profile.DoesNotExist:
             profile = Profile.objects.create(user=request.user, phone_e164=request.user.username)
         return Response(ProfileSerializer(profile).data)
+
+
+class ProfileUpdateView(APIView):
+    """Update user profile (display_name, location, logo, banner)"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def patch(self, request):
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            return Response({"detail": "Profile not found"}, status=404)
+
+        serializer = ProfileUpdateSerializer(profile, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # Return full profile data
+        return Response(ProfileSerializer(profile).data, status=200)
+
+
+class ProfileDeleteView(APIView):
+    """Delete user account and all associated data"""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def delete(self, request):
+        user = request.user
+
+        # Delete user (will cascade to profile and listings via on_delete=CASCADE)
+        user_id = user.id
+        user.delete()
+
+        return Response({
+            "status": "deleted",
+            "user_id": user_id,
+            "message": "Account and all associated data have been permanently deleted."
+        }, status=200)

@@ -27,12 +27,31 @@ def _parse_filters(params) -> Dict[str, Any]:
                     else:
                         vals.append(v)
                 filters.setdefault("attrs", {})[key] = vals
-        elif k in {"category_slug", "location_slug", "min_price", "max_price", "condition"}:
+        elif k in {"category_slug", "location_slug", "min_price", "max_price", "condition", "currency"}:
             filters[k] = values[-1]
     return filters
 
 
 class ListingSearchView(APIView):
+    """
+    Listing search API with currency-aware price filtering.
+
+    Query Parameters:
+        - q: Search query text
+        - currency: Currency code for price filtering (default: UZS)
+        - min_price: Minimum price in the specified currency
+        - max_price: Maximum price in the specified currency
+        - category_slug: Filter by category slug
+        - location_slug: Filter by location slug
+        - condition: Filter by condition (new/used)
+        - sort: Sort order (relevance/newest/price_asc/price_desc)
+        - page: Page number (default: 1)
+        - per_page: Results per page (default: 20, max: 50)
+
+    Examples:
+        GET /api/search/?min_price=100&max_price=1000&currency=USD
+        GET /api/search/?min_price=1000000&max_price=5000000&currency=UZS
+    """
     authentication_classes: list = []
     permission_classes: list = []
 
@@ -84,15 +103,41 @@ class ListingSearchView(APIView):
         if cnd := filters.get("condition"):
             filter_clauses.append({"term": {"condition": cnd}})
 
+        # Price filtering with currency conversion
         min_price = filters.get("min_price")
         max_price = filters.get("max_price")
+        currency = filters.get("currency", "UZS").upper()
+
         if min_price or max_price:
+            from currency.services import CurrencyService
+            from decimal import Decimal
+
             rng: Dict[str, Any] = {}
+
+            # Convert user's price range to normalized base currency (UZS) for filtering
+            # since price_normalized in index is always in base currency
             if min_price:
-                rng["gte"] = float(min_price)
+                min_price_decimal = Decimal(str(min_price))
+                # Convert from user's currency to base currency
+                converted_min = CurrencyService.normalize_price_to_base(min_price_decimal, currency)
+                if converted_min is not None:
+                    rng["gte"] = float(converted_min)
+                else:
+                    # Fallback: if conversion fails, use original value
+                    rng["gte"] = float(min_price)
+
             if max_price:
-                rng["lte"] = float(max_price)
-            filter_clauses.append({"range": {"price": rng}})
+                max_price_decimal = Decimal(str(max_price))
+                # Convert from user's currency to base currency
+                converted_max = CurrencyService.normalize_price_to_base(max_price_decimal, currency)
+                if converted_max is not None:
+                    rng["lte"] = float(converted_max)
+                else:
+                    # Fallback: if conversion fails, use original value
+                    rng["lte"] = float(max_price)
+
+            # Use price_normalized field which stores prices in base currency
+            filter_clauses.append({"range": {"price_normalized": rng}})
 
         # Attribute filters
         for key, vals in filters.get("attrs", {}).items():
@@ -153,13 +198,14 @@ class ListingSearchView(APIView):
             }
             filter_clauses.append(nested_query)
 
+        # Sorting: use price_normalized for consistent price sorting across currencies
         sort_clause: List[Any] = []
         if sort == "newest":
             sort_clause = [{"refreshed_at": {"order": "desc"}}]
         elif sort == "price_asc":
-            sort_clause = [{"price": {"order": "asc"}}]
+            sort_clause = [{"price_normalized": {"order": "asc"}}]
         elif sort == "price_desc":
-            sort_clause = [{"price": {"order": "desc"}}]
+            sort_clause = [{"price_normalized": {"order": "desc"}}]
 
         # Add aggregations for faceted search
         aggs = {
@@ -207,7 +253,17 @@ class ListingSearchView(APIView):
             hits = resp.get("hits", {}).get("hits", [])
             total = resp.get("hits", {}).get("total", {}).get("value", 0)
             aggregations = resp.get("aggregations", {})
-            
+
+            # Verify listings exist in database to prevent stale data
+            from listings.models import Listing
+            listing_ids = [h.get("_id") for h in hits]
+            existing_ids = set(
+                str(id) for id in Listing.objects.filter(
+                    id__in=listing_ids,
+                    status=Listing.Status.ACTIVE
+                ).values_list('id', flat=True)
+            )
+
             results = [
                 {
                     "id": h.get("_id"),
@@ -215,7 +271,13 @@ class ListingSearchView(APIView):
                     **h.get("_source", {}),
                 }
                 for h in hits
+                if h.get("_id") in existing_ids
             ]
+
+            # Adjust total if we filtered out stale results
+            filtered_count = len(hits) - len(results)
+            if filtered_count > 0:
+                total = max(0, total - filtered_count)
             
             # Process aggregations for frontend
             facets = {}
@@ -235,9 +297,49 @@ class ListingSearchView(APIView):
                     for b in aggregations["conditions"]["buckets"]
                 ]
             if "price_stats" in aggregations:
+                from currency.services import CurrencyService
+                from decimal import Decimal
+
+                # Get price stats (in base currency)
+                min_price_normalized = aggregations["price_stats"]["min"]
+                max_price_normalized = aggregations["price_stats"]["max"]
+
+                # Convert to user's requested currency if specified
+                if currency != "UZS":
+                    # Get default currency to determine base currency
+                    default_currency = CurrencyService.get_default_currency()
+                    base_currency_code = default_currency.code if default_currency else "UZS"
+
+                    # Convert min price from base to user's currency
+                    if min_price_normalized is not None:
+                        converted_min = CurrencyService.convert_price(
+                            Decimal(str(min_price_normalized)),
+                            base_currency_code,
+                            currency
+                        )
+                        min_price_display = float(converted_min) if converted_min is not None else min_price_normalized
+                    else:
+                        min_price_display = None
+
+                    # Convert max price from base to user's currency
+                    if max_price_normalized is not None:
+                        converted_max = CurrencyService.convert_price(
+                            Decimal(str(max_price_normalized)),
+                            base_currency_code,
+                            currency
+                        )
+                        max_price_display = float(converted_max) if converted_max is not None else max_price_normalized
+                    else:
+                        max_price_display = None
+                else:
+                    # Already in base currency (UZS)
+                    min_price_display = min_price_normalized
+                    max_price_display = max_price_normalized
+
                 facets["price_range"] = {
-                    "min": aggregations["price_stats"]["min"],
-                    "max": aggregations["price_stats"]["max"]
+                    "min": min_price_display,
+                    "max": max_price_display,
+                    "currency": currency
                 }
             if "attrs" in aggregations:
                 facets["attributes"] = {}

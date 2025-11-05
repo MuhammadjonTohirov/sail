@@ -1,10 +1,9 @@
 "use client";
 import { Search, Taxonomy, SavedSearches } from '@/lib/api';
-import { useEffect, useMemo, useState } from 'react';
+import { Suspense, useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n';
 import { useRouter, useSearchParams } from 'next/navigation';
-import Dropdown from '@/components/ui/Dropdown';
 import CategoryPicker from '@/components/ui/CategoryPicker';
 import ProductCard from '@/components/search/ProductCard';
 import { appConfig } from '@/config';
@@ -13,7 +12,7 @@ type Hit = { id: string; title: string; price?: number; currency?: string; media
 type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; icon?: string; children: CategoryNode[] };
 type Attr = { id: number; key: string; label: string; type: string; options?: string[] };
 
-export default function SearchPage() {
+function SearchPageContent() {
   const { t, locale } = useI18n();
   const base = locale === 'uz' ? '/uz' : '';
   const sp = useSearchParams();
@@ -23,6 +22,7 @@ export default function SearchPage() {
   const [minPrice, setMinPrice] = useState(sp.get('min_price') || '');
   const [maxPrice, setMaxPrice] = useState(sp.get('max_price') || '');
   const [sort, setSort] = useState(sp.get('sort') || 'relevance');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [categoryTree, setCategoryTree] = useState<CategoryNode[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<{ id: number; slug: string } | null>(null);
   const [selectedCategoryPath, setSelectedCategoryPath] = useState<string>('');
@@ -235,29 +235,37 @@ export default function SearchPage() {
               )}
             </div>
           ))}
-          <button className="btn-accent" onClick={run} style={{ width: '100%' }}>{locale === 'uz' ? 'Filtrlarni qo‘llash' : 'Применить фильтры'}</button>
+          <button className="btn-accent" onClick={run} style={{ width: '100%' }}>{locale === 'uz' ? "Filtrlarni qo'llash" : 'Применить фильтры'}</button>
         </aside>
 
         <section className="search-results">
-          <div className="results-bar card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <div className="muted">{loading ? (locale === 'uz' ? 'Yuklanmoqda…' : 'Загрузка…') : `${total} ${locale === 'uz' ? 'e\'lon' : 'объявлений'}`}</div>
-            <div className="row" style={{ alignItems: 'center', gap: '12px' }}>
-              <label className="muted">{locale === 'uz' ? 'Saralash:' : 'Сортировка:'}</label>
-              <Dropdown
-                value={sort}
-                onChange={(v) => setSort(v)}
-                options={[
-                  { value: 'relevance', label: locale === 'uz' ? 'Relevanta' : 'По релевантности' },
-                  { value: 'newest', label: locale === 'uz' ? 'Yangi' : 'Сначала новые' },
-                  { value: 'price_asc', label: locale === 'uz' ? 'Narx o\'s.' : 'Цена: по возрастанию' },
-                  { value: 'price_desc', label: locale === 'uz' ? 'Narx kamay.' : 'Цена: по убыванию' },
-                ]}
-              />
-              {features.enableSavedSearches && (
-                <button onClick={saveSearch} className="btn-outline" style={{ padding: '8px 16px' }}>
-                  {locale === 'uz' ? 'Qidiruvni saqlash' : 'Сохранить поиск'}
-                </button>
-              )}
+          <div className="results-bar card">
+            <div className="view-toggle-wrapper">
+              <button
+                type="button"
+                className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
+                onClick={() => setViewMode('list')}
+                aria-label={locale === 'uz' ? "Ro'yxat ko'rinishi" : 'Список'}
+              >
+                <svg className="view-icon" fill="currentColor" viewBox="0 0 24 24">
+                  <rect x="3" y="5" width="18" height="4" rx="1" />
+                  <rect x="3" y="11" width="18" height="4" rx="1" />
+                  <rect x="3" y="17" width="18" height="4" rx="1" />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
+                onClick={() => setViewMode('grid')}
+                aria-label={locale === 'uz' ? "Katak ko'rinishi" : 'Сетка'}
+              >
+                <svg className="view-icon" fill="currentColor" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="8" height="8" rx="1" />
+                  <rect x="13" y="3" width="8" height="8" rx="1" />
+                  <rect x="3" y="13" width="8" height="8" rx="1" />
+                  <rect x="13" y="13" width="8" height="8" rx="1" />
+                </svg>
+              </button>
             </div>
           </div>
 
@@ -268,14 +276,28 @@ export default function SearchPage() {
               <p className="muted">{locale === 'uz' ? 'Qidiruv parametrlarini o‘zgartiring.' : 'Попробуйте изменить параметры поиска.'}</p>
             </div>
           ) : (
-            <div className="grid">
+            <div className={`grid ${viewMode === 'list' ? 'list-view' : ''}`}>
               {results.map((r) => (
-                <ProductCard key={r.id} hit={r as any} href={`${base}/l/${r.id}`} locale={locale} />
+                <ProductCard
+                  key={r.id}
+                  hit={r as any}
+                  href={`${base}/l/${r.id}`}
+                  locale={locale}
+                  viewMode={viewMode}
+                />
               ))}
             </div>
           )}
         </section>
       </div>
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="container" style={{ paddingTop: 16, paddingBottom: 32 }}>Loading...</div>}>
+      <SearchPageContent />
+    </Suspense>
   );
 }

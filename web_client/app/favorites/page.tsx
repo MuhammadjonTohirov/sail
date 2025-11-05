@@ -3,43 +3,29 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/lib/i18n';
-import { Favorites, SavedSearches, RecentlyViewed } from '@/lib/api';
+import { SavedSearches } from '@/lib/api';
+import { useRecentlyViewed } from '@/hooks/useRecentlyViewed';
+import { useFavorites } from '@/hooks/useFavorites';
 import { appConfig } from '@/config';
-
-interface FavoriteItem {
-  id: number;
-  listing: number;
-  listing_title: string;
-  listing_price: number;
-  listing_location: string;
-  listing_media_urls: string[];
-  created_at: string;
-}
-
-interface RecentItem {
-  id: number;
-  listing: number;
-  listing_title: string;
-  listing_price: number;
-  listing_location: string;
-  listing_media_urls: string[];
-  viewed_at: string;
-}
 
 interface SavedSearch {
   id: number;
   title: string;
   query: {
+    q?: string;
+    category?: number;
     category_name?: string;
+    location?: number;
     location_name?: string;
     price_min?: number;
     price_max?: number;
+    [key: string]: any; // Allow other filter fields
   };
   created_at: string;
 }
 
 export default function FavoritesPage() {
-  const { locale } = useI18n();
+  const { t, locale } = useI18n();
   const { features, i18n } = appConfig;
   const enableFavorites = features.enableFavorites;
   const enableSavedSearches = features.enableSavedSearches;
@@ -47,49 +33,22 @@ export default function FavoritesPage() {
   const initialTab: 'liked' | 'searches' | 'recent' = enableFavorites ? 'liked' : enableSavedSearches ? 'searches' : 'recent';
   const [activeTab, setActiveTab] = useState<'liked' | 'searches' | 'recent'>(initialTab);
 
-  // Liked items (from API)
-  const [likedItems, setLikedItems] = useState<FavoriteItem[]>([]);
-  const [loadingLiked, setLoadingLiked] = useState(true);
+  // Liked items (using Clean Architecture)
+  const { favorites: likedItems, loading: loadingLiked, removeFavorite } = useFavorites();
 
   // Saved searches (from API)
   const [savedSearches, setSavedSearches] = useState<SavedSearch[]>([]);
-  const [loadingSearches, setLoadingSearches] = useState(false);
+  const [loadingSearches, setLoadingSearches] = useState(true);
 
-  // Recently visited (from API)
-  const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
-  const [loadingRecent, setLoadingRecent] = useState(false);
-
-  const label = (ru: string, uz: string) => (locale === 'uz' ? uz : ru);
-
-  // Load liked items
-  useEffect(() => {
-    if (!enableFavorites) {
-      setLikedItems([]);
-      setLoadingLiked(false);
-      return;
-    }
-    const loadLikedItems = async () => {
-      try {
-        const data = await Favorites.list();
-        setLikedItems(data || []);
-      } catch (error) {
-        console.error('Failed to load liked items:', error);
-        setLikedItems([]);
-      } finally {
-        setLoadingLiked(false);
-      }
-    };
-
-    loadLikedItems();
-  }, [enableFavorites]);
+  // Recently visited (using clean architecture)
+  const { recentItems, loading: loadingRecent, load: loadRecentItems, clearAll: clearRecentItems } = useRecentlyViewed();
 
   // Load saved searches
   useEffect(() => {
+    let cancelled = false;
     if (!enableSavedSearches) {
       setSavedSearches([]);
-      return;
-    }
-    if (activeTab !== 'searches' || savedSearches.length > 0) {
+      setLoadingSearches(false);
       return;
     }
 
@@ -97,37 +56,34 @@ export default function FavoritesPage() {
       setLoadingSearches(true);
       try {
         const data = await SavedSearches.list();
-        setSavedSearches(data.results || data || []);
+        if (!cancelled) {
+          setSavedSearches(data.results || data || []);
+        }
       } catch (error) {
         console.error('Failed to load saved searches:', error);
-        setSavedSearches([]);
+        if (!cancelled) {
+          setSavedSearches([]);
+        }
       } finally {
-        setLoadingSearches(false);
+        if (!cancelled) {
+          setLoadingSearches(false);
+        }
       }
     };
 
     loadSavedSearches();
-  }, [activeTab, savedSearches.length, enableSavedSearches]);
+
+    return () => {
+      cancelled = true;
+    };
+  }, [enableSavedSearches]);
 
   // Load recently visited
   useEffect(() => {
     if (activeTab === 'recent' && recentItems.length === 0) {
-      const loadRecentItems = async () => {
-        setLoadingRecent(true);
-        try {
-          const data = await RecentlyViewed.list();
-          setRecentItems(data || []);
-        } catch (error) {
-          console.error('Failed to load recent items:', error);
-          setRecentItems([]);
-        } finally {
-          setLoadingRecent(false);
-        }
-      };
-
       loadRecentItems();
     }
-  }, [activeTab, recentItems.length]);
+  }, [activeTab, recentItems.length, loadRecentItems]);
 
   useEffect(() => {
     if (!enableFavorites && activeTab === 'liked') {
@@ -140,8 +96,7 @@ export default function FavoritesPage() {
   const handleUnlike = async (listingId: number) => {
     if (!enableFavorites) return;
     try {
-      await Favorites.delete(listingId);
-      setLikedItems(likedItems.filter((item) => item.listing !== listingId));
+      await removeFavorite(listingId);
     } catch (error) {
       console.error('Failed to remove favorite:', error);
     }
@@ -157,21 +112,35 @@ export default function FavoritesPage() {
     }
   };
 
+  const buildSearchUrl = (query: SavedSearch['query']) => {
+    const params = new URLSearchParams();
+
+    // Add all query parameters to the URL
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null && value !== '') {
+        // Skip display-only fields like category_name, location_name
+        if (key.endsWith('_name')) return;
+        console.log('Adding search param:', key, value);
+        params.append(key, String(value));
+      }
+    });
+    console.log('Built search URL with params:', params.toString());
+    return `${base}/search?${params.toString()}`;
+  };
+
   const handleClearAll = async () => {
     if (activeTab === 'liked') {
-      if (confirm(label('Удалить все избранные объявления?', 'Barcha sevimlilarni o\'chirish?'))) {
+      if (confirm(t('favorites.confirmClearFavorites'))) {
         try {
-          await Promise.all(likedItems.map(item => Favorites.delete(item.listing)));
-          setLikedItems([]);
+          await Promise.all(likedItems.map(item => removeFavorite(item.listingId)));
         } catch (error) {
           console.error('Failed to clear favorites:', error);
         }
       }
     } else if (activeTab === 'recent') {
-      if (confirm(label('Очистить историю просмотров?', 'Ko\'rishlar tarixini tozalash?'))) {
+      if (confirm(t('favorites.confirmClearHistory'))) {
         try {
-          await RecentlyViewed.clear();
-          setRecentItems([]);
+          await clearRecentItems();
         } catch (error) {
           console.error('Failed to clear recent items:', error);
         }
@@ -197,41 +166,41 @@ export default function FavoritesPage() {
     const diffInHours = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60));
 
     if (diffInHours < 24) {
-      return label(`${diffInHours} ч. назад`, `${diffInHours} soat oldin`);
+      return t('favorites.hoursAgo', { hours: diffInHours });
     }
     const diffInDays = Math.floor(diffInHours / 24);
     if (diffInDays < 30) {
-      return label(`${diffInDays} дн. назад`, `${diffInDays} kun oldin`);
+      return t('favorites.daysAgo', { days: diffInDays });
     }
     return date.toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU');
   };
 
-  const renderFavoriteCard = (item: FavoriteItem) => (
+  const renderFavoriteCard = (item: typeof likedItems[0]) => (
     <div key={item.id} className="listing-card">
-      <Link href={`${base}/l/${item.listing}`} className="listing-card-link">
-        {item.listing_media_urls && item.listing_media_urls.length > 0 ? (
-          <div className="listing-card-img" style={{ backgroundImage: `url(${item.listing_media_urls[0]})` }} />
+      <Link href={`${base}/l/${item.listingId}`} className="listing-card-link">
+        {item.listingMediaUrls && item.listingMediaUrls.length > 0 ? (
+          <div className="listing-card-img" style={{ backgroundImage: `url(${item.listingMediaUrls[0]})` }} />
         ) : (
           <div className="listing-card-img listing-card-img-placeholder">
             <span style={{ fontSize: '48px', opacity: 0.3 }}>📷</span>
           </div>
         )}
         <div className="listing-card-body">
-          <h3 className="listing-card-title">{item.listing_title}</h3>
-          <div className="listing-card-price">{formatPrice(item.listing_price)}</div>
+          <h3 className="listing-card-title">{item.listingTitle}</h3>
+          <div className="listing-card-price">{formatPrice(item.listingPrice)}</div>
           <div className="listing-card-meta">
-            {item.listing_location && <span>{item.listing_location}</span>}
-            <span>{formatDate(item.created_at)}</span>
+            {item.listingLocation && <span>{item.listingLocation}</span>}
+            <span>{formatDate(item.createdAt)}</span>
           </div>
         </div>
       </Link>
       <button
         onClick={(e) => {
           e.preventDefault();
-          handleUnlike(item.listing);
+          handleUnlike(item.listingId);
         }}
         className="listing-card-remove"
-        title={label('Удалить', 'O\'chirish')}
+        title={t('favorites.removeTooltip')}
       >
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
           <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -240,22 +209,22 @@ export default function FavoritesPage() {
     </div>
   );
 
-  const renderRecentCard = (item: RecentItem) => (
+  const renderRecentCard = (item: typeof recentItems[0]) => (
     <div key={item.id} className="listing-card">
-      <Link href={`${base}/l/${item.listing}`} className="listing-card-link">
-        {item.listing_media_urls && item.listing_media_urls.length > 0 ? (
-          <div className="listing-card-img" style={{ backgroundImage: `url(${item.listing_media_urls[0]})` }} />
+      <Link href={`${base}/l/${item.listingId}`} className="listing-card-link">
+        {item.mediaUrls && item.mediaUrls.length > 0 ? (
+          <div className="listing-card-img" style={{ backgroundImage: `url(${item.mediaUrls[0]})` }} />
         ) : (
           <div className="listing-card-img listing-card-img-placeholder">
             <span style={{ fontSize: '48px', opacity: 0.3 }}>📷</span>
           </div>
         )}
         <div className="listing-card-body">
-          <h3 className="listing-card-title">{item.listing_title}</h3>
-          <div className="listing-card-price">{formatPrice(item.listing_price)}</div>
+          <h3 className="listing-card-title">{item.title}</h3>
+          <div className="listing-card-price">{formatPrice(item.price)}</div>
           <div className="listing-card-meta">
-            {item.listing_location && <span>{item.listing_location}</span>}
-            <span>{formatDate(item.viewed_at)}</span>
+            {item.location && <span>{item.location}</span>}
+            <span>{formatDate(item.viewedAt.toISOString())}</span>
           </div>
         </div>
       </Link>
@@ -265,7 +234,7 @@ export default function FavoritesPage() {
   return (
     <div className="page-section page-section--padded" style={{ paddingTop: 0 }}>
       <h1 style={{ marginBottom: '32px', fontSize: '32px', fontWeight: 700 }}>
-        {label('Избранные объявления', 'Sevimli e\'lonlar')}
+        {t('favorites.pageTitle')}
       </h1>
 
       {/* Tabs */}
@@ -285,7 +254,7 @@ export default function FavoritesPage() {
                 marginBottom: '-2px',
               }}
             >
-              {label('Избранные объявления', `Sevimli e'lonlar`)} <span style={{ marginLeft: 4, fontWeight: 400 }}>({likedItems.length})</span>
+              {t('favorites.tabFavorites')} <span style={{ marginLeft: 4, fontWeight: 400 }}>({likedItems.length})</span>
             </button>
           )}
           {enableSavedSearches && (
@@ -302,7 +271,7 @@ export default function FavoritesPage() {
                 marginBottom: '-2px',
               }}
             >
-              {label('Сохраненные поиски', 'Saqlangan qidiruvlar')} <span style={{ marginLeft: 4, fontWeight: 400 }}>({savedSearches.length})</span>
+              {t('favorites.tabSavedSearches')} <span style={{ marginLeft: 4, fontWeight: 400 }}>({savedSearches.length})</span>
             </button>
           )}
           <button
@@ -318,7 +287,7 @@ export default function FavoritesPage() {
               marginBottom: '-2px',
             }}
           >
-            {label('Недавно просмотренные', 'Yaqinda ko\'rilgan')}
+            {t('favorites.tabRecentlyViewed')}
           </button>
         </div>
       </div>
@@ -328,8 +297,8 @@ export default function FavoritesPage() {
         <div style={{ marginBottom: '20px', textAlign: 'right' }}>
           <button onClick={handleClearAll} className="btn-outline">
             {activeTab === 'liked'
-              ? label('Очистить избранные', 'Sevimlilarni tozalash')
-              : label('Очистить историю', 'Tarixni tozalash')
+              ? t('favorites.clearFavorites')
+              : t('favorites.clearHistory')
             }
           </button>
         </div>
@@ -340,16 +309,16 @@ export default function FavoritesPage() {
         <div>
           {loadingLiked ? (
             <div style={{ textAlign: 'center', padding: '60px', color: 'var(--muted)' }}>
-              {label('Загрузка...', 'Yuklanmoqda...')}
+              {t('favorites.loading')}
             </div>
           ) : likedItems.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px' }}>
               <div style={{ fontSize: '64px', marginBottom: '16px' }}>💔</div>
               <h3 style={{ color: 'var(--muted)', marginBottom: '8px' }}>
-                {label('Нет избранных объявлений', 'Sevimli e\'lonlar yo\'q')}
+                {t('favorites.noFavorites')}
               </h3>
               <p style={{ color: 'var(--muted)' }}>
-                {label('Добавляйте объявления в избранное, чтобы быстро находить их позже', 'E\'lonlarni sevimlilar ro\'yxatiga qo\'shing')}
+                {t('favorites.noFavoritesDescription')}
               </p>
             </div>
           ) : (
@@ -364,31 +333,33 @@ export default function FavoritesPage() {
         <div>
           {loadingSearches ? (
             <div style={{ textAlign: 'center', padding: '60px', color: 'var(--muted)' }}>
-              {label('Загрузка...', 'Yuklanmoqda...')}
+              {t('favorites.loading')}
             </div>
           ) : savedSearches.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px' }}>
               <div style={{ fontSize: '64px', marginBottom: '16px' }}>🔍</div>
               <h3 style={{ color: 'var(--muted)', marginBottom: '8px' }}>
-                {label('Нет сохраненных поисков', 'Saqlangan qidiruvlar yo\'q')}
+                {t('favorites.noSavedSearches')}
               </h3>
               <p style={{ color: 'var(--muted)' }}>
-                {label('Сохраните параметры поиска, чтобы получать уведомления о новых объявлениях', 'Yangi e\'lonlar haqida xabarnoma olish uchun qidiruvni saqlang')}
+                {t('favorites.noSavedSearchesDescription')}
               </p>
             </div>
           ) : (
             <div style={{ display: 'grid', gap: '16px' }}>
               {savedSearches.map((search) => (
                 <div key={search.id} className="saved-search-card">
-                  <div style={{ flex: 1 }}>
-                    <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px' }}>{search.title}</h3>
+                  <Link href={buildSearchUrl(search.query)} style={{ flex: 1, textDecoration: 'none', color: 'inherit' }}>
+                    <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '8px', cursor: 'pointer', color: 'var(--brand)' }}>
+                      {search.title}
+                    </h3>
                     <div style={{ fontSize: '14px', color: 'var(--muted)' }}>
                       {search.query.category_name && <span>{search.query.category_name}</span>}
                       {search.query.location_name && <span> • {search.query.location_name}</span>}
                       {(search.query.price_min || search.query.price_max) && (
                         <span>
                           {' '}
-                          • {label('Цена:', 'Narxi:')}{' '}
+                          • {t('favorites.priceLabel')}{' '}
                           {search.query.price_min ? `${search.query.price_min.toLocaleString(locale === 'uz' ? 'uz-UZ' : 'ru-RU')} ${i18n.currencySymbol}` : '—'}
                           {' - '}
                           {search.query.price_max ? `${search.query.price_max.toLocaleString(locale === 'uz' ? 'uz-UZ' : 'ru-RU')} ${i18n.currencySymbol}` : '∞'}
@@ -398,13 +369,13 @@ export default function FavoritesPage() {
                     <div style={{ fontSize: '12px', color: 'var(--muted)', marginTop: '4px' }}>
                       {formatDate(search.created_at)}
                     </div>
-                  </div>
+                  </Link>
                   <button
                     onClick={() => handleDeleteSearch(search.id)}
                     className="btn-outline"
                     style={{ padding: '8px 16px' }}
                   >
-                    {label('Удалить', 'O\'chirish')}
+                    {t('favorites.deleteButton')}
                   </button>
                 </div>
               ))}
@@ -417,16 +388,16 @@ export default function FavoritesPage() {
         <div>
           {loadingRecent ? (
             <div style={{ textAlign: 'center', padding: '60px', color: 'var(--muted)' }}>
-              {label('Загрузка...', 'Yuklanmoqda...')}
+              {t('favorites.loading')}
             </div>
           ) : recentItems.length === 0 ? (
             <div style={{ textAlign: 'center', padding: '60px' }}>
               <div style={{ fontSize: '64px', marginBottom: '16px' }}>👀</div>
               <h3 style={{ color: 'var(--muted)', marginBottom: '8px' }}>
-                {label('Нет недавно просмотренных', 'Yaqinda ko\'rilgan e\'lonlar yo\'q')}
+                {t('favorites.noRecentlyViewed')}
               </h3>
               <p style={{ color: 'var(--muted)' }}>
-                {label('Здесь будут отображаться объявления, которые вы недавно просматривали', 'Bu yerda siz yaqinda ko\'rgan e\'lonlar ko\'rsatiladi')}
+                {t('favorites.noRecentlyViewedDescription')}
               </p>
             </div>
           ) : (

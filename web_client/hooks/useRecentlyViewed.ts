@@ -1,54 +1,51 @@
-import { useState, useEffect, useCallback } from 'react';
-import { RecentlyViewed } from '@/lib/api';
-
-interface RecentItem {
-  id: number;
-  listing: number;
-  listing_title: string;
-  listing_price: number;
-  listing_location: string;
-  listing_media_urls: string[];
-  viewed_at: string;
-}
+import { useState, useCallback, useMemo } from 'react';
+import { RecentlyViewedListing } from '@/domain/models/RecentlyViewedListing';
+import { GetRecentlyViewedUseCase } from '@/domain/usecases/recentlyViewed/GetRecentlyViewedUseCase';
+import { TrackRecentlyViewedUseCase } from '@/domain/usecases/recentlyViewed/TrackRecentlyViewedUseCase';
+import { ClearRecentlyViewedUseCase } from '@/domain/usecases/recentlyViewed/ClearRecentlyViewedUseCase';
+import { RecentlyViewedRepositoryImpl } from '@/data/repositories/RecentlyViewedRepositoryImpl';
 
 export function useRecentlyViewed() {
-  const [recentItems, setRecentItems] = useState<RecentItem[]>([]);
+  const [recentItems, setRecentItems] = useState<RecentlyViewedListing[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const repository = useMemo(() => new RecentlyViewedRepositoryImpl(), []);
+  const getUseCase = useMemo(() => new GetRecentlyViewedUseCase(repository), [repository]);
+  const trackUseCase = useMemo(() => new TrackRecentlyViewedUseCase(repository), [repository]);
+  const clearUseCase = useMemo(() => new ClearRecentlyViewedUseCase(repository), [repository]);
 
   const loadRecentItems = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await RecentlyViewed.list();
-      setRecentItems(data || []);
+      const items = await getUseCase.execute();
+      setRecentItems(items);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to load recent items');
       setRecentItems([]);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [getUseCase]);
 
   const trackViewed = useCallback(async (listingId: number) => {
     try {
-      await RecentlyViewed.track(listingId);
-      // Optionally reload the list
+      await trackUseCase.execute(listingId);
       await loadRecentItems();
     } catch (err) {
-      // Silently fail - tracking is not critical
       console.warn('Failed to track viewed listing:', err);
     }
-  }, [loadRecentItems]);
+  }, [trackUseCase, loadRecentItems]);
 
   const clearAll = useCallback(async () => {
     try {
-      await RecentlyViewed.clear();
+      await clearUseCase.execute();
       setRecentItems([]);
     } catch (err) {
       throw new Error(err instanceof Error ? err.message : 'Failed to clear recent items');
     }
-  }, []);
+  }, [clearUseCase]);
 
   return {
     recentItems,

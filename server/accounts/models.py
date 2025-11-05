@@ -11,12 +11,26 @@ from django.utils import timezone
 User = get_user_model()
 
 
+def profile_logo_upload_to(instance: "Profile", filename: str) -> str:
+    return f"profiles/{instance.user_id}/logo/{filename}"
+
+
+def profile_banner_upload_to(instance: "Profile", filename: str) -> str:
+    return f"profiles/{instance.user_id}/banner/{filename}"
+
+
 class Profile(models.Model):
     user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="profile")
     phone_e164 = models.CharField(max_length=20, unique=True)
     display_name = models.CharField(max_length=255, blank=True, default="")
     avatar_url = models.URLField(blank=True, default="")
     about = models.TextField(blank=True, default="")
+
+    # Settings page fields
+    location = models.ForeignKey('taxonomy.Location', on_delete=models.SET_NULL, null=True, blank=True, related_name="user_profiles")
+    logo = models.ImageField(upload_to=profile_logo_upload_to, null=True, blank=True)
+    banner = models.ImageField(upload_to=profile_banner_upload_to, null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:  # pragma: no cover

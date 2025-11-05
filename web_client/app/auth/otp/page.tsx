@@ -1,11 +1,11 @@
 "use client";
 import { Auth } from '@/lib/api';
-import { useState, useEffect } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useI18n } from '@/lib/i18n';
 
-export default function OTPPage() {
-  const { t, locale } = useI18n();
+function OTPPageContent() {
+  const { t } = useI18n();
   const [phone, setPhone] = useState('+998');
   const [code, setCode] = useState('');
   const [sent, setSent] = useState<{ status?: string; debug_code?: string } | null>(null);
@@ -14,7 +14,7 @@ export default function OTPPage() {
   const [countdown, setCountdown] = useState(0);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const redirectTo = searchParams.get('redirect') || '/u/listings';
+  const redirectTo = searchParams.get('redirect') || '/search';
 
   // Countdown timer for resend
   useEffect(() => {
@@ -32,7 +32,7 @@ export default function OTPPage() {
 
   const request = async () => {
     if (!phone || phone.length < 10) {
-      setError(locale === 'uz' ? 'Telefon raqamini kiriting' : 'Введите номер телефона');
+      setError(t('auth.errorPhoneRequired'));
       return;
     }
 
@@ -50,7 +50,7 @@ export default function OTPPage() {
         if (codeInput) codeInput.focus();
       }, 100);
     } catch (e: any) {
-      setError(e.message || (locale === 'uz' ? 'Xatolik yuz berdi' : 'Произошла ошибка'));
+      setError(e.message || t('auth.errorGeneric'));
     } finally {
       setLoading(false);
     }
@@ -58,7 +58,7 @@ export default function OTPPage() {
 
   const verify = async () => {
     if (!code || code.length !== 6) {
-      setError(locale === 'uz' ? '6 raqamli kodni kiriting' : 'Введите 6-значный код');
+      setError(t('auth.errorCodeRequired'));
       return;
     }
 
@@ -69,7 +69,7 @@ export default function OTPPage() {
       await Auth.verifyOtp(phone, code);
       router.push(redirectTo);
     } catch (e: any) {
-      setError(e.message || (locale === 'uz' ? 'Kod noto\'g\'ri' : 'Неверный код'));
+      setError(e.message || t('auth.errorInvalidCode'));
     } finally {
       setLoading(false);
     }
@@ -109,10 +109,8 @@ export default function OTPPage() {
     }, 100);
   };
 
-  const label = (ru: string, uz: string) => locale === 'uz' ? uz : ru;
-
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+    <div className="h-full bg-gray-50 flex items-center justify-center px-4 py-12">
       <div className="max-w-md w-full">
         {/* Header */}
         <div className="text-center mb-8">
@@ -122,10 +120,10 @@ export default function OTPPage() {
             </svg>
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">
-            {label('Вход или регистрация', 'Kirish yoki ro\'yxatdan o\'tish')}
+            {t('auth.pageTitle')}
           </h1>
           <p className="text-gray-600">
-            {label('Введите номер телефона для получения кода', 'Kod olish uchun telefon raqamingizni kiriting')}
+            {t('auth.pageSubtitle')}
           </p>
         </div>
 
@@ -136,7 +134,7 @@ export default function OTPPage() {
             <div className="space-y-4">
               <div>
                 <label htmlFor="phone-input" className="block text-sm font-semibold text-gray-700 mb-2">
-                  {label('Номер телефона', 'Telefon raqami')}
+                  {t('auth.phoneLabel')}
                 </label>
                 <input
                   id="phone-input"
@@ -144,12 +142,12 @@ export default function OTPPage() {
                   value={phone}
                   onChange={e => setPhone(e.target.value)}
                   onKeyDown={handlePhoneKeyDown}
-                  placeholder="+998 90 123 45 67"
+                  placeholder={t('auth.phonePlaceholder')}
                   disabled={loading}
                   className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg focus:outline-none focus:border-[#23E5DB] focus:ring-2 focus:ring-[#23E5DB] focus:ring-opacity-20 transition-colors"
                 />
                 <p className="text-xs text-gray-500 mt-2">
-                  {label('Например: +998901234567', 'Masalan: +998901234567')}
+                  {t('auth.phoneExample')}
                 </p>
               </div>
 
@@ -164,10 +162,10 @@ export default function OTPPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {label('Отправка...', 'Yuborilmoqda...')}
+                    {t('auth.sendingButton')}
                   </>
                 ) : (
-                  label('Получить код', 'Kod olish')
+                  t('auth.getCodeButton')
                 )}
               </button>
             </div>
@@ -177,13 +175,13 @@ export default function OTPPage() {
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label htmlFor="code-input" className="block text-sm font-semibold text-gray-700">
-                    {label('Код подтверждения', 'Tasdiqlash kodi')}
+                    {t('auth.codeLabel')}
                   </label>
                   <button
                     onClick={resetForm}
                     className="text-xs text-[#23E5DB] hover:text-[#1dd4cb] font-medium"
                   >
-                    {label('Изменить номер', 'Raqamni o\'zgartirish')}
+                    {t('auth.changeNumberButton')}
                   </button>
                 </div>
                 <input
@@ -199,10 +197,7 @@ export default function OTPPage() {
                   className="w-full px-4 py-3 text-center text-2xl font-mono tracking-widest border border-gray-300 rounded-lg focus:outline-none focus:border-[#23E5DB] focus:ring-2 focus:ring-[#23E5DB] focus:ring-opacity-20 transition-colors"
                 />
                 <p className="text-xs text-gray-500 mt-2 text-center">
-                  {label(
-                    `Мы отправили код на ${phone}`,
-                    `${phone} raqamiga kod yubordik`
-                  )}
+                  {t('auth.codeSentMessage', { phone })}
                 </p>
               </div>
 
@@ -210,10 +205,10 @@ export default function OTPPage() {
               {sent.debug_code && (
                 <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
                   <p className="text-xs font-medium text-yellow-800 mb-1">
-                    {label('Режим разработки', 'Ishlab chiqish rejimi')}
+                    {t('auth.developmentMode')}
                   </p>
                   <p className="text-sm font-mono text-yellow-900">
-                    {label('Код:', 'Kod:')} <span className="font-bold">{sent.debug_code}</span>
+                    {t('auth.codeLabel2')} <span className="font-bold">{sent.debug_code}</span>
                   </p>
                 </div>
               )}
@@ -229,10 +224,10 @@ export default function OTPPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {label('Проверка...', 'Tekshirilmoqda...')}
+                    {t('auth.verifyingButton')}
                   </>
                 ) : (
-                  label('Подтвердить', 'Tasdiqlash')
+                  t('auth.verifyButton')
                 )}
               </button>
 
@@ -240,10 +235,7 @@ export default function OTPPage() {
               <div className="text-center">
                 {countdown > 0 ? (
                   <p className="text-sm text-gray-500">
-                    {label(
-                      `Отправить код повторно через ${countdown} сек`,
-                      `${countdown} soniyadan keyin qayta yuborish`
-                    )}
+                    {t('auth.resendCodeCountdown', { countdown })}
                   </p>
                 ) : (
                   <button
@@ -251,7 +243,7 @@ export default function OTPPage() {
                     disabled={loading}
                     className="text-sm text-[#23E5DB] hover:text-[#1dd4cb] font-medium disabled:opacity-50"
                   >
-                    {label('Отправить код повторно', 'Kodni qayta yuborish')}
+                    {t('auth.resendCodeButton')}
                   </button>
                 )}
               </div>
@@ -273,12 +265,26 @@ export default function OTPPage() {
 
         {/* Footer */}
         <div className="text-center text-xs text-gray-500">
-          {label(
-            'Нажимая кнопку, вы соглашаетесь с условиями использования и политикой конфиденциальности',
-            'Tugmani bosish orqali siz foydalanish shartlari va maxfiylik siyosatiga rozilik bildirasiz'
-          )}
+          {t('auth.termsMessage')}
         </div>
       </div>
     </div>
+  );
+}
+
+function LoadingFallback() {
+  const { t } = useI18n();
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center px-4 py-12">
+      {t('auth.loading')}
+    </div>
+  );
+}
+
+export default function OTPPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <OTPPageContent />
+    </Suspense>
   );
 }
