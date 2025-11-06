@@ -1,9 +1,10 @@
 {
-  "/u/listings/page": "app/u/listings/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
   "/u/settings/page": "app/u/settings/page.js",
-  "/post/page": "app/post/page.js",
-  "/search/page": "app/search/page.js",
-  "/favorites/page": "app/favorites/page.js",
   "/l/[id]/page": "app/l/[id]/page.js",
-  "/chat/page": "app/chat/page.js"
+  "/search/page": "app/search/page.js",
+  "/u/[userId]/page": "app/u/[userId]/page.js",
+  "/u/listings/page": "app/u/listings/page.js",
+  "/page": "app/page.js",
+  "/favorites/page": "app/favorites/page.js"
 }

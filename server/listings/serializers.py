@@ -152,16 +152,22 @@ class ListingSerializer(serializers.ModelSerializer):
         profile = getattr(user, "profile", None)
         name = ""
         avatar_url = ""
+        logo = ""
+        banner = ""
         since = None
         if profile:
             name = profile.display_name or profile.phone_e164
             avatar_url = profile.avatar_url or ""
             since = profile.created_at
+            logo = profile.logo.url if profile.logo else ""
+            banner = profile.banner.url if profile.banner else ""
         return {
             "id": user.id,
             "name": name,
             "avatar_url": avatar_url,
             "since": since,
+            "logo": logo,
+            "banner": banner,
         }
 
     def get_price_normalized(self, obj: Listing) -> float:  # pragma: no cover
