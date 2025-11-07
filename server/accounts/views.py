@@ -106,6 +106,9 @@ class OTPVerifyView(APIView):
             if profile.phone_e164 != phone:
                 profile.phone_e164 = phone
                 profile.save(update_fields=["phone_e164"])
+        
+        # delete otp after successful verification
+        otp.delete()
 
         refresh = RefreshToken.for_user(user)
         data = {
@@ -161,3 +164,17 @@ class ProfileDeleteView(APIView):
             "user_id": user_id,
             "message": "Account and all associated data have been permanently deleted."
         }, status=200)
+
+
+class ProfileActiveView(APIView):
+    """Mark authenticated user as active right now."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request):
+        try:
+            profile = request.user.profile
+        except Profile.DoesNotExist:
+            profile = Profile.objects.create(user=request.user, phone_e164=request.user.username)
+        profile.last_active_at = timezone.now()
+        profile.save(update_fields=["last_active_at"])
+        return Response({"last_active_at": profile.last_active_at}, status=200)

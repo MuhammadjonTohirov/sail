@@ -57,4 +57,12 @@ export class ProfileRepositoryImpl implements IProfileRepository {
       } catch {}
     }
   }
+
+  async markActive(): Promise<Date | null> {
+    const result = await apiFetch('/api/v1/profile/active', {
+      method: 'POST',
+    });
+    const value = result?.last_active_at;
+    return value ? new Date(value) : null;
+  }
 }

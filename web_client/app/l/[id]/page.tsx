@@ -1,5 +1,5 @@
 "use client";
-import { Listings, apiFetch, ChatApi } from '@/lib/api';
+import { ChatApi } from '@/lib/api';
 import { useEffect, useMemo, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 import { useRouter } from 'next/navigation';
@@ -8,24 +8,31 @@ import { RecentlyViewedTracker } from '@/components/RecentlyViewedTracker';
 import { ReportModal } from '@/components/listing/ReportModal';
 import ChatOverlay from '@/components/chat/ChatOverlay';
 import type { ChatThread } from '@/domain/chat';
-import { Console } from 'console';
+import { ListingsRepositoryImpl } from '@/data/repositories/ListingsRepositoryImpl';
+import { GetListingDetailUseCase } from '@/domain/usecases/listings/GetListingDetailUseCase';
+import { GetUserListingsUseCase } from '@/domain/usecases/listings/GetUserListingsUseCase';
+import type { Listing } from '@/domain/models/Listing';
+import Avatar from '@/components/ui/Avatar';
+import '@/utils/string.extensions'
 
 export default function ListingDetail({ params }: { params: { id: string } }) {
   const { t, locale } = useI18n();
   const router = useRouter();
   const base = locale === 'uz' ? '/uz' : '';
   const id = Number(params.id);
-  const [data, setData] = useState<any>(null);
+  const repository = useMemo(() => new ListingsRepositoryImpl(), []);
+  const detailUseCase = useMemo(() => new GetListingDetailUseCase(repository), [repository]);
+  const userListingsUseCase = useMemo(() => new GetUserListingsUseCase(repository), [repository]);
+  const [listing, setListing] = useState<Listing | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [idx, setIdx] = useState(0);
-  const [isThumbsScrolling, setThumbsScrolling] = useState(false);
   const [showPhone, setShowPhone] = useState(false);
   const [reportMsg, setReportMsg] = useState('');
   const [reportModalOpen, setReportModalOpen] = useState(false);
   // drag-to-swipe state must be defined before any early returns
   const [drag, setDrag] = useState<{startX:number, moved:boolean}|null>(null);
-  const [sellerListings, setSellerListings] = useState<any[]>([]);
+  const [sellerListings, setSellerListings] = useState<Listing[]>([]);
   const [loadingSellerListings, setLoadingSellerListings] = useState(false);
   const [chatOpen, setChatOpen] = useState(false);
   const [chatLoading, setChatLoading] = useState(false);
@@ -34,18 +41,37 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
   const [viewerId, setViewerId] = useState<number | null>(null);
 
   useEffect(() => {
+    if (!Number.isFinite(id) || id <= 0) {
+      setListing(null);
+      setError(t('listing.notFound'));
+      setLoading(false);
+      return;
+    }
+    let cancelled = false;
     (async () => {
       setLoading(true);
       setError('');
       try {
-        setData(await Listings.detail(id));
+        const result = await detailUseCase.execute(id);
+        console.log('Fetched listing detail', result.seller);
+        if (!cancelled) {
+          setListing(result);
+        }
       } catch (e: any) {
-        setError(e.message || t('listing.notFound'));
+        if (!cancelled) {
+          setListing(null);
+          setError(e?.message || t('listing.notFound'));
+        }
       } finally {
-        setLoading(false);
+        if (!cancelled) {
+          setLoading(false);
+        }
       }
     })();
-  }, [id, locale]);
+    return () => {
+      cancelled = true;
+    };
+  }, [detailUseCase, id, t]);
 
   useEffect(() => {
     setChatOpen(false);
@@ -76,32 +102,51 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
 
   // Fetch seller's other listings
   useEffect(() => {
-    if (!data?.user_id) return;
+    const sellerId = listing?.seller?.id ?? listing?.userId;
+    if (!sellerId) return;
+    let cancelled = false;
     (async () => {
       setLoadingSellerListings(true);
       try {
-        const response = await apiFetch(`/api/v1/listings?user_id=${data.user_id}&status=active&per_page=6`);
-        const filtered = (response.results || []).filter((l: any) => l.id !== id);
+        const results = await userListingsUseCase.execute({ userId: sellerId, sort: 'newest' });
+        if (cancelled) return;
+        const filtered = results.filter((l) => l.id !== id).slice(0, 6);
         setSellerListings(filtered);
       } catch (e) {
-        console.error('Failed to load seller listings', e);
+        if (!cancelled) {
+          console.error('Failed to load seller listings', e);
+        }
       } finally {
-        setLoadingSellerListings(false);
+        if (!cancelled) {
+          setLoadingSellerListings(false);
+        }
       }
     })();
-  }, [data?.user_id, id]);
+    return () => {
+      cancelled = true;
+    };
+  }, [id, listing?.seller?.id, listing?.userId, userListingsUseCase]);
 
   const chips = useMemo(() => {
+    if (!listing) return [];
     const arr: { label: string }[] = [];
-    if (!data) return arr;
-    arr.push({ label: data.seller_type === 'business' ? t('listing.sellerTypeBusiness') : t('listing.sellerTypePrivate') });
-    arr.push({ label: t('listing.conditionLabel') + (data.condition === 'new' ? t('listing.conditionNew') : t('listing.conditionUsed')) });
-    (data.attributes || []).forEach((a: any) => {
-      const v = Array.isArray(a.value) ? a.value.join(', ') : String(a.value ?? '');
-      if (v) arr.push({ label: `${a.label}: ${v}` });
+    arr.push({
+      label: listing.sellerType === 'business'
+        ? t('listing.sellerTypeBusiness')
+        : t('listing.sellerTypePrivate'),
+    });
+    arr.push({
+      label: t('listing.conditionLabel') + (listing.condition === 'new' ? t('listing.conditionNew') : t('listing.conditionUsed')),
+    });
+    (listing.attributes || []).forEach((attr) => {
+      const raw = attr?.value;
+      const value = Array.isArray(raw) ? raw.join(', ') : (raw !== undefined && raw !== null ? String(raw) : '');
+      if (value) {
+        arr.push({ label: `${attr.label ?? attr.key}: ${value}` });
+      }
     });
     return arr;
-  }, [data, locale, t]);
+  }, [listing, t]);
 
   useEffect(() => {
     if (!reportMsg) return;
@@ -134,7 +179,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
   }
 
   // Error state
-  if (error || !data) {
+  if (error || !listing) {
     return (
       <div className="container py-12">
         <div className="max-w-md mx-auto text-center">
@@ -157,21 +202,35 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
       </div>
     );
   }
-  const media = data.media || [];
-  const current = media[idx] ? media[idx].image_url : '';
-  const primaryImage = media[0]?.image_url || current || '';
+  const rawMedia = Array.isArray(listing.media) && listing.media.length > 0 ? listing.media : undefined;
+  const mediaUrls = listing.mediaUrls && listing.mediaUrls.length > 0 ? listing.mediaUrls : [];
+  const mediaItems = rawMedia
+    ? rawMedia
+        .map((item, index) => ({
+          id: item.id ?? index,
+          url: item.imageUrl || item.image || '',
+        }))
+        .filter((item) => item.url)
+    : mediaUrls.map((url, index) => ({ id: index, url }));
+  const galleryLength = mediaItems.length;
+  const current = mediaItems[idx]?.url ?? '';
+  const primaryImage = mediaItems[0]?.url ?? '';
 
-  const isOwnListing = viewerId != null && viewerId === data.seller.id;
+  const isOwnListing = viewerId != null && viewerId === (listing.seller?.id ?? listing.userId ?? listing.user?.id);
 
   const chatListingSummary = {
     id,
-    title: data.title,
-    priceAmount: data.price_amount,
-    priceCurrency: data.price_currency,
+    title: listing.title,
+    priceAmount: listing.priceAmount,
+    priceCurrency: listing.priceCurrency,
     thumbnailUrl: primaryImage,
-    sellerName: data.user?.display_name || data.user?.phone_e164 || undefined,
+    sellerName: listing.seller?.name || listing.user?.displayName || listing.user?.phoneE164,
   };
-
+  const createdAtDate = listing.createdAt ? new Date(listing.createdAt) : null;
+  const sellerId = listing.seller?.id ?? listing.userId ?? listing.user?.id;
+  const sellerDisplayName = listing.seller?.name || listing.user?.displayName || listing.user?.name || listing.user?.phoneE164 || 'U';
+  // const sellerSinceDate = listing.seller?.since ? new Date(listing.seller.since) : null;
+  const sellerLastActiveDate = listing.seller?.lastActiveAt ? new Date(listing.seller.lastActiveAt) : null; 
   const handleChatClick = async () => {
     if (typeof window === 'undefined') return;
     if (isOwnListing) return;
@@ -211,8 +270,8 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
     setChatLoading(false);
   };
 
-  const prev = () => setIdx((i) => (i - 1 + media.length) % Math.max(media.length, 1));
-  const next = () => setIdx((i) => (i + 1) % Math.max(media.length, 1));
+  const prev = () => setIdx((i) => (i - 1 + galleryLength) % Math.max(galleryLength, 1));
+  const next = () => setIdx((i) => (i + 1) % Math.max(galleryLength, 1));
 
   // drag-to-swipe for main image
 
@@ -224,7 +283,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
       <div className="detail-grid">
         <div>
           <div className="gallery card">
-            {data.is_promoted && (
+            {listing.isPromoted && (
               <div className="promoted-banner">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
@@ -239,7 +298,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
               onKeyDown={(e) => { if (e.key === 'ArrowLeft') prev(); if (e.key === 'ArrowRight') next(); }}
             >
               {current ? (
-                <img src={current} alt={data.title} />
+                <img src={current} alt={listing.title} />
               ) : (
                 <div className="no-image-placeholder">
                   <svg className="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -248,22 +307,22 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
                   <span className="text-gray-400 mt-2">{t('listing.noImage')}</span>
                 </div>
               )}
-              {media.length > 1 && (
+              {galleryLength > 1 && (
                 <>
                   <div className="gallery-nav">
                     <button onClick={prev} aria-label="Previous">‹</button>
                     <button onClick={next} aria-label="Next">›</button>
                   </div>
                   <div className="gallery-counter">
-                    {idx + 1} / {media.length}
+                    {idx + 1} / {galleryLength}
                   </div>
                 </>
               )}
             </div>
-          {media.length > 0 && (
+          {galleryLength > 0 && (
             <div className="gallery-thumbs">
-              {media.map((m: any, i: number) => (
-                <img key={m.id} src={m.image_url} className={i===idx?'is-active':''} onClick={() => setIdx(i)} alt="" />
+              {mediaItems.map((item, i) => (
+                <img key={item.id} src={item.url} className={i === idx ? 'is-active' : ''} onClick={() => setIdx(i)} alt="" />
               ))}
             </div>
           )}
@@ -277,13 +336,13 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
             </a>
             <span className="breadcrumb-sep">›</span>
             <a href={`${locale === 'uz' ? '/uz' : ''}/search`} className="breadcrumb-link">
-              {data.category_name || t('listing.allCategories')}
+              {listing.categoryName || t('listing.allCategories')}
             </a>
             <span className="breadcrumb-sep">›</span>
-            <span className="breadcrumb-current">{data.title}</span>
+            <span className="breadcrumb-current">{listing.title}</span>
           </div>
 
-          <h1 className="detail-title">{data.title}</h1>
+          <h1 className="detail-title">{listing.title}</h1>
 
           {chips.length > 0 && (
             <div className="detail-attributes">
@@ -301,13 +360,13 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
           <div className="detail-section">
             <h3 className="section-title">{t('listing.description')}</h3>
             <p className="description-text">
-              {data.description || <span className="text-gray-400">{t('listing.noDescription')}</span>}
+              {listing.description || <span className="text-gray-400">{t('listing.noDescription')}</span>}
             </p>
           </div>
 
           <div className="border-t mt-6 pt-4">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-xs text-gray-400">ID: {data.id}</span>
+              <span className="text-xs text-gray-400">ID: {listing.id}</span>
               <div className="flex items-center gap-3">
                 {reportMsg && <span className="text-xs text-green-600">{reportMsg}</span>}
                 <button
@@ -334,21 +393,21 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {new Date(data.created_at).toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', {
+              {createdAtDate ? createdAtDate.toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', {
                 year: 'numeric',
                 month: 'long',
                 day: 'numeric'
-              })}
+              }) : ''}
             </div>
             <FavoriteButton listingId={id} size="md" variant="icon" />
           </div>
 
-          {data.price_amount > 0 ? (
+          {listing.priceAmount > 0 ? (
             <div className="price-block mb-4">
               <div className="text-4xl font-bold text-[#002F34] mb-1">
-                {Number(data.price_amount).toLocaleString()} <span className="text-2xl">{data.price_currency}</span>
+                {Number(listing.priceAmount).toLocaleString()} <span className="text-2xl">{listing.priceCurrency}</span>
               </div>
-              {data.is_price_negotiable && (
+              {listing.isPriceNegotiable && (
                 <div className="flex items-center gap-1 text-sm text-[#23E5DB]">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
@@ -397,7 +456,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
               </svg>
               {showPhone ? (
-                data.contact_phone_masked || data.user?.phone_e164 || '—'
+                listing.contactPhoneMasked || listing.user?.phoneE164 || listing.user?.phone || '—'
               ) : (
                 t('listing.showPhone')
               )}
@@ -414,31 +473,30 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
             {t('listing.seller')}
           </div>
           <div className="seller-info">
-            <div className="seller-avatar">
-              {(data.user?.display_name || data.user?.phone_e164 || 'U').charAt(0).toUpperCase()}
-            </div>
+            <Avatar
+              className="seller-avatar"
+              imageUrl={listing.seller?.avatarUrl?.getIfEmpty(listing.seller?.logo)}
+              placeholder={sellerDisplayName}
+              alt={sellerDisplayName}
+            />
             <div className="seller-details">
               <div className="seller-name">
-                {data.user?.display_name || t('listing.user')}
+                {sellerDisplayName || t('listing.user')}
               </div>
               <div className="seller-meta">
-                {t('listing.onSiteSince')} {new Date(data.created_at).toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', { year: 'numeric', month: 'short' })}
+                {t('listing.onSiteAt')}{' '}
+                {(sellerLastActiveDate ?? sellerLastActiveDate)?.toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', { 
+                    day: 'numeric', 
+                    year: 'numeric', 
+                    month: 'short' 
+                  }) || '—'}
               </div>
-            </div>
-          </div>
-          <div className="seller-stats">
-            <div className="stat-box">
-              <div className="stat-value">—</div>
-              <div className="stat-name">{t('listing.listings')}</div>
-            </div>
-            <div className="stat-box">
-              <div className="stat-value">—</div>
-              <div className="stat-name">{t('listing.reviews')}</div>
             </div>
           </div>
           <button
-            onClick={() => router.push(`${base}/u/${data.seller?.id || data.user?.id || data.user_id}`)}
+            onClick={() => sellerId && router.push(`${base}/u/${sellerId}`)}
             className="w-full btn-outline btn-lg text-sm"
+            disabled={!sellerId}
           >
             {t('listing.sellerAllListings')}
           </button>
@@ -454,7 +512,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
             {t('listing.location')}
           </div>
           <div className="location-name">
-            {data.location_name || data.location || t('listing.notSpecified')}
+            {listing.locationName || t('listing.notSpecified')}
           </div>
         </div>
       </aside>
@@ -468,8 +526,11 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
               {t('listing.sellerOtherListings')}
             </h2>
             <a
-              href={`${locale === 'uz' ? '/uz' : ''}/u/${data.user_id}/listings`}
+              href={sellerId?.toString && `${base}/u/${sellerId}`}
               className="view-all-link"
+              onClick={(e) => {
+                if (!sellerId) e.preventDefault();
+              }}
             >
               {t('listing.viewAll')} →
             </a>
@@ -487,43 +548,50 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
             </div>
           ) : (
             <div className="related-listings-grid">
-              {sellerListings.map((listing: any) => (
-                <a
-                  key={listing.id}
-                  href={`${locale === 'uz' ? '/uz' : ''}/l/${listing.id}`}
-                  className="related-listing-card"
-                >
-                  <div className="related-listing-image">
-                    {listing.media?.[0]?.image_url ? (
-                      <img src={listing.media[0].image_url} alt={listing.title} />
-                    ) : (
-                      <div className="no-image">
-                        <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                    )}
-                  </div>
-                  <div className="related-listing-content">
-                    <h3 className="related-listing-title">{listing.title}</h3>
-                    <div className="related-listing-price">
-                      {listing.price_amount > 0 ? (
-                        `${Number(listing.price_amount).toLocaleString()} ${listing.price_currency}`
+              {sellerListings.map((otherListing) => {
+                const thumb =
+                  otherListing.media?.[0]?.imageUrl ||
+                  otherListing.media?.[0]?.image ||
+                  otherListing.mediaUrls?.[0] ||
+                  '';
+                return (
+                  <a
+                    key={otherListing.id}
+                    href={`${locale === 'uz' ? '/uz' : ''}/l/${otherListing.id}`}
+                    className="related-listing-card"
+                  >
+                    <div className="related-listing-image">
+                      {thumb ? (
+                        <img src={thumb} alt={otherListing.title} />
                       ) : (
-                        t('listing.free')
+                        <div className="no-image">
+                          <svg className="w-12 h-12 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                        </div>
                       )}
                     </div>
-                    {listing.location_name && (
-                      <div className="related-listing-location">
-                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        </svg>
-                        {listing.location_name}
+                    <div className="related-listing-content">
+                      <h3 className="related-listing-title">{otherListing.title}</h3>
+                      <div className="related-listing-price">
+                        {otherListing.priceAmount > 0 ? (
+                          `${Number(otherListing.priceAmount).toLocaleString()} ${otherListing.priceCurrency}`
+                        ) : (
+                          t('listing.free')
+                        )}
                       </div>
-                    )}
-                  </div>
-                </a>
-              ))}
+                      {otherListing.locationName && (
+                        <div className="related-listing-location">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          </svg>
+                          {otherListing.locationName}
+                        </div>
+                      )}
+                    </div>
+                  </a>
+                );
+              })}
             </div>
           )}
         </div>

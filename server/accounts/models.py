@@ -31,6 +31,8 @@ class Profile(models.Model):
     logo = models.ImageField(upload_to=profile_logo_upload_to, null=True, blank=True)
     banner = models.ImageField(upload_to=profile_banner_upload_to, null=True, blank=True)
 
+    last_active_at = models.DateTimeField(null=True, blank=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:  # pragma: no cover

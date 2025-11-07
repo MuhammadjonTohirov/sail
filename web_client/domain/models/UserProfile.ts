@@ -9,6 +9,7 @@ export interface UserProfile {
   readonly locationName?: string | null;
   readonly logoUrl?: string | null;
   readonly bannerUrl?: string | null;
+  readonly lastActiveAt?: Date | null;
   readonly createdAt: Date;
 }
 

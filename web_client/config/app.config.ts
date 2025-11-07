@@ -22,8 +22,8 @@ export const appConfig = {
 
   // Contact & Social
   contact: {
-    email: 'support@markethub.com',
-    phone: '+998 90 123 45 67',
+    email: 'support@markethub.uz',
+    phone: '+998 93 585 24 15',
     address: 'Tashkent, Uzbekistan',
   },
 
@@ -191,9 +191,19 @@ export const appConfig = {
     },
     defaultZoom: 12,
   },
+  
 } as const;
 
 // Type exports for TypeScript
 export type AppConfig = typeof appConfig;
 export type ThemeColors = typeof appConfig.theme.colors;
 export type Features = typeof appConfig.features;
+
+function trustedImageUrl(url: string): string {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    return url;
+  }
+  
+  return `${appConfig.api.baseUrl}/${url.replace(/^\/+/, '')}`;
+}
+export { trustedImageUrl };

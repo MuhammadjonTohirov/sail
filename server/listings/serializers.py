@@ -155,12 +155,14 @@ class ListingSerializer(serializers.ModelSerializer):
         logo = ""
         banner = ""
         since = None
+        last_active = None
         if profile:
             name = profile.display_name or profile.phone_e164
             avatar_url = profile.avatar_url or ""
             since = profile.created_at
             logo = profile.logo.url if profile.logo else ""
             banner = profile.banner.url if profile.banner else ""
+            last_active = profile.last_active_at
         return {
             "id": user.id,
             "name": name,
@@ -168,6 +170,7 @@ class ListingSerializer(serializers.ModelSerializer):
             "since": since,
             "logo": logo,
             "banner": banner,
+            "last_active_at": last_active,
         }
 
     def get_price_normalized(self, obj: Listing) -> float:  # pragma: no cover

@@ -18,6 +18,7 @@ export class ProfileMapper {
       locationName: dto.location_name,
       logoUrl: dto.logo,
       bannerUrl: dto.banner,
+      lastActiveAt: dto.last_active_at ? new Date(dto.last_active_at) : null,
       createdAt: new Date(dto.created_at),
     };
   }

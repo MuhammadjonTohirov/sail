@@ -13,6 +13,7 @@ export interface ProfileDTO {
   location_name?: string | null;
   logo?: string | null;
   banner?: string | null;
+  last_active_at?: string | null;
   created_at: string;
 }
 

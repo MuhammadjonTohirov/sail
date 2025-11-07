@@ -32,6 +32,7 @@ class ProfileSerializer(serializers.ModelSerializer):
             "location_name",
             "logo",
             "banner",
+            "last_active_at",
             "created_at",
         ]
         read_only_fields = ["phone_e164", "created_at"]

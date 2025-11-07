@@ -144,3 +144,8 @@ docker-compose.override.yml
 secrets.json
 .secrets/
 config/secrets/
+
+server/venv/
+/node_modules
+web_client/node_modules/
+web_client/node_modules

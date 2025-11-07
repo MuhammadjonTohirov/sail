@@ -4,6 +4,50 @@ import { ListingPayload } from '../../domain/models/ListingPayload';
 
 export class ListingMapper {
   static toDomain(dto: ListingDTO): Listing {
+    const media = Array.isArray(dto.media)
+      ? dto.media.map((item) => ({
+          id: item.id,
+          type: item.type ?? null,
+          image: item.image ?? null,
+          imageUrl: item.image_url ?? null,
+          width: item.width ?? null,
+          height: item.height ?? null,
+          order: item.order ?? null,
+          uploadedAt: item.uploaded_at ?? null,
+        }))
+      : undefined;
+
+    const seller = dto.seller
+      ? {
+          id: dto.seller.id,
+          name: dto.seller.name,
+          avatarUrl: dto.seller.avatar_url,
+          since: dto.seller.since ?? null,
+          logo: dto.seller.logo ?? null,
+          banner: dto.seller.banner ?? null,
+          phone: dto.seller.phone,
+          lastActiveAt: dto.seller.last_active_at ?? null,
+        }
+      : undefined;
+
+    const user = dto.user
+      ? {
+          id: dto.user.id,
+          phone: dto.user.phone,
+          name: dto.user.name,
+          displayName: dto.user.display_name,
+          phoneE164: dto.user.phone_e164,
+        }
+      : undefined;
+
+    const mediaUrls =
+      dto.media_urls ??
+      (media
+        ? media
+            .map((item) => item.imageUrl || item.image || '')
+            .filter((url): url is string => Boolean(url))
+        : undefined);
+
     return {
       id: dto.id,
       title: dto.title,
@@ -16,18 +60,27 @@ export class ListingMapper {
       sellerType: dto.seller_type,
       categoryId: dto.category || 0,
       categoryName: dto.category_name,
+      categorySlug: dto.category_slug,
       locationId: dto.location || 0,
       locationName: dto.location_name,
+      locationSlug: dto.location_slug,
       lat: dto.lat,
       lon: dto.lon,
-      mediaUrls: dto.media_urls,
+      media,
+      mediaUrls,
       attributes: dto.attributes,
       status: dto.status,
       createdAt: dto.created_at,
       updatedAt: dto.updated_at,
       refreshedAt: dto.refreshed_at,
-      user: dto.user,
-      seller: dto.seller,
+      expiresAt: dto.expires_at,
+      qualityScore: dto.quality_score ?? null,
+      contactPhoneMasked: dto.contact_phone_masked ?? null,
+      priceNormalized: dto.price_normalized ?? null,
+      isPromoted: dto.is_promoted ?? null,
+      userId: dto.user_id ?? seller?.id ?? user?.id,
+      user,
+      seller,
     };
   }
 

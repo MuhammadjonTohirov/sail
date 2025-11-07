@@ -19,4 +19,9 @@ export interface IProfileRepository {
    * Delete user account
    */
   deleteAccount(): Promise<void>;
+
+  /**
+   * Update the user's last active timestamp to now.
+   */
+  markActive(): Promise<Date | null>;
 }

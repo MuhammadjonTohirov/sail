@@ -5,6 +5,7 @@ import ClientNav from './navbar/ClientNav';
 import Footer from '@/components/layout/Footer';
 import CurrencyProvider from '@/components/providers/CurrencyProvider';
 import I18nProvider from '@/components/providers/I18nProvider';
+import ActiveStatusProvider from '@/components/providers/ActiveStatusProvider';
 import { appConfig, buildThemeStyle } from '@/config';
 
 export const metadata: Metadata = {
@@ -35,9 +36,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body style={bodyStyle}>
         <I18nProvider>
           <CurrencyProvider>
-            <ClientNav />
-            <main className="container page-content">{children}</main>
-            <Footer />
+            <ActiveStatusProvider>
+              <ClientNav />
+              <main className="container page-content">{children}</main>
+              <Footer />
+            </ActiveStatusProvider>
           </CurrencyProvider>
         </I18nProvider>
       </body>
