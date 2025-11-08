@@ -229,7 +229,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
   const createdAtDate = listing.createdAt ? new Date(listing.createdAt) : null;
   const sellerId = listing.seller?.id ?? listing.userId ?? listing.user?.id;
   const sellerDisplayName = listing.seller?.name || listing.user?.displayName || listing.user?.name || listing.user?.phoneE164 || 'U';
-  // const sellerSinceDate = listing.seller?.since ? new Date(listing.seller.since) : null;
+  const sellerSinceDate = listing.seller?.since ? new Date(listing.seller.since) : null;
   const sellerLastActiveDate = listing.seller?.lastActiveAt ? new Date(listing.seller.lastActiveAt) : null; 
   const handleChatClick = async () => {
     if (typeof window === 'undefined') return;
@@ -485,7 +485,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
               </div>
               <div className="seller-meta">
                 {t('listing.onSiteAt')}{' '}
-                {(sellerLastActiveDate ?? sellerLastActiveDate)?.toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', { 
+                {(sellerLastActiveDate ?? sellerSinceDate)?.toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', { 
                     day: 'numeric', 
                     year: 'numeric', 
                     month: 'short' 
