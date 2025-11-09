@@ -33,6 +33,7 @@ def mapping_body() -> Dict[str, Any]:
             "dynamic": "false",
             "properties": {
                 "id": {"type": "keyword"},
+                "user_id": {"type": "keyword"},
                 "title": {"type": "text", "analyzer": "folding"},
                 "description": {"type": "text", "analyzer": "folding"},
                 "category_path": {"type": "keyword"},
@@ -123,6 +124,7 @@ def build_document(listing: Listing) -> Dict[str, Any]:
 
     doc = {
         "id": str(listing.id),
+        "user_id": str(listing.user_id),
         "title": listing.title,
         "description": listing.description,
         "category_path": cat_path,

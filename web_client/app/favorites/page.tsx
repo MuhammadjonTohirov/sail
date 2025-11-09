@@ -115,16 +115,21 @@ export default function FavoritesPage() {
   const buildSearchUrl = (query: SavedSearch['query']) => {
     const params = new URLSearchParams();
 
+    // Extract the actual search parameters from the nested 'params' object
+    const searchParams = query.params || query;
+
     // Add all query parameters to the URL
-    Object.entries(query).forEach(([key, value]) => {
+    Object.entries(searchParams).forEach(([key, value]) => {
       if (value !== undefined && value !== null && value !== '') {
-        // Skip display-only fields like category_name, location_name
-        if (key.endsWith('_name')) return;
-        console.log('Adding search param:', key, value);
-        params.append(key, String(value));
+        // Handle array values (for multiselect attributes)
+        if (Array.isArray(value)) {
+          value.forEach(v => params.append(key, String(v)));
+        } else {
+          params.append(key, String(value));
+        }
       }
     });
-    console.log('Built search URL with params:', params.toString());
+
     return `${base}/search?${params.toString()}`;
   };
 

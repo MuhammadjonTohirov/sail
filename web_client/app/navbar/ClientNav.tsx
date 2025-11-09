@@ -3,8 +3,10 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { useEffect, useRef, useState } from "react";
-import { Auth } from "@/lib/api";
-import { appConfig } from "@/config";
+import { appConfig, trustedImageUrl } from "@/config";
+import { LogoutUseCase } from "@/domain/usecases/auth/LogoutUseCase";
+import { AuthRepositoryImpl } from "@/data/repositories/AuthRepositoryImpl";
+import { Assets, getAsset } from "@/utils/assets";
 
 const iconProps = { width: 22, height: 22, strokeWidth: 1.8 };
 const profileIconProps = { width: 26, height: 26, strokeWidth: 1.8 };
@@ -15,6 +17,7 @@ export default function ClientNav() {
   const { t, locale } = useI18n();
   const [authed, setAuthed] = useState<boolean>(false);
   const [profileName, setProfileName] = useState<string>("");
+  const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [menuOpen, setMenuOpen] = useState<boolean>(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const { features } = appConfig;
@@ -29,6 +32,8 @@ export default function ClientNav() {
       if (profRaw) {
         const p = JSON.parse(profRaw);
         const dn = p.display_name && p.display_name.trim() ? p.display_name : (p.username || "");
+        const imageUrl = p.avatar ?? p.logo ?? '';
+        setAvatarUrl(trustedImageUrl(imageUrl));
         setProfileName(dn || "");
       } else {
         setProfileName("");
@@ -48,6 +53,7 @@ export default function ClientNav() {
   const isSearchActive = normalizedPath.startsWith('/search');
   const isFavoritesActive = normalizedPath.startsWith('/favorites');
   const isPostActive = normalizedPath.startsWith('/post');
+  const logoutUseCase = new LogoutUseCase(new AuthRepositoryImpl());
 
   useEffect(() => {
     setHydrated(true);
@@ -87,7 +93,7 @@ export default function ClientNav() {
 
   const onProfileClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
-    if (!hydrated) return;
+    // if (!hydrated) return;
     if (!authed) {
       router.push(`${base}/auth/otp`);
       return;
@@ -95,16 +101,42 @@ export default function ClientNav() {
     setMenuOpen((v) => !v);
   };
 
+  const onAddPostClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    // if (!hydrated) return;
+    if (!authed) {
+      alert(t('auth.loginRequiredToPost'));
+      router.push(`${base}/auth/otp`);
+      return;
+    }
+    router.push(`${base}/post`);
+  };
+  const appLogo = getAsset('app-logo.svg')
   return (
     <header className="topbar">
-      <div className="container" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <Link href={isUZ ? '/uz' : '/'}>{appConfig.name}</Link>
+      <div className="container" style={
+          { 
+            display: 'flex', 
+            alignItems: 'center', 
+            justifyContent: 'space-between', 
+            height: '32px'
+          }
+        }>
+
+        <Link href={isUZ ? '/uz' : '/'}>
+          <div className="topbar-logo" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <img src={appLogo} alt={appConfig.name} style={{height: '32px'}} />
+            <p>{appConfig.name}</p>
+          </div>
+        </Link>
+        
         <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
+          
           <Link
             href={`${base}/search`}
             className={`nav-icon nav-icon--outline${isSearchActive ? ' is-active' : ''}`}
-            aria-label={t('navSearch')}
-            title={t('navSearch')}
+            aria-label={t('nav.search')}
+            title={t('nav.search')}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...iconProps}>
               <circle cx="11" cy="11" r="6" />
@@ -128,6 +160,7 @@ export default function ClientNav() {
 
           <Link
             href={`${base}/post`}
+            onClick={onAddPostClick}
             className={`nav-icon nav-icon--accent${isPostActive ? ' is-active' : ''}`}
             aria-label={t('navPost')}
             title={t('navPost')}
@@ -137,6 +170,7 @@ export default function ClientNav() {
               <path d="M5 12h14" />
             </svg>
           </Link>
+          
           <div className="dropdown" ref={menuRef}>
             <button
               type="button"
@@ -147,10 +181,19 @@ export default function ClientNav() {
               title={authed ? t('nav.profile') : t('nav.auth')}
               aria-label={authed ? t('nav.profile') : t('nav.auth')}
             >
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...profileIconProps}>
-                <circle cx="12" cy="8" r="4" />
-                <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
-              </svg>
+              {authed && avatarUrl ? (
+                <img
+                  src={avatarUrl}
+                  alt={profileName || t('nav.profile')}
+                  className="nav-profile-avatar"
+                  onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                />
+              ) : (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" {...profileIconProps}>
+                  <circle cx="12" cy="8" r="4" />
+                  <path d="M4 20c0-4 3.6-7 8-7s8 3 8 7" />
+                </svg>
+              )}
             </button>
             {authed && menuOpen && (
               <div className="dropdown-menu" role="menu">
@@ -159,7 +202,7 @@ export default function ClientNav() {
                 <a className="menu-item" href={`${base}/chat`}>{t('nav.chats')}</a>
                 <a className="menu-item" href={`${base}/u/settings`}>{t('nav.settings')}</a>
                 <div className="menu-sep" />
-                <button className="menu-item" onClick={() => { Auth.logout(); setMenuOpen(false); router.push(base || '/'); }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 0 }}>
+                <button className="menu-item" onClick={() => { logoutUseCase.execute(); setMenuOpen(false); router.push(base || '/'); }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 0 }}>
                   {t('nav.logout')}
                 </button>
               </div>

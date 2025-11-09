@@ -34,6 +34,25 @@
     "ctaSubtitle": "Создайте объявление бесплатно и найдите покупателя уже сегодня",
     "ctaButton": "Разместить объявление"
   },
+  "searchPage": {
+    "searchPlaceholder": "Я ищу...",
+    "allCategories": "Все категории",
+    "searchButton": "Искать",
+    "homeBreadcrumb": "Главная",
+    "saveSearch": "Сохранить поиск",
+    "filtersTitle": "Фильтры",
+    "resetFilters": "Сбросить",
+    "priceLabel": "Цена",
+    "priceFrom": "От",
+    "priceTo": "До",
+    "rangeMin": "Мин",
+    "rangeMax": "Макс",
+    "applyFilters": "Применить фильтры",
+    "listView": "Список",
+    "gridView": "Сетка",
+    "noResultsTitle": "Объявления не найдены",
+    "noResultsDescription": "Попробуйте изменить параметры поиска."
+  },
   "features": {
     "promotions": "Продвижение объявлений",
     "favorites": "Список избранного",
@@ -66,7 +85,8 @@
     "errorCodeRequired": "Введите 6-значный код",
     "errorGeneric": "Произошла ошибка",
     "errorInvalidCode": "Неверный код",
-    "loading": "Загрузка..."
+    "loading": "Загрузка...",
+    "loginRequiredToPost": "Чтобы разместить объявление, необходимо войти в систему"
   },
   "listing": {
     "loading": "Загрузка...",

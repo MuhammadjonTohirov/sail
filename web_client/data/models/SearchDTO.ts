@@ -1,14 +1,22 @@
+import { ListingSellerDTO } from "./ListingDTO";
+
 export interface SearchListingDTO {
   id: string;
   title: string;
   price?: number;
+  description?: string | null;
+  condition?: string | null;
+  quality_score?: number | null;
+  score?: number | null;
   currency?: string;
   media_urls?: string[];
   location_name_ru?: string;
   location_name_uz?: string;
   refreshed_at?: string;
   is_promoted?: boolean;
+  seller?: ListingSellerDTO | null;
 }
+
 
 export interface SearchFacetOptionDTO {
   key: string | null;

@@ -25,4 +25,8 @@ export interface SearchResult {
   readonly page?: number | null;
   readonly perPage?: number | null;
   readonly facets?: SearchFacets | null;
+
+  // static empty object for SearchResult
+  
+  readonly empty: SearchResult;
 }

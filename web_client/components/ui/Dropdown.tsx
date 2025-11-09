@@ -7,6 +7,7 @@ export default function Dropdown({
   options,
   value,
   onChange,
+  style,
   className = "",
   buttonClassName = "",
   align = "right",
@@ -15,6 +16,7 @@ export default function Dropdown({
   value: string;
   onChange: (v: string) => void;
   className?: string;
+  style?: { [key: string]: string };
   buttonClassName?: string;
   align?: "left" | "right";
 }) {
@@ -39,7 +41,7 @@ export default function Dropdown({
   }, []);
 
   return (
-    <div ref={ref} className={`dd ${className}`}>
+    <div ref={ref} className={`dd ${className}`} style={style}>
       <button
         type="button"
         className={`dd-trigger ${buttonClassName}`}

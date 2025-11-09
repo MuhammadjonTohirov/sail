@@ -1,9 +1,16 @@
 "use client";
-import { Listings } from '@/lib/api';
 import { useEffect, useState } from 'react';
 import { useI18n } from '@/lib/i18n';
 import { useParams } from 'next/navigation';
-import ProductCard, { ProductHit } from '@/components/search/ProductCard';
+import ProductCard, { ProductHit, searchListinToProductHit } from '@/components/search/ProductCard';
+import { GetUserListingsUseCase } from '@/domain/usecases/listings/GetUserListingsUseCase';
+import { ListingsRepositoryImpl } from '@/data/repositories/ListingsRepositoryImpl';
+import { SearchResult } from '@/domain/models/SearchResult';
+import { SearchListing } from '@/domain/models/SearchListing';
+import { GetUserByIdUseCase } from '@/domain/usecases/users/GetUserByIdUseCase';
+import { UsersRepositoryImpl } from '@/data/repositories/UsersRepositoryImpl';
+import { User } from '@/domain/models/User';
+import Avatar from '@/components/ui/Avatar';
 
 export type ProductMedia = {
   id: string;
@@ -27,28 +34,13 @@ export type ProductItem = {
 };
 
 // convert ProductItem to ProductHit
-function convertToProductHit(item: ProductItem): ProductHit {
-  console.log('Converting ProductItem to ProductHit:', item);
-  return {
-    id: item.id,
-    title: item.title,
-    price: item.price_amount,
-    currency: item.price_currency,
-    media_urls: (item.media ?? []).map((media) => {return media.image}),
-    location_name_ru: item.location_name_ru,
-    location_name_uz: item.location_name_uz,
-    refreshed_at: item.refreshed_at,
-    is_promoted: item.is_promoted,
-    condition: item.condition,
-  };
-}
 
 export default function UserProfilePage() {
   const { userId } = useParams();
   const { t, locale } = useI18n();
   const base = locale === 'uz' ? '/uz' : '';
-  const [listings, setListings] = useState<any[]>([]);
-  const [seller, setSeller] = useState<any>(null);
+  const [listings, setListings] = useState<SearchListing[]>([]);
+  const [seller, setSeller] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [sort, setSort] = useState('newest');
   const [error, setError] = useState('');
@@ -56,15 +48,23 @@ export default function UserProfilePage() {
   const label = (ru: string, uz: string) => (locale === 'uz' ? uz : ru);
 
   useEffect(() => {
-    const loadUserListings = async () => {
+    const loadUserData = async () => {
       try {
         setLoading(true);
-        const data = await Listings.userListings(Number(userId), { sort });
-        setListings(data);
-        // Get seller info from first listing
-        if (data.length > 0 && data[0].seller) {
-          setSeller(data[0].seller);
-        }
+
+        // Fetch user info
+        const getUserUseCase = new GetUserByIdUseCase(new UsersRepositoryImpl());
+        const userData = await getUserUseCase.execute(Number(userId));
+        setSeller(userData);
+
+        // Fetch user listings
+        const getListingsUseCase = new GetUserListingsUseCase(new ListingsRepositoryImpl());
+        const listingsData = await getListingsUseCase.execute({
+          userId: Number(userId),
+          sort: sort
+        });
+        console.log('User listings data:', listingsData);
+        setListings(listingsData);
       } catch (e: any) {
         setError(e.message || label('Ошибка загрузки', 'Yuklashda xatolik'));
       } finally {
@@ -73,7 +73,7 @@ export default function UserProfilePage() {
     };
 
     if (userId) {
-      loadUserListings();
+      loadUserData();
     }
   }, [userId, sort, locale]);
 
@@ -96,22 +96,31 @@ export default function UserProfilePage() {
       </div>
     );
   }
-
+  const lastActiveAt = seller?.lastActiveAt ? new Date(seller.lastActiveAt) : null;
+  const since = seller?.since ? new Date(seller.since) : null;
   return (
     <div className="container py-6">
       {/* Seller Info */}
       <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-full bg-[#23E5DB] flex items-center justify-center text-white text-2xl font-bold">
-            {seller?.name?.[0]?.toUpperCase() || 'U'}
-          </div>
+          <Avatar
+            className="seller-avatar"
+            imageUrl={seller?.avatarUrl || seller?.logo}
+            placeholder={seller?.displayName ?? 'User'}
+            alt={seller?.displayName || label('Пользователь', 'Foydalanuvchi')}
+          />
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              {seller?.name || label('Пользователь', 'Foydalanuvchi')}
+              {seller?.displayName || label('Пользователь', 'Foydalanuvchi')}
             </h1>
-            <p className="text-gray-600">
-              {label('На сайте с', 'Saytda')} {seller?.since ? new Date(seller.since).toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', { month: 'long', year: 'numeric' }) : ''}
-            </p>
+            <div className="seller-meta">
+              {t('listing.onSiteAt')}{' '}
+              {(lastActiveAt ?? since)?.toLocaleDateString(locale === 'uz' ? 'uz-UZ' : 'ru-RU', {
+                day: 'numeric',
+                year: 'numeric',
+                month: 'short'
+              }) || '—'}
+            </div>
           </div>
         </div>
       </div>
@@ -152,10 +161,10 @@ export default function UserProfilePage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {listings.map((listing: ProductItem) => (
+          {listings.map((listing: SearchListing) => (
             <ProductCard
               key={listing.id}
-              hit={convertToProductHit(listing)}
+              hit={searchListinToProductHit(listing)}
               href={`${base}/l/${listing.id}`}
               locale={locale}
               viewMode="list"

@@ -8,6 +8,7 @@ from .views import (
     ProfileUpdateView,
     ProfileDeleteView,
     ProfileActiveView,
+    UserProfileView,
 )
 
 urlpatterns = [
@@ -18,4 +19,5 @@ urlpatterns = [
     path("profile", ProfileUpdateView.as_view(), name="profile-update"),
     path("profile/active", ProfileActiveView.as_view(), name="profile-active"),
     path("profile/delete", ProfileDeleteView.as_view(), name="profile-delete"),
+    path("users/<int:user_id>", UserProfileView.as_view(), name="user-profile"),
 ]

@@ -178,3 +178,18 @@ class ProfileActiveView(APIView):
         profile.last_active_at = timezone.now()
         profile.save(update_fields=["last_active_at"])
         return Response({"last_active_at": profile.last_active_at}, status=200)
+
+
+class UserProfileView(APIView):
+    """Get user profile by user ID (public endpoint)"""
+    authentication_classes: list = []
+    permission_classes: list = []
+
+    def get(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            profile = user.profile
+        except (User.DoesNotExist, Profile.DoesNotExist):
+            return Response({"detail": "User not found"}, status=404)
+
+        return Response(ProfileSerializer(profile).data, status=200)

@@ -19,7 +19,7 @@ export default function CategoriesGrid() {
   return (
     <section className="home-section">
       <div className="container">
-        <h2 style={{ margin: '16px 0' }}>{t('navSearch')}</h2>
+        <h2 style={{ margin: '16px 0' }}>{t('nav.search')}</h2>
         <div className="category-grid">
           {cats.map((c) => (
             <a key={c.id} className="category-tile" href={`${base}/search?category_slug=${encodeURIComponent(c.slug)}`}>

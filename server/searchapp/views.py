@@ -27,7 +27,7 @@ def _parse_filters(params) -> Dict[str, Any]:
                     else:
                         vals.append(v)
                 filters.setdefault("attrs", {})[key] = vals
-        elif k in {"category_slug", "location_slug", "min_price", "max_price", "condition", "currency"}:
+        elif k in {"category_slug", "location_slug", "min_price", "max_price", "condition", "currency", "user_id"}:
             filters[k] = values[-1]
     return filters
 
@@ -44,6 +44,7 @@ class ListingSearchView(APIView):
         - category_slug: Filter by category slug
         - location_slug: Filter by location slug
         - condition: Filter by condition (new/used)
+        - user_id: Filter by user ID (for fetching user's listings)
         - sort: Sort order (relevance/newest/price_asc/price_desc)
         - page: Page number (default: 1)
         - per_page: Results per page (default: 20, max: 50)
@@ -51,6 +52,7 @@ class ListingSearchView(APIView):
     Examples:
         GET /api/search/?min_price=100&max_price=1000&currency=USD
         GET /api/search/?min_price=1000000&max_price=5000000&currency=UZS
+        GET /api/search/?user_id=123&sort=newest
     """
     authentication_classes: list = []
     permission_classes: list = []
@@ -102,6 +104,10 @@ class ListingSearchView(APIView):
 
         if cnd := filters.get("condition"):
             filter_clauses.append({"term": {"condition": cnd}})
+
+        # User filter
+        if user_id := filters.get("user_id"):
+            filter_clauses.append({"term": {"user_id": str(user_id)}})
 
         # Price filtering with currency conversion
         min_price = filters.get("min_price")

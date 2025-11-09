@@ -7,15 +7,15 @@
 
 export const appConfig = {
   // App Branding
-  name: 'MarketHub',
+  name: 'Sail',
   shortName: 'MHub',
   description: 'Buy and sell anything locally',
   tagline: 'Your local marketplace for everything',
 
   // SEO & Meta
   seo: {
-    defaultTitle: 'MarketHub - Buy & Sell Locally',
-    titleTemplate: '%s | MarketHub',
+    defaultTitle: 'Sail - Buy & Sell Locally',
+    titleTemplate: '%s | Sail',
     description: 'Discover great deals on new and used items. Buy, sell, and connect with your local community.',
     keywords: ['marketplace', 'classifieds', 'buy', 'sell', 'local', 'trade'],
   },
@@ -43,7 +43,7 @@ export const appConfig = {
         100: '#e0f2fe',
         200: '#bae6fd',
         300: '#7dd3fc',
-        400: '#38bdf8',
+        400: '#38bdf8ff',
         500: '#0ea5e9',  // Main primary color
         600: '#0284c7',
         700: '#0369a1',

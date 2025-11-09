@@ -456,16 +456,18 @@ function PostPageContent() {
           {dealType === 'sell' && (
             <div style={{ marginTop: 12 }}>
               <div className="row">
-                <div className="field" style={{ flex: 1 }}>
+                <div className="field" style={{ width: 300 }}>
                   <label>{t('post.priceLabel')}</label>
                   <input type="number" value={price} onChange={e => setPrice(e.target.value)} disabled={negotiable} />
                 </div>
-                <div className="field" style={{ width: 140 }}>
+                <div className="field">
                   <label>{t('post.currencyLabel')}</label>
                   <Dropdown
                     value={priceCurrency}
                     onChange={(v) => setPriceCurrency((v as string) || configI18n.currency)}
                     options={currencyOptions.map((value) => ({ value, label: value }))}
+                    style={{"height": "50px"}}
+                    align="left"
                   />
                 </div>
               </div>
@@ -510,7 +512,7 @@ function PostPageContent() {
               type="button"
               className="btn-outline"
               onClick={() => setLocationPickerOpen(true)}
-              style={{ width: '100%', textAlign: 'left' }}
+              style={{ flexWrap: 'wrap', textAlign: 'left' , minWidth: '100px', maxWidth: '300px'}}
             >
               {locationPath || t('post.selectRegionCity')}
             </button>

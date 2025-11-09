@@ -15,17 +15,39 @@ import {
 
 export class SearchMapper {
   static listingToDomain(dto: SearchListingDTO): SearchListing {
+    const seller = dto.seller
+      ? {
+          id: dto.seller.id,
+          name: dto.seller.name,
+          avatarUrl: dto.seller.avatar_url,
+          since: dto.seller.since ?? null,
+          logo: dto.seller.logo ?? null,
+          banner: dto.seller.banner ?? null,
+          phone: dto.seller.phone,
+          lastActiveAt: dto.seller.last_active_at ?? null,
+        }
+      : undefined;
+
     return {
       id: dto.id,
       title: dto.title,
       price: dto.price ?? null,
+      description: dto.description ?? null,
+      condition: dto.condition ?? null,
+      score: dto.score ?? null,
+      qualityScore: dto.quality_score ?? null,
       currency: dto.currency ?? null,
       mediaUrls: dto.media_urls ?? null,
       locationNameRu: dto.location_name_ru ?? null,
       locationNameUz: dto.location_name_uz ?? null,
       refreshedAt: dto.refreshed_at ?? null,
       isPromoted: dto.is_promoted ?? null,
+      seller: seller
     };
+  }
+
+  static searchListingToDomainList(dtos: SearchListingDTO[]): SearchListing[] {
+    return dtos.map(dto => this.listingToDomain(dto));
   }
 
   static resultToDomain(dto: SearchResultDTO): SearchResult {

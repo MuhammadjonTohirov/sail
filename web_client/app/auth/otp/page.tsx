@@ -56,8 +56,11 @@ function OTPPageContent() {
     }
   };
 
-  const verify = async () => {
-    if (!code || code.length !== 6) {
+  const verify = async (otp?: string) => {
+    const value = otp ?? code;
+    console.log('Verifying code:', value);
+
+    if (!value || value.length !== 6) {
       setError(t('auth.errorCodeRequired'));
       return;
     }
@@ -66,7 +69,7 @@ function OTPPageContent() {
     setLoading(true);
 
     try {
-      await Auth.verifyOtp(phone, code);
+      await Auth.verifyOtp(phone, value);
       router.push(redirectTo);
     } catch (e: any) {
       setError(e.message || t('auth.errorInvalidCode'));
@@ -92,9 +95,8 @@ function OTPPageContent() {
     const cleaned = value.replace(/\D/g, '').slice(0, 6);
     setCode(cleaned);
 
-    // Auto-verify when 6 digits are entered
     if (cleaned.length === 6 && sent) {
-      setTimeout(() => verify(), 100);
+      setTimeout(() => verify(cleaned), 100);
     }
   };
 
@@ -214,7 +216,7 @@ function OTPPageContent() {
               )}
 
               <button
-                onClick={verify}
+                onClick={() => verify()}
                 disabled={loading || code.length !== 6}
                 className="w-full bg-[#23E5DB] hover:bg-[#1dd4cb] text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
               >

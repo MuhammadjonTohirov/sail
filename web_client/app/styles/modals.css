@@ -97,6 +97,13 @@
   z-index: 50;
 }
 
+.nav-profile-avatar { /* circular 24x24*/
+  width: 40px;
+  height: 40px;
+  border-radius: 100%;
+  object-fit: cover;
+}
+
 .dropdown-menu .menu-header {
   padding: 8px;
   font-weight: 700;

@@ -1,6 +1,7 @@
 import { ListingDTO, ListingPayloadDTO } from '../models/ListingDTO';
 import { Listing } from '../../domain/models/Listing';
 import { ListingPayload } from '../../domain/models/ListingPayload';
+import { SearchListingDTO } from '../models/SearchDTO';
 
 export class ListingMapper {
   static toDomain(dto: ListingDTO): Listing {
@@ -83,7 +84,7 @@ export class ListingMapper {
       seller,
     };
   }
-
+  
   static toDomainList(dtos: ListingDTO[]): Listing[] {
     return dtos.map(dto => this.toDomain(dto));
   }

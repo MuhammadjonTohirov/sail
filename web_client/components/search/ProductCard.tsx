@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { FavoriteButton } from '@/components/FavoriteButton';
 import PriceDisplay from '@/components/PriceDisplay';
+import { SearchListing } from '@/domain/models/SearchListing';
 
 export type ProductHit = {
   id: string;
@@ -22,6 +23,21 @@ interface ProductCardProps {
   href: string;
   locale?: 'ru' | 'uz';
   viewMode?: 'grid' | 'list';
+}
+
+export function searchListinToProductHit(listing: SearchListing): ProductHit {
+  return {
+    id: listing.id.toString(),
+    title: listing.title,
+    price: listing.price ?? 0,
+    currency: listing.currency ?? "UZS",
+    media_urls: listing.mediaUrls ?? [],
+    location_name_ru: listing.locationNameRu ?? '',
+    location_name_uz: listing.locationNameUz ?? '',
+    refreshed_at: listing.refreshedAt ?? '',
+    is_promoted: listing.isPromoted ?? false,
+    condition: listing.condition ?? '',
+  };
 }
 
 export default function ProductCard({ hit, href, locale = 'ru', viewMode = 'grid' }: ProductCardProps) {

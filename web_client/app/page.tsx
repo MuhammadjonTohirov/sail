@@ -141,19 +141,6 @@ export default function HomePage() {
                 {t('home.searchButton')}
               </button>
             </div>
-
-            {/* Quick Stats */}
-            <div className="hero-stats">
-              {highlights.map((item, idx) => (
-                <Fragment key={`${item.icon}-${idx}`}>
-                  <div className="stat-item">
-                    <div className="stat-number">{item.icon}</div>
-                    <div className="stat-label">{t(item.key, { phone: contact.phone, email: contact.email, address: contact.address })}</div>
-                  </div>
-                  {idx < highlights.length - 1 && <div className="stat-divider"></div>}
-                </Fragment>
-              ))}
-            </div>
           </div>
         </div>
       </div>

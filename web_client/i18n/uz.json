@@ -34,6 +34,25 @@
     "ctaSubtitle": "Bepul e'lon yarating va bugun xaridor toping",
     "ctaButton": "E'lon joylashtirish"
   },
+  "searchPage": {
+    "searchPlaceholder": "Men qidiryapman...",
+    "allCategories": "Barcha kategoriyalar",
+    "searchButton": "Qidirish",
+    "homeBreadcrumb": "Bosh sahifa",
+    "saveSearch": "Qidiruvni saqlash",
+    "filtersTitle": "Filtrlar",
+    "resetFilters": "Tozalash",
+    "priceLabel": "Narx",
+    "priceFrom": "Dan",
+    "priceTo": "Gacha",
+    "rangeMin": "Min",
+    "rangeMax": "Max",
+    "applyFilters": "Filtrlarni qo'llash",
+    "listView": "Ro'yxat ko'rinishi",
+    "gridView": "Katak ko'rinishi",
+    "noResultsTitle": "E'lonlar topilmadi",
+    "noResultsDescription": "Qidiruv parametrlarini o'zgartiring."
+  },
   "features": {
     "promotions": "Reklama qilingan eʼlonlar",
     "favorites": "Sevimlilar roʻyxati",
@@ -66,7 +85,8 @@
     "errorCodeRequired": "6 raqamli kodni kiriting",
     "errorGeneric": "Xatolik yuz berdi",
     "errorInvalidCode": "Kod noto'g'ri",
-    "loading": "Yuklanmoqda..."
+    "loading": "Yuklanmoqda...",
+    "loginRequiredToPost": "E'lon joylashtirish uchun tizimga kirishingiz kerak"
   },
   "listing": {
     "loading": "Yuklanmoqda...",

@@ -1,303 +1,103 @@
 "use client";
-import { Search, Taxonomy, SavedSearches } from '@/lib/api';
-import { Suspense, useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { useI18n } from '@/lib/i18n';
-import { useRouter, useSearchParams } from 'next/navigation';
-import CategoryPicker from '@/components/ui/CategoryPicker';
-import ProductCard from '@/components/search/ProductCard';
-import { appConfig } from '@/config';
+import { Suspense } from 'react';
+import { useSearchViewModel } from './useSearchViewModel';
+import type { SearchPrefill } from './types';
+import SearchBar from '@/components/search/SearchBar';
+import SearchBreadcrumbs from '@/components/search/SearchBreadcrumbs';
+import SearchFilters from '@/components/search/SearchFilters';
+import SearchResultsBar from '@/components/search/SearchResultsBar';
+import SearchResultsGrid from '@/components/search/SearchResultsGrid';
 
-type Hit = { id: string; title: string; price?: number; currency?: string; media_urls?: string[]; location_name_ru?: string; location_name_uz?: string; refreshed_at?: string };
-type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; icon?: string; children: CategoryNode[] };
-type Attr = { id: number; key: string; label: string; type: string; options?: string[] };
+interface SearchPageContentProps {
+  initialFilters?: SearchPrefill;
+}
 
-function SearchPageContent() {
-  const { t, locale } = useI18n();
-  const base = locale === 'uz' ? '/uz' : '';
-  const sp = useSearchParams();
-  const router = useRouter();
-
-  const [q, setQ] = useState(sp.get('q') || '');
-  const [minPrice, setMinPrice] = useState(sp.get('min_price') || '');
-  const [maxPrice, setMaxPrice] = useState(sp.get('max_price') || '');
-  const [sort, setSort] = useState(sp.get('sort') || 'relevance');
-  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
-  const [categoryTree, setCategoryTree] = useState<CategoryNode[]>([]);
-  const [selectedCategory, setSelectedCategory] = useState<{ id: number; slug: string } | null>(null);
-  const [selectedCategoryPath, setSelectedCategoryPath] = useState<string>('');
-  const [catPickerOpen, setCatPickerOpen] = useState(false);
-  const [attributes, setAttributes] = useState<Attr[]>([]);
-  const [attrValues, setAttrValues] = useState<Record<string, any>>({});
-  const [results, setResults] = useState<Hit[]>([]);
-  const [total, setTotal] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const { features, pagination } = appConfig;
-  const perPage = pagination.itemsPerPage;
-
-  useEffect(() => { (async () => { setCategoryTree(await Taxonomy.categories()); })(); }, []);
-  // No dedicated "my listings" merge here — results come from search backend
-  useEffect(() => { (async () => {
-    if (selectedCategory?.id) setAttributes(await Taxonomy.attributes(selectedCategory.id)); else setAttributes([]);
-  })(); }, [selectedCategory?.id]);
-
-  const flatCategories = useMemo(() => {
-    const arr: { id: number; slug: string; name: string }[] = [];
-    const walk = (nodes: CategoryNode[], prefix: string[]) => {
-      nodes.forEach(n => {
-        arr.push({ id: n.id, slug: n.slug, name: [...prefix, n.name].join(' / ') });
-        if (n.children?.length) walk(n.children, [...prefix, n.name]);
-      });
-    };
-    walk(categoryTree, []);
-    return arr;
-  }, [categoryTree]);
-
-  const run = async () => {
-    setLoading(true);
-    try {
-      const params: Record<string, any> = { q, min_price: minPrice, max_price: maxPrice, sort, per_page: perPage };
-      if (selectedCategory) params.category_slug = selectedCategory.slug;
-      for (const a of attributes) {
-        const v = attrValues[a.key];
-        if (v === undefined || v === '' || v === null) continue;
-        if (a.type === 'multiselect' && Array.isArray(v)) params[`attrs.${a.key}`] = v;
-        else if (a.type === 'number' || a.type === 'range') {
-          const [mn, mx] = Array.isArray(v) ? v : [v, undefined];
-          if (mn !== undefined && mn !== '') params[`attrs.${a.key}_min`] = mn;
-          if (mx !== undefined && mx !== '') params[`attrs.${a.key}_max`] = mx;
-        } else params[`attrs.${a.key}`] = v;
-      }
-      const data = await Search.listings(params);
-      setResults(data.results || []);
-      setTotal(data.total || 0);
-      // update URL
-      const usp = new URLSearchParams();
-      if (q) usp.set('q', q);
-      if (minPrice) usp.set('min_price', String(minPrice));
-      if (maxPrice) usp.set('max_price', String(maxPrice));
-      if (selectedCategory) usp.set('category_slug', selectedCategory.slug);
-      if (sort && sort !== 'relevance') usp.set('sort', sort);
-      router.replace(`${base}/search?${usp.toString()}`);
-    } finally { setLoading(false); }
-  };
-
-  useEffect(() => { run(); }, []);
-  useEffect(() => { run(); /* refresh on sort change */ }, [sort]);
-
-  const saveSearch = async () => {
-    if (!features.enableSavedSearches) return;
-    const title = selectedCategoryPath || q || (locale === 'uz' ? 'Qidiruv' : 'Поиск');
-    const query = {
-      params: {
-        q,
-        min_price: minPrice,
-        max_price: maxPrice,
-        ...(selectedCategory ? { category_slug: selectedCategory.slug } : {})
-      },
-      category_name: selectedCategoryPath,
-      location_name: sp.get('location_name') || undefined,
-      price_min: minPrice ? Number(minPrice) : undefined,
-      price_max: maxPrice ? Number(maxPrice) : undefined,
-    };
-    try {
-      await SavedSearches.create({ title, query });
-      alert(locale === 'uz' ? 'Qidiruv saqlandi' : 'Поиск сохранен');
-    } catch (e) {
-      alert(locale === 'uz' ? 'Xatolik yuz berdi' : 'Ошибка при сохранении');
-    }
-  };
-
-  function label(ru: string, uz: string) {
-    return locale === 'uz' ? uz : ru;
-  }
+function SearchPageContent({ initialFilters }: SearchPageContentProps = {}) {
+  const {
+    locale,
+    basePath,
+    q,
+    setQ,
+    minPrice,
+    setMinPrice,
+    maxPrice,
+    setMaxPrice,
+    viewMode,
+    setViewMode,
+    categoryTree,
+    selectedCategory,
+    selectedCategoryPath,
+    attributes,
+    attrValues,
+    results,
+    loading,
+    runSearch,
+    selectCategoryFromPicker,
+    resetFilters,
+    setAttrValue,
+    saveCurrentSearch,
+  } = useSearchViewModel(initialFilters);
 
   return (
     <div className="container" style={{ paddingTop: 16, paddingBottom: 32 }}>
-      {/* Search Bar */}
-      <div className="olx-search-bar">
-        <div className="search-input-wrapper">
-          <svg className="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-          <input
-            className="olx-search-input"
-            placeholder={label('Я ищу...', 'Men qidiryapman...')}
-            value={q}
-            onChange={e => setQ(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && run()}
-          />
-        </div>
+      <SearchBar
+        q={q}
+        setQ={setQ}
+        selectedCategory={selectedCategory}
+        selectedCategoryPath={selectedCategoryPath}
+        categoryTree={categoryTree}
+        onSearch={runSearch}
+        onCategorySelect={selectCategoryFromPicker}
+        loading={loading}
+      />
 
-        <button
-          type="button"
-          className="category-select-btn"
-          onClick={() => setCatPickerOpen(true)}
-        >
-          <span className="truncate">
-            {selectedCategory ? selectedCategoryPath : label('Все категории', 'Barcha kategoriyalar')}
-          </span>
-          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
-
-        <button className="olx-search-btn" onClick={run} disabled={loading}>
-          {loading ? (
-            <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-          ) : (
-            label('Искать', 'Qidirish')
-          )}
-        </button>
-
-        <CategoryPicker
-          open={catPickerOpen}
-          categories={categoryTree}
-          onClose={() => setCatPickerOpen(false)}
-          onSelect={({ id, path }) => {
-            const slug = flatCategories.find(c => c.id === id)?.slug || '';
-            setSelectedCategory({ id, slug });
-            setSelectedCategoryPath(path);
-            setCatPickerOpen(false);
-            setTimeout(() => run(), 0);
-          }}
-        />
-      </div>
-
-      {/* Breadcrumbs */}
       {selectedCategory && (
-        <div className="breadcrumbs mb-4">
-          <a href={`${base}/search`} className="breadcrumb-link">{label('Главная', 'Bosh sahifa')}</a>
-          <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-          <span className="text-gray-700">{selectedCategoryPath}</span>
-        </div>
+        <SearchBreadcrumbs
+          selectedCategoryPath={selectedCategoryPath}
+          basePath={basePath}
+          onSaveSearch={saveCurrentSearch}
+        />
       )}
 
       <div className="search-layout">
-        <aside className="search-filters card">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold m-0">{label('Фильтры', 'Filtrlar')}</h3>
-            {(selectedCategory || minPrice || maxPrice || Object.keys(attrValues).length > 0) && (
-              <button
-                onClick={() => {
-                  setSelectedCategory(null);
-                  setSelectedCategoryPath('');
-                  setMinPrice('');
-                  setMaxPrice('');
-                  setAttrValues({});
-                  setTimeout(() => run(), 0);
-                }}
-                className="text-sm text-[#23E5DB] hover:text-[#1dd4cb]"
-              >
-                {label('Сбросить', 'Tozalash')}
-              </button>
-            )}
-          </div>
-          <div className="filter-group">
-            <label className="muted">{locale === 'uz' ? 'Narx' : 'Цена'}</label>
-            <div className="row">
-              <input placeholder={locale === 'uz' ? 'Dan' : 'От'} value={minPrice} onChange={e => setMinPrice(e.target.value)} />
-              <input placeholder={locale === 'uz' ? 'Gacha' : 'До'} value={maxPrice} onChange={e => setMaxPrice(e.target.value)} />
-            </div>
-          </div>
-          {attributes.map(a => (
-            <div key={a.id} className="filter-group">
-              <label className="muted">{a.label}</label>
-              {a.type === 'select' && (
-                <select value={attrValues[a.key] || ''} onChange={e => setAttrValues(s => ({ ...s, [a.key]: e.target.value }))}>
-                  <option value="">--</option>
-                  {(a.options || []).map(o => <option key={o} value={o}>{o}</option>)}
-                </select>
-              )}
-              {a.type === 'multiselect' && (
-                <select multiple value={attrValues[a.key] || []} onChange={e => setAttrValues(s => ({ ...s, [a.key]: Array.from(e.target.selectedOptions).map(o => o.value) }))}>
-                  {(a.options || []).map(o => <option key={o} value={o}>{o}</option>)}
-                </select>
-              )}
-              {(a.type === 'number' || a.type === 'range') && (
-                <div className="row">
-                  <input placeholder={locale === 'uz' ? 'Min' : 'Мин'} value={(attrValues[a.key]?.[0] ?? '')} onChange={e => setAttrValues(s => ({ ...s, [a.key]: [e.target.value, s[a.key]?.[1]] }))} />
-                  <input placeholder={locale === 'uz' ? 'Max' : 'Макс'} value={(attrValues[a.key]?.[1] ?? '')} onChange={e => setAttrValues(s => ({ ...s, [a.key]: [s[a.key]?.[0], e.target.value] }))} />
-                </div>
-              )}
-              {a.type === 'text' && (
-                <input value={attrValues[a.key] || ''} onChange={e => setAttrValues(s => ({ ...s, [a.key]: e.target.value }))} />
-              )}
-              {a.type === 'boolean' && (
-                <label>
-                  <input type="checkbox" checked={!!attrValues[a.key]} onChange={e => setAttrValues(s => ({ ...s, [a.key]: e.target.checked }))} />
-                </label>
-              )}
-            </div>
-          ))}
-          <button className="btn-accent" onClick={run} style={{ width: '100%' }}>{locale === 'uz' ? "Filtrlarni qo'llash" : 'Применить фильтры'}</button>
-        </aside>
+        <SearchFilters
+          selectedCategory={selectedCategory}
+          minPrice={minPrice}
+          setMinPrice={setMinPrice}
+          maxPrice={maxPrice}
+          setMaxPrice={setMaxPrice}
+          attributes={attributes}
+          attrValues={attrValues}
+          setAttrValue={setAttrValue}
+          onResetFilters={resetFilters}
+          onApplyFilters={runSearch}
+        />
 
         <section className="search-results">
-          <div className="results-bar card">
-            <div className="view-toggle-wrapper">
-              <button
-                type="button"
-                className={`view-toggle-btn ${viewMode === 'list' ? 'active' : ''}`}
-                onClick={() => setViewMode('list')}
-                aria-label={locale === 'uz' ? "Ro'yxat ko'rinishi" : 'Список'}
-              >
-                <svg className="view-icon" fill="currentColor" viewBox="0 0 24 24">
-                  <rect x="3" y="5" width="18" height="4" rx="1" />
-                  <rect x="3" y="11" width="18" height="4" rx="1" />
-                  <rect x="3" y="17" width="18" height="4" rx="1" />
-                </svg>
-              </button>
-              <button
-                type="button"
-                className={`view-toggle-btn ${viewMode === 'grid' ? 'active' : ''}`}
-                onClick={() => setViewMode('grid')}
-                aria-label={locale === 'uz' ? "Katak ko'rinishi" : 'Сетка'}
-              >
-                <svg className="view-icon" fill="currentColor" viewBox="0 0 24 24">
-                  <rect x="3" y="3" width="8" height="8" rx="1" />
-                  <rect x="13" y="3" width="8" height="8" rx="1" />
-                  <rect x="3" y="13" width="8" height="8" rx="1" />
-                  <rect x="13" y="13" width="8" height="8" rx="1" />
-                </svg>
-              </button>
-            </div>
-          </div>
+          <SearchResultsBar
+            viewMode={viewMode}
+            setViewMode={setViewMode}
+          />
 
-          {results.length === 0 && !loading ? (
-            <div className="card" style={{ padding: 32, textAlign: 'center' }}>
-              <div style={{ fontSize: 48, opacity: .2, marginBottom: 8 }}>🔎</div>
-              <h3 style={{ margin: 0 }}>{locale === 'uz' ? 'E’lonlar topilmadi' : 'Объявления не найдены'}</h3>
-              <p className="muted">{locale === 'uz' ? 'Qidiruv parametrlarini o‘zgartiring.' : 'Попробуйте изменить параметры поиска.'}</p>
-            </div>
-          ) : (
-            <div className={`grid ${viewMode === 'list' ? 'list-view' : ''}`}>
-              {results.map((r) => (
-                <ProductCard
-                  key={r.id}
-                  hit={r as any}
-                  href={`${base}/l/${r.id}`}
-                  locale={locale}
-                  viewMode={viewMode}
-                />
-              ))}
-            </div>
-          )}
+          <SearchResultsGrid
+            results={results}
+            loading={loading}
+            viewMode={viewMode}
+            basePath={basePath}
+            locale={locale as 'ru' | 'uz'}
+          />
         </section>
       </div>
     </div>
   );
 }
 
-export default function SearchPage() {
+export { SearchPageContent };
+
+export default function SearchPage(props: SearchPageContentProps = {}) {
   return (
     <Suspense fallback={<div className="container" style={{ paddingTop: 16, paddingBottom: 32 }}>Loading...</div>}>
-      <SearchPageContent />
+      <SearchPageContent initialFilters={props.initialFilters} />
     </Suspense>
   );
 }

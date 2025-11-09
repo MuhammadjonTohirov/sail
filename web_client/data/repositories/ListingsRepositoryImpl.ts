@@ -5,6 +5,10 @@ import { UserListingsParams } from '../../domain/models/UserListingsParams';
 import { ListingDTO } from '../models/ListingDTO';
 import { ListingMapper } from '../mappers/ListingMapper';
 import { Listings } from '../../lib/listingsApi';
+import { Search } from '../../lib/searchApi';
+import { SearchListing } from '@/domain/models/SearchListing';
+import { SearchListingDTO } from '../models/SearchDTO';
+import { SearchMapper } from '../mappers/SearchMapper';
 
 export class ListingsRepositoryImpl implements IListingsRepository {
   async createListing(payload: ListingPayload): Promise<Listing> {
@@ -23,13 +27,20 @@ export class ListingsRepositoryImpl implements IListingsRepository {
     return ListingMapper.toDomainList(result);
   }
 
-  async getUserListings(params: UserListingsParams): Promise<Listing[]> {
-    const apiParams = {
-      category: params.category,
-      sort: params.sort,
+  async getUserListings(params: UserListingsParams): Promise<SearchListing[]> {
+    const searchParams: Record<string, any> = {
+      user_id: params.userId,
+      sort: params.sort || 'newest',
     };
-    const result: ListingDTO[] = await Listings.userListings(params.userId, apiParams);
-    return ListingMapper.toDomainList(result);
+
+    if (params.category) {
+      searchParams.category_slug = params.category;
+    }
+
+    const response = await Search.listings(searchParams);
+    const results: SearchListingDTO[] = response.results || [];
+
+    return SearchMapper.searchListingToDomainList(results);
   }
 
   async updateListing(id: number, payload: Partial<ListingPayload>): Promise<Listing> {
