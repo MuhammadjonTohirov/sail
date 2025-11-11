@@ -7,8 +7,7 @@ type CategoryNode = { id: number; name: string; slug: string; is_leaf: boolean; 
 
 export default function CategoriesGrid() {
   const [cats, setCats] = useState<CategoryNode[]>([]);
-  const { t, locale } = useI18n();
-  const base = locale === 'uz' ? '/uz' : '';
+  const { t } = useI18n();
 
   useEffect(() => {
     (async () => {
@@ -22,7 +21,7 @@ export default function CategoriesGrid() {
         <h2 style={{ margin: '16px 0' }}>{t('nav.search')}</h2>
         <div className="category-grid">
           {cats.map((c) => (
-            <a key={c.id} className="category-tile" href={`${base}/search?category_slug=${encodeURIComponent(c.slug)}`}>
+            <a key={c.id} className="category-tile" href={`/search?category_slug=${encodeURIComponent(c.slug)}`}>
               <div className="category-tile__icon" aria-hidden>
                 {c.icon_url ? (
                   <img src={c.icon_url} alt="" style={{ width: 24, height: 24, objectFit: 'contain' }} />

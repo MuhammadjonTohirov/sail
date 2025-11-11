@@ -15,7 +15,6 @@ import { RelatedListingsView } from './views/RelatedListingsView';
 export default function ListingDetail({ params }: { params: { id: string } }) {
   const { t, locale } = useI18n();
   const router = useRouter();
-  const base = locale === 'uz' ? '/uz' : '';
   const id = Number(params.id);
 
   const vm = useListingDetailViewModel({ id }, t);
@@ -25,7 +24,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
     if (vm.isOwnListing) return;
     const token = localStorage.getItem('access_token');
     if (!token) {
-      router.push(locale === 'uz' ? '/uz/auth/otp' : '/auth/otp');
+      router.push('/auth/otp');
       return;
     }
     await vm.openChat();
@@ -119,7 +118,6 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
             chips={vm.chips}
             reportMsg={vm.reportMsg}
             reportModalOpen={vm.reportModalOpen}
-            locale={locale}
             onReportClick={() => vm.setReportModalOpen(true)}
             t={t}
           />
@@ -155,8 +153,7 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
             lon={listing.lon ?? vm.geocodedLocation?.lon}
             isApproximate={vm.hasGeocodedLocation}
             locale={locale}
-            base={base}
-            onViewAllListings={() => vm.sellerId && router.push(`${base}/u/${vm.sellerId}`)}
+            onViewAllListings={() => vm.sellerId && router.push(`/u/${vm.sellerId}`)}
             t={t}
           />
         </aside>
@@ -166,8 +163,6 @@ export default function ListingDetail({ params }: { params: { id: string } }) {
         listings={vm.sellerListings}
         loading={vm.loadingSellerListings}
         sellerId={vm.sellerId}
-        locale={locale}
-        base={base}
         t={t}
       />
 

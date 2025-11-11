@@ -6,7 +6,6 @@ interface ListingInfoViewProps {
   chips: Array<{ label: string }>;
   reportMsg: string;
   reportModalOpen: boolean;
-  locale: string;
   onReportClick: () => void;
   t: (key: string) => string;
 }
@@ -19,18 +18,17 @@ export const ListingInfoView = ({
   chips,
   reportMsg,
   reportModalOpen,
-  locale,
   onReportClick,
   t,
 }: ListingInfoViewProps) => {
   return (
     <div className="card" style={{ marginTop: 12 }}>
       <div className="breadcrumbs mb-4">
-        <a href={locale === 'uz' ? '/uz' : '/'} className="breadcrumb-link">
+        <a href={`/`} className="breadcrumb-link">
           {t('listing.home')}
         </a>
         <span className="breadcrumb-sep">›</span>
-        <a href={`${locale === 'uz' ? '/uz' : ''}/search`} className="breadcrumb-link">
+        <a href={`/search`} className="breadcrumb-link">
           {categoryName || t('listing.allCategories')}
         </a>
         <span className="breadcrumb-sep">›</span>

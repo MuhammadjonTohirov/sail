@@ -6,8 +6,7 @@ import { useI18n } from '@/lib/i18n';
 export default function HeroSearch() {
   const [q, setQ] = useState('');
   const router = useRouter();
-  const { t, locale } = useI18n();
-  const base = locale === 'uz' ? '/uz' : '';
+  const { t } = useI18n();
 
   return (
     <section className="hero">
@@ -21,18 +20,17 @@ export default function HeroSearch() {
               placeholder={t('searchTitle')}
               value={q}
               onChange={(e) => setQ(e.target.value)}
-              onKeyDown={(e) => { if (e.key === 'Enter') router.push(`${base}/search?q=${encodeURIComponent(q)}`); }}
+              onKeyDown={(e) => { if (e.key === 'Enter') router.push(`/search?q=${encodeURIComponent(q)}`); }}
             />
-            <button className="searchbar__btn btn-accent" onClick={() => router.push(`${base}/search?q=${encodeURIComponent(q)}`)}>
+            <button className="searchbar__btn btn-accent" onClick={() => router.push(`/search?q=${encodeURIComponent(q)}`)}>
               {t('searchTitle')}
             </button>
           </div>
           <div style={{ marginTop: 10 }}>
-            <a className="link" href={`${base}/post`}>{t('postTitle')}</a>
+            <a className="link" href={`/post`}>{t('postTitle')}</a>
           </div>
         </div>
       </div>
     </section>
   );
 }
-

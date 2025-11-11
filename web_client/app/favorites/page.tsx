@@ -29,7 +29,6 @@ export default function FavoritesPage() {
   const { features, i18n } = appConfig;
   const enableFavorites = features.enableFavorites;
   const enableSavedSearches = features.enableSavedSearches;
-  const base = locale === 'uz' ? '/uz' : '';
   const initialTab: 'liked' | 'searches' | 'recent' = enableFavorites ? 'liked' : enableSavedSearches ? 'searches' : 'recent';
   const [activeTab, setActiveTab] = useState<'liked' | 'searches' | 'recent'>(initialTab);
 
@@ -130,7 +129,7 @@ export default function FavoritesPage() {
       }
     });
 
-    return `${base}/search?${params.toString()}`;
+    return `/search?${params.toString()}`;
   };
 
   const handleClearAll = async () => {
@@ -182,7 +181,7 @@ export default function FavoritesPage() {
 
   const renderFavoriteCard = (item: typeof likedItems[0]) => (
     <div key={item.id} className="listing-card">
-      <Link href={`${base}/l/${item.listingId}`} className="listing-card-link">
+      <Link href={`/l/${item.listingId}`} className="listing-card-link">
         {item.listingMediaUrls && item.listingMediaUrls.length > 0 ? (
           <div className="listing-card-img" style={{ backgroundImage: `url(${item.listingMediaUrls[0]})` }} />
         ) : (
@@ -216,7 +215,7 @@ export default function FavoritesPage() {
 
   const renderRecentCard = (item: typeof recentItems[0]) => (
     <div key={item.id} className="listing-card">
-      <Link href={`${base}/l/${item.listingId}`} className="listing-card-link">
+      <Link href={`/l/${item.listingId}`} className="listing-card-link">
         {item.mediaUrls && item.mediaUrls.length > 0 ? (
           <div className="listing-card-img" style={{ backgroundImage: `url(${item.mediaUrls[0]})` }} />
         ) : (

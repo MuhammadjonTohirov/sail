@@ -2,6 +2,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
+import type { Locale } from "@/i18n/config";
 import { useEffect, useRef, useState } from "react";
 import { appConfig, trustedImageUrl } from "@/config";
 import { LogoutUseCase } from "@/domain/usecases/auth/LogoutUseCase";
@@ -14,7 +15,7 @@ const profileIconProps = { width: 26, height: 26, strokeWidth: 1.8 };
 export default function ClientNav() {
   const pathname = usePathname() || "/";
   const router = useRouter();
-  const { t, locale } = useI18n();
+  const { t, locale, setLocale } = useI18n();
   const [authed, setAuthed] = useState<boolean>(false);
   const [profileName, setProfileName] = useState<string>("");
   const [avatarUrl, setAvatarUrl] = useState<string>("");
@@ -22,7 +23,7 @@ export default function ClientNav() {
   const menuRef = useRef<HTMLDivElement | null>(null);
   const { features } = appConfig;
   const [hydrated, setHydrated] = useState(false);
-
+  const isLocaleRu = locale === 'ru';
   const readAuth = () => {
     try {
       if (typeof window === 'undefined') return;
@@ -33,7 +34,9 @@ export default function ClientNav() {
         const p = JSON.parse(profRaw);
         const dn = p.display_name && p.display_name.trim() ? p.display_name : (p.username || "");
         const imageUrl = p.avatar ?? p.logo ?? '';
-        setAvatarUrl(trustedImageUrl(imageUrl));
+        if (imageUrl.length > 0) {
+          setAvatarUrl(trustedImageUrl(imageUrl));
+        }
         setProfileName(dn || "");
       } else {
         setProfileName("");
@@ -44,15 +47,9 @@ export default function ClientNav() {
     }
   };
 
-  // Compute manual locale-switched hrefs (Next.js App Router i18n can be finicky)
-  const path = pathname || "/";
-  const isUZ = path.startsWith('/uz');
-  const ruHref = isUZ ? path.replace(/^\/uz(?=\/|$)/, '') || '/' : path || '/';
-  const uzHref = isUZ ? path : (path === '/' ? '/uz' : `/uz${path}`);
-  const normalizedPath = isUZ ? path.replace(/^\/uz/, '') || '/' : path;
-  const isSearchActive = normalizedPath.startsWith('/search');
-  const isFavoritesActive = normalizedPath.startsWith('/favorites');
-  const isPostActive = normalizedPath.startsWith('/post');
+  const isSearchActive = pathname.startsWith('/search');
+  const isFavoritesActive = pathname.startsWith('/favorites');
+  const isPostActive = pathname.startsWith('/post');
   const logoutUseCase = new LogoutUseCase(new AuthRepositoryImpl());
 
   useEffect(() => {
@@ -89,13 +86,11 @@ export default function ClientNav() {
     if (!authed) setMenuOpen(false);
   }, [authed]);
 
-  const base = isUZ ? '/uz' : '';
-
   const onProfileClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     // if (!hydrated) return;
     if (!authed) {
-      router.push(`${base}/auth/otp`);
+      router.push(`/auth/otp`);
       return;
     }
     setMenuOpen((v) => !v);
@@ -106,10 +101,14 @@ export default function ClientNav() {
     // if (!hydrated) return;
     if (!authed) {
       alert(t('auth.loginRequiredToPost'));
-      router.push(`${base}/auth/otp`);
+      router.push(`/auth/otp`);
       return;
     }
-    router.push(`${base}/post`);
+    router.push(`/post`);
+  };
+  const changeLocale = (next: Locale) => {
+    if (locale === next) return;
+    setLocale(next);
   };
   const appLogo = getAsset('app-logo.svg')
   return (
@@ -123,7 +122,7 @@ export default function ClientNav() {
           }
         }>
 
-        <Link href={isUZ ? '/uz' : '/'}>
+        <Link href={`/`}>
           <div className="topbar-logo" style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <img src={appLogo} alt={appConfig.name} style={{height: '32px'}} />
             <p>{appConfig.name}</p>
@@ -133,7 +132,7 @@ export default function ClientNav() {
         <nav style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
           
           <Link
-            href={`${base}/search`}
+            href={`/search`}
             className={`nav-icon nav-icon--outline${isSearchActive ? ' is-active' : ''}`}
             aria-label={t('nav.search')}
             title={t('nav.search')}
@@ -147,7 +146,7 @@ export default function ClientNav() {
           {/* Favorites Link with Heart Icon */}
           {features.enableFavorites && (
             <Link
-              href={`${base}/favorites`}
+              href={`/favorites`}
               className={`nav-icon nav-icon--outline${isFavoritesActive ? ' is-active' : ''}`}
               title={t('navFavorites')}
               aria-label={t('navFavorites')}
@@ -159,7 +158,7 @@ export default function ClientNav() {
           )}
 
           <Link
-            href={`${base}/post`}
+            href={`/post`}
             onClick={onAddPostClick}
             className={`nav-icon nav-icon--accent${isPostActive ? ' is-active' : ''}`}
             aria-label={t('navPost')}
@@ -198,19 +197,44 @@ export default function ClientNav() {
             {authed && menuOpen && (
               <div className="dropdown-menu" role="menu">
                 <div className="menu-header">{profileName || t('nav.profile')}</div>
-                <a className="menu-item" href={`${base}/u/listings`}>{t('nav.listings')}</a>
-                <a className="menu-item" href={`${base}/chat`}>{t('nav.chats')}</a>
-                <a className="menu-item" href={`${base}/u/settings`}>{t('nav.settings')}</a>
-                <div className="menu-sep" />
-                <button className="menu-item" onClick={() => { logoutUseCase.execute(); setMenuOpen(false); router.push(base || '/'); }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 0 }}>
-                  {t('nav.logout')}
-                </button>
-              </div>
+
+                  <button className="menu-item" onClick={() => { router.push('/u/listings'); setMenuOpen(false); }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 0 }}>
+                    {t('nav.listings')}
+                  </button>
+
+                  <button className="menu-item" onClick={() => { router.push('/chat'); setMenuOpen(false); }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 0 }}>
+                    {t('nav.chats')}
+                  </button>
+
+                  <button className="menu-item" onClick={() => { router.push('/u/settings'); setMenuOpen(false); }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 0 }}>
+                    {t('nav.settings')}
+                  </button>
+                  <div className="menu-sep" />
+                    <button className="menu-item" onClick={() => { logoutUseCase.execute(); setMenuOpen(false); router.push('/'); }} style={{ width: '100%', textAlign: 'left', background: 'none', border: 0 }}>
+                      {t('nav.logout')}
+                    </button>
+                  </div>
             )}
-          </div>
+            </div>
           <span className="muted" style={{ margin: '0 6px' }}>|</span>
-          <Link href={ruHref} aria-current={locale === 'ru' ? 'true' : undefined}>{t('lang.switchRU')}</Link>
-          <Link href={uzHref} aria-current={locale === 'uz' ? 'true' : undefined}>{t('lang.switchUZ')}</Link>
+          <button
+              type="button"
+              className="locale-toggle"
+              onClick={() => changeLocale('ru')}
+              aria-current={locale === 'ru' ? 'true' : undefined}
+              style={{ background: '#F9F9F9', border: 'none', color: 'inherit', cursor: 'pointer' }}
+            >
+              {t('lang.switchRU')}
+            </button>
+            <button
+              type="button"
+              className="locale-toggle"
+              onClick={() => changeLocale('uz')}
+              aria-current={locale === 'uz' ? 'true' : undefined}
+              style={{ background: '#F9F9F9', border: 'none', color: 'inherit', cursor: 'pointer' }}
+            >
+              {t('lang.switchUZ')}
+            </button>
         </nav>
       </div>
     </header>

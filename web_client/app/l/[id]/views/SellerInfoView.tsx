@@ -13,7 +13,6 @@ interface SellerInfoViewProps {
   lon?: number;
   isApproximate?: boolean; // Indicates if coordinates are geocoded/approximate
   locale: string;
-  base: string;
   onViewAllListings: () => void;
   t: (key: string) => string;
 }
@@ -30,7 +29,6 @@ export const SellerInfoView = ({
   lon,
   isApproximate = false,
   locale,
-  base,
   onViewAllListings,
   t,
 }: SellerInfoViewProps) => {

@@ -16,7 +16,6 @@ type Loc = { id: number; name: string; has_children?: boolean; parent?: number |
 
 function PostPageContent() {
   const { t, locale } = useI18n();
-  const base = locale === 'uz' ? '/uz' : '';
   const router = useRouter();
   const searchParams = useSearchParams();
   const [mounted, setMounted] = useState(false);
@@ -334,7 +333,7 @@ function PostPageContent() {
         }
       }
 
-      router.push(`${base}/u/listings`);
+      router.push(`/u/listings`);
     } catch (e: any) { setError(e.message); } finally { setUploading(false); }
   };
 

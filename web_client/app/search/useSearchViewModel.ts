@@ -170,7 +170,7 @@ export interface SearchViewModel {
 
 export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewModel {
   const { locale } = useI18n();
-  const basePath = locale === 'uz' ? '/uz' : '';
+  const basePath = '';
   const router = useRouter();
   const searchParams = useSearchParams();
   const interactorRef = useRef(new SearchInteractor());

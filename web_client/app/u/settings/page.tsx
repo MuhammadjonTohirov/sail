@@ -10,7 +10,6 @@ import { appConfig } from '@/config';
 export default function SettingsPage() {
   const { t, locale } = useI18n();
   const router = useRouter();
-  const base = locale === 'uz' ? '/uz' : '';
   const [mounted, setMounted] = useState(false);
 
   // Use Clean Architecture hook
@@ -122,7 +121,7 @@ export default function SettingsPage() {
     if (confirm(t('settings.deleteAccountWarning'))) {
       try {
         await deleteAccount();
-        router.push(base || '/');
+        router.push('/');
       } catch (error) {
         console.error('Failed to delete account:', error);
         alert('Failed to delete account');

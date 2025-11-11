@@ -38,7 +38,6 @@ export type ProductItem = {
 export default function UserProfilePage() {
   const { userId } = useParams();
   const { t, locale } = useI18n();
-  const base = locale === 'uz' ? '/uz' : '';
   const [listings, setListings] = useState<SearchListing[]>([]);
   const [seller, setSeller] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -165,7 +164,7 @@ export default function UserProfilePage() {
             <ProductCard
               key={listing.id}
               hit={searchListinToProductHit(listing)}
-              href={`${base}/l/${listing.id}`}
+              href={`/l/${listing.id}`}
               locale={locale}
               viewMode="list"
             />

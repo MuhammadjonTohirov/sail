@@ -8,7 +8,6 @@ import { TaxonomyRepositoryImpl } from '@/data/repositories/TaxonomyRepositoryIm
 import { SearchRepositoryImpl } from '@/data/repositories/SearchRepositoryImpl';
 import { SavedSearchesRepositoryImpl } from '@/data/repositories/SavedSearchesRepositoryImpl';
 import { CategoryNode, Attr, Hit } from './types';
-import { SearchResult } from '@/domain/models/SearchResult';
 import { SearchListing } from '@/domain/models/SearchListing';
 
 export class SearchInteractor {

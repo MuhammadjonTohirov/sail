@@ -10,7 +10,6 @@ type CatNode = { id: number; name: string; slug: string; is_leaf: boolean; child
 
 export default function MyListings() {
   const { t, locale } = useI18n();
-  const base = locale === 'uz' ? '/uz' : '';
 
   const [items, setItems] = useState<any[]>([]);
   const [error, setError] = useState<string>('');
@@ -90,7 +89,7 @@ export default function MyListings() {
           {t('myListings.pageTitle')}
         </h1>
         <a
-          href={`${base}/post`}
+          href={`/post`}
           className="bg-[#23E5DB] hover:bg-[#1dd4cb] text-white font-semibold py-2 px-4 rounded-lg transition-colors inline-flex items-center gap-2"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -197,7 +196,7 @@ export default function MyListings() {
             }
           </p>
           <a
-            href={`${base}/post`}
+            href={`/post`}
             className="inline-flex items-center gap-2 bg-[#23E5DB] hover:bg-[#1dd4cb] text-white font-semibold py-2 px-6 rounded-lg transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -210,7 +209,7 @@ export default function MyListings() {
         <div className="space-y-3">
           {filtered.map((l: any) => (
             <div className="my-listing-card" key={l.id}>
-              <a href={`${base}/l/${l.id}`} className="listing-image-link">
+              <a href={`/l/${l.id}`} className="listing-image-link">
                 {l.media?.[0]?.image_url ? (
                   <img className="listing-image" src={l.media[0].image_url} alt={l.title} />
                 ) : (
@@ -223,7 +222,7 @@ export default function MyListings() {
               </a>
 
               <div className="listing-info">
-                <a href={`${base}/l/${l.id}`} className="listing-title-link">
+                <a href={`/l/${l.id}`} className="listing-title-link">
                   <h3 className="listing-title">{l.title}</h3>
                 </a>
                 <div className="listing-price">
@@ -255,7 +254,7 @@ export default function MyListings() {
                 </button>
 
                 <a
-                  href={`${base}/post?edit=${l.id}`}
+                  href={`/post?edit=${l.id}`}
                   className="action-btn secondary"
                   title={t('myListings.editTooltip')}
                 >

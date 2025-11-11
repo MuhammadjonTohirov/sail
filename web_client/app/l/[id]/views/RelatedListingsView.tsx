@@ -4,8 +4,6 @@ interface RelatedListingsViewProps {
   listings: SearchListing[];
   loading: boolean;
   sellerId: number | null;
-  locale: string;
-  base: string;
   t: (key: string) => string;
 }
 
@@ -13,8 +11,6 @@ export const RelatedListingsView = ({
   listings,
   loading,
   sellerId,
-  locale,
-  base,
   t,
 }: RelatedListingsViewProps) => {
   if (listings.length === 0) {
@@ -28,7 +24,7 @@ export const RelatedListingsView = ({
           {t('listing.sellerOtherListings')}
         </h2>
         <a
-          href={sellerId?.toString ? `${base}/u/${sellerId}` : '#'}
+          href={sellerId?.toString ? `/u/${sellerId}` : '#'}
           className="view-all-link"
           onClick={(e) => {
             if (!sellerId) e.preventDefault();
@@ -59,7 +55,7 @@ export const RelatedListingsView = ({
             return (
               <a
                 key={otherListing.id}
-                href={`${locale === 'uz' ? '/uz' : ''}/l/${otherListing.id}`}
+                href={`/l/${otherListing.id}`}
                 className="related-listing-card"
               >
                 <div className="related-listing-image">

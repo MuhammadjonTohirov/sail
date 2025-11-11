@@ -1,14 +1,11 @@
 "use client";
-import { usePathname } from "next/navigation";
 import { useTranslation } from 'react-i18next';
-
-export type Locale = "ru" | "uz";
+import type { Locale } from '@/i18n/config';
+import { useLocaleContext } from '@/context/LocaleContext';
 
 export function useI18n() {
-  const pathname = usePathname() || "/";
-  const first = pathname.split("/").filter(Boolean)[0];
-  const locale: Locale = first === "uz" ? "uz" : "ru";
+  const { locale, setLocale } = useLocaleContext();
   const { t } = useTranslation();
 
-  return { t, locale };
+  return { t, locale: locale as Locale, setLocale };
 }

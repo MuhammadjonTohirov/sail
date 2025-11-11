@@ -38,7 +38,6 @@ function convertToHit(listing: SearchListing): Hit {
 
 export default function HomePage() {
   const { t, locale } = useI18n();
-  const base = locale === 'uz' ? '/uz' : '';
   const [searchQuery, setSearchQuery] = useState('');
   const [featuredListings, setFeaturedListings] = useState<Hit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,9 +107,9 @@ export default function HomePage() {
 
   const handleSearch = () => {
     if (searchQuery.trim()) {
-      window.location.href = `${base}/search?q=${encodeURIComponent(searchQuery)}`;
+      window.location.href = `/search?q=${encodeURIComponent(searchQuery)}`;
     } else {
-      window.location.href = `${base}/search`;
+      window.location.href = `/search`;
     }
   };
 
@@ -152,7 +151,7 @@ export default function HomePage() {
             <h2 className="text-2xl font-bold text-gray-900">
               {t('home.popularCategories')}
             </h2>
-            <Link href={`${base}/search`} className="text-[#23E5DB] hover:text-[#1dd4cb] text-sm font-medium">
+            <Link href={`/search`} className="text-[#23E5DB] hover:text-[#1dd4cb] text-sm font-medium">
               {t('home.allCategories')}
             </Link>
           </div>
@@ -165,7 +164,7 @@ export default function HomePage() {
         <div className="container">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-gray-900">{featuredTitle}</h2>
-            <Link href={`${base}/search`} className="text-[#23E5DB] hover:text-[#1dd4cb] text-sm font-medium">
+            <Link href={`/search`} className="text-[#23E5DB] hover:text-[#1dd4cb] text-sm font-medium">
               {t('home.viewAll')}
             </Link>
           </div>
@@ -186,7 +185,7 @@ export default function HomePage() {
                 <ProductCard
                   key={hit.id}
                   hit={hit}
-                  href={`${base}/l/${hit.id}`}
+                  href={`/l/${hit.id}`}
                   locale={locale}
                 />
               ))}
@@ -263,7 +262,7 @@ export default function HomePage() {
             {t('home.ctaSubtitle')}
           </p>
           <a
-            href={`${base}/post`}
+            href={`/post`}
             className="inline-flex items-center gap-2 bg-white text-[#002F34] font-semibold py-3 px-8 rounded-lg hover:bg-gray-100 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
