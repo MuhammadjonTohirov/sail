@@ -9,7 +9,9 @@
     "chats": "Chatlar",
     "favorites": "Sevimlilar",
     "settings": "Sozlamalar",
-    "logout": "Chiqish"
+    "logout": "Chiqish",
+    "openMenu": "Menyuni ochish",
+    "closeMenu": "Menyuni yopish"
   },
   "home": {
     "welcome": "Xush kelibsiz",
@@ -18,10 +20,11 @@
     "searchPlaceholder": "Nima qidiryapsiz?",
     "searchButton": "Qidirish",
     "popularCategories": "Ommabop kategoriyalar",
-    "allCategories": "Barcha kategoriyalar →",
+    "allCategories": "Barcha kategoriyalar",
     "featuredListings": "Reklama qilingan e'lonlar",
     "recentListings": "So'nggi e'lonlar",
-    "viewAll": "Hammasini ko'rish →",
+    "suggestedForYou": "Siz uchun tavsiya etamiz",
+    "viewAll": "Hammasini ko'rish",
     "noListings": "Hozircha e'lonlar yo'q",
     "howItWorks": "Qanday ishlaydi",
     "step1Title": "1. E'lon yarating",
@@ -53,7 +56,9 @@
     "noResultsTitle": "E'lonlar topilmadi",
     "noResultsDescription": "Qidiruv parametrlarini o'zgartiring.",
     "filtersApplied": "{{count}} ta filtr",
-    "filtersBack": "Natijalarga qaytish"
+    "filtersBack": "Natijalarga qaytish",
+    "select": "Tanlash",
+    "endOfResults": "Boshqa e'lonlar yo'q"
   },
   "features": {
     "promotions": "Reklama qilingan eʼlonlar",
@@ -93,8 +98,8 @@
       "title": "Kirish",
       "subtitle": "Yoki",
       "registerLink": "ro'yxatdan o'ting",
-      "loginLabel": "Email yoki telefon",
-      "loginPlaceholder": "user@example.com yoki +998901234567",
+      "loginLabel": "Email",
+      "loginPlaceholder": "",
       "passwordLabel": "Parol",
       "passwordPlaceholder": "Parolni kiriting",
       "forgotPassword": "Parolni unutdingizmi?",
@@ -107,9 +112,9 @@
       "title": "Ro'yxatdan o'tish",
       "subtitle": "Akkauntingiz bormi?",
       "loginLink": "Kirish",
-      "loginLabel": "Email yoki telefon",
-      "loginPlaceholder": "user@example.com yoki +998901234567",
-      "loginHint": "Ro'yxatdan o'tish uchun email yoki telefondan foydalaning",
+      "loginLabel": "Email",
+      "loginPlaceholder": "user@example.com",
+      "loginHint": "Ro'yxatdan o'tish uchun emaildan foydalaning",
       "displayNameLabel": "Ism",
       "displayNamePlaceholder": "Sizga qanday murojaat qilishimiz mumkin?",
       "passwordLabel": "Parol",
@@ -137,9 +142,9 @@
     },
     "forgotPassword": {
       "title": "Parolni tiklash",
-      "subtitle": "Kod olish uchun email yoki telefonni kiriting",
-      "loginLabel": "Email yoki telefon",
-      "loginPlaceholder": "user@example.com yoki +998901234567",
+      "subtitle": "Kod olish uchun email kiriting",
+      "loginLabel": "Email",
+      "loginPlaceholder": "user@example.com",
       "loginHint": "Parolni tiklash uchun kod yuboramiz",
       "requestSubmit": "Kod yuborish",
       "requesting": "Yuborilmoqda...",
@@ -168,7 +173,15 @@
     "or": "yoki",
     "telegram": {
       "connecting": "Telegram orqali ulanmoqda...",
-      "error": "Telegram orqali kirishda xatolik"
+      "error": "Telegram orqali kirishda xatolik",
+      "confirmMessage": "Siz ushbu Telegram hisobi bilan kirishni xohlayapsiz. Davom etasizmi?",
+      "continueAs": "{{name}} sifatida davom etish",
+      "useDifferentAccount": "Boshqa hisob ishlatish",
+      "cancel": "Bekor qilish",
+      "switchAccountHint": "Boshqa hisob bilan kirish uchun avval brauzerda Telegram'dan chiqing",
+      "logoutTitle": "Telegram hisobini qanday almashtirish",
+      "logoutInstructions": "Telegram brauzerda sessiyani saqlaydi. Siz:\n\n1. Maxfiy oyna (inkognito) ochishingiz mumkin - eng tez usul\n2. telegram.org uchun brauzer ma'lumotlarini tozalashingiz mumkin\n3. Telegram web versiyasiga o'tib, u yerdan chiqishingiz mumkin (vidjet uchun ishlamasligi mumkin)",
+      "understoodTryAgain": "Tushundim"
     }
   },
   "listing": {
@@ -241,6 +254,11 @@
     "locationTitle": "Manzil",
     "selectLocation": "Manzilni tanlang*",
     "selectRegionCity": "Viloyat va shaharni tanlang",
+    "useMyLocation": "Mening joylashuvim",
+    "detectingLocation": "Aniqlanmoqda...",
+    "locationPermissionDenied": "Joylashuvga kirish rad etildi",
+    "locationDetectionFailed": "Joylashuvni aniqlab bo'lmadi",
+    "noLocationFound": "Yaqin shahar topilmadi",
     "contactInfo": "Aloqa ma'lumotlari",
     "contactInfoNote": "Bu ma'lumotlar xaridorlar siz bilan bog'lanishi uchun ko'rinadi",
     "contactNameLabel": "Aloqa ismi",
@@ -298,7 +316,44 @@
     "confirmDelete": "E'lonni o'chirish?",
     "confirmDeleteMessage": "Bu amalni bekor qilib bo'lmaydi. E'lon butunlay o'chiriladi.",
     "confirmButton": "Ha, o'chirish",
-    "cancelButton": "Bekor qilish"
+    "cancelButton": "Bekor qilish",
+    "stats": {
+      "views": "Ko'rishlar",
+      "favorites": "Sevimlilarda",
+      "interests": "Qiziqishlar"
+    },
+    "statisticsTooltip": "E'lon statistikasi",
+    "statisticsModal": {
+      "title": "E'lon statistikasi",
+      "activeSince": "Joylangan",
+      "views": "Ko'rishlar",
+      "favorites": "Sevimlilarda",
+      "interests": "Qiziqishlar",
+      "insights": "Tahlil",
+      "daysActive": "Faol kunlar",
+      "avgViewsPerDay": "Kuniga ko'rishlar",
+      "conversionRate": "Konversiya",
+      "totalEngagement": "Jami faollik",
+      "tip": "Maslahat: E'lonni muntazam ko'taring, shunda ko'proq ko'rishlar va qiziqish olasiz.",
+      "close": "Yopish"
+    },
+    "shareTooltip": "Ulashish",
+    "shareModal": {
+      "title": "E'lonni ulashish",
+      "copyLink": "Havolani nusxalash",
+      "copied": "Nusxalandi!",
+      "orShareTo": "yoki ulashing",
+      "telegramChats": "Telegram kanallari",
+      "loading": "Yuklanmoqda...",
+      "loadError": "Kanallarni yuklab bo'lmadi",
+      "noChats": "Mavjud kanallar yo'q",
+      "noChatsHint": "Botni Telegram kanal yoki guruhga qo'shing",
+      "success": "Muvaffaqiyatli yuborildi!",
+      "shareError": "Ulashib bo'lmadi",
+      "cancel": "Bekor qilish",
+      "share": "Ulashish",
+      "sharing": "Yuborilmoqda..."
+    }
   },
   "favorites": {
     "pageTitle": "Sevimli e'lonlar",
@@ -320,7 +375,12 @@
     "noSavedSearches": "Saqlangan qidiruvlar yo'q",
     "noSavedSearchesDescription": "Yangi e'lonlar haqida xabarnoma olish uchun qidiruvni saqlang",
     "noRecentlyViewed": "Yaqinda ko'rilgan e'lonlar yo'q",
-    "noRecentlyViewedDescription": "Bu yerda siz yaqinda ko'rgan e'lonlar ko'rsatiladi"
+    "noRecentlyViewedDescription": "Bu yerda siz yaqinda ko'rgan e'lonlar ko'rsatiladi",
+    "priceNotSpecified": "ko'rsatilmagan",
+    "newItemsFound": "yangi e'lonlar",
+    "noNewItems": "yangi e'lonlar topilmadi",
+    "confirmDeleteSearch": "Saqlangan qidiruvni o'chirish?",
+    "deleteSearchError": "Qidiruvni o'chirib bo'lmadi. Qayta urinib ko'ring."
   },
   "savedSearches": {
     "pageTitle": "Saqlangan qidiruvlar",
@@ -338,11 +398,25 @@
     "pageDescription": "Xaridorlar va sotuvchilar bilan to'g'ridan-to'g'ri platformada muloqot qiling.",
     "selectConversation": "Muloqotni davom ettirish uchun suhbatni tanlang.",
     "userChatTitle": "Chat",
-    "userChatDescription": "Xaridorlar va sotuvchilar bilan barcha suhbatlaringiz bir joyda."
+    "userChatDescription": "Xaridorlar va sotuvchilar bilan barcha suhbatlaringiz bir joyda.",
+    "chat": "Chat",
+    "loadingChats": "Chatlar yuklanmoqda…",
+    "noMessages": "Hali xabarlar yo'q",
+    "noMessagesYet": "Xabarsiz",
+    "startConversation": "Bu yerda paydo bo'lishi uchun sotuvchi bilan suhbatni boshlang.",
+    "listingDeleted": "O'chirilgan",
+    "listingUnavailable": "Mavjud emas",
+    "listingDeletedBanner": "Bu e'lon o'chirilgan",
+    "listingUnavailableBanner": "Bu e'lon endi faol emas"
   },
   "common": {
     "reportListing": "E'lonni shikoyat qilish",
-    "deliveryNotice": "{{brand}} yetkazib berish xizmatini taqdim etmaydi. Barcha savdolar xaridor va sotuvchi o'rtasida bevosita amalga oshadi."
+    "deliveryNotice": "{{brand}} yetkazib berish xizmatini taqdim etmaydi. Barcha savdolar xaridor va sotuvchi o'rtasida bevosita amalga oshadi.",
+    "retry": "Qayta urinish",
+    "back": "Orqaga",
+    "loadingMore": "Ko'proq yuklanmoqda...",
+    "share": "Ulashish",
+    "copyLink": "Havolani nusxalash"
   },
   "settings": {
     "pageTitle": "Sozlamalar",
@@ -350,8 +424,14 @@
     "logoAndBanner": "Logo va banner",
     "accountManagement": "Hisobni boshqarish",
     "location": "Joylashuv",
+    "selectLocation": "Manzilni tanlang",
     "nameOnOLX": "{{name}} dagi ismingiz",
     "saveButton": "Saqlash",
+    "saving": "Saqlanmoqda...",
+    "saveSuccess": "Profil muvaffaqiyatli saqlandi!",
+    "saveError": "Profilni saqlab bo'lmadi",
+    "deleteError": "Hisobni o'chirib bo'lmadi",
+    "loading": "Yuklanmoqda...",
     "logo": "Logo",
     "banner": "Banner",
     "recommendedSize": "Tavsiya etilgan o'lcham",
@@ -359,9 +439,92 @@
     "logoDisplayInfo": "Sizning logotipingiz ko'rsatiladi:",
     "logoDisplayBusiness": "{{name}} biznes sahifasida (agar mavjud bo'lsa)",
     "logoDisplayListings": "e'lon sahifasida (agar siz biznessiz)",
-    "deleteAccount": "hisobni o'chirish",
-    "deleteAccountWarning": "Hisobni o'chirish qaytarib bo'lmaydigan jarayon bo'lib, natijada barcha ma'lumotlaringiz o'chiriladi. Huquqiy sabablarga ko'ra ba'zi ma'lumotlar saqlanishi mumkin.",
-    "deleteProfileButton": "Profilni o'chirish"
+    "deleteAccount": "Hisobni o'chirish",
+    "deleteAccountWarning": "Hisobni o'chirish qaytarib bo'lmaydigan jarayon bo'lib, natijada barcha ma'lumotlaringiz o'chiriladi. \nHuquqiy sabablarga ko'ra ba'zi ma'lumotlar saqlanishi mumkin.",
+    "deleteProfileButton": "Profilni o'chirish",
+    "telegram": {
+      "title": "Telegram ulash",
+      "connected": "Telegram ulangan",
+      "benefitsTitle": "Nima uchun Telegram ulash kerak?",
+      "benefit1": "E'lonlarni to'g'ridan-to'g'ri Telegram kanal va guruhlarga ulashing",
+      "benefit2": "Yangi xabarlar haqida bildirishnoma oling",
+      "benefit3": "Parolsiz Telegram orqali tezkor kirish",
+      "linking": "Ulanmoqda...",
+      "linkSuccess": "Telegram muvaffaqiyatli ulandi!",
+      "linkError": "Telegramni ulab bo'lmadi",
+      "unlink": "Uzish",
+      "unlinking": "Uzilmoqda...",
+      "unlinkConfirm": "Telegramni uzishni xohlaysizmi? E'lonlarni Telegram kanallarga ulasha olmaysiz.",
+      "unlinkError": "Telegramni uzib bo'lmadi",
+      "cannotUnlinkOnlyMethod": "Telegramni uzib bo'lmaydi, chunki bu yagona kirish usuli",
+      "onlyMethodHint": "Uzish uchun parol o'rnating",
+      "confirmMessage": "Siz ushbu Telegram hisobini ulashni xohlayapsiz. Davom etasizmi?",
+      "connectAs": "{{name}}ni ulash",
+      "useDifferentAccount": "Boshqa hisob ishlatish",
+      "cancel": "Bekor qilish",
+      "switchAccountHint": "Boshqa hisob ishlatish uchun avval brauzerda Telegram'dan chiqing",
+      "logoutTitle": "Telegram'dan chiqish",
+      "logoutInstructions": "Telegram'dan chiqish sahifasini ochdik. Chiqqandan so'ng, bu yerga qayting va boshqa hisobni ulash uchun Telegram ulash tugmasini qayta bosing.",
+      "connectedChats": "Ulangan chatlar",
+      "disconnectChat": "Chatni uzish",
+      "disconnectChatConfirm": "Ushbu chatni uzishga ishonchingiz komilmi? Bot guruh/kanaldan chiqib ketadi.",
+      "disconnectChatError": "Chatni uzib bo'lmadi",
+      "loadChatsError": "Chatlar ro'yxatini yuklab bo'lmadi",
+      "noChats": "Ulangan chatlar yo'q",
+      "chatInactive": "Faol emas",
+      "chatInactiveHint": "Bot ushbu chatdan olib tashlangan yoki chat o'chirilgan"
+    },
+    "security": {
+      "title": "Xavfsizlik",
+      "changePasswordDescription": "Hisobingizni himoya qilish uchun parolingizni o'zgartiring.",
+      "setPasswordDescription": "Email yoki telefon orqali kirish uchun parol o'rnating.",
+      "currentPassword": "Joriy parol",
+      "currentPasswordPlaceholder": "Joriy parolni kiriting",
+      "currentPasswordRequired": "Joriy parolni kiriting",
+      "newPassword": "Yangi parol",
+      "newPasswordPlaceholder": "Yangi parolni kiriting",
+      "confirmPassword": "Parolni tasdiqlang",
+      "confirmPasswordPlaceholder": "Parolni qayta kiriting",
+      "passwordHint": "Kamida 8 ta belgi",
+      "passwordTooShort": "Parol kamida 8 ta belgidan iborat bo'lishi kerak",
+      "passwordMismatch": "Parollar mos kelmaydi",
+      "changeButton": "Parolni o'zgartirish",
+      "setButton": "Parolni o'rnatish",
+      "changing": "Saqlanmoqda...",
+      "changeSuccess": "Parol muvaffaqiyatli o'zgartirildi!",
+      "changeError": "Parolni o'zgartirib bo'lmadi"
+    },
+    "notifications": {
+      "title": "Bildirishnomalar",
+      "description": "Telegram orqali bildirishnomalarni sozlang",
+      "connectTelegramHint": "Bildirishnomalar olish uchun Telegramni ulang",
+      "newMessages": "Yangi xabarlar",
+      "newMessagesDescription": "Chatlarda yangi xabarlar haqida bildirishnoma olish",
+      "savedSearches": "Saqlangan qidiruvlar",
+      "savedSearchesDescription": "Saqlangan qidiruvlaringiz bo'yicha yangi e'lonlar haqida kunlik bildirishnomalar",
+      "promotions": "Aksiyalar va takliflar",
+      "promotionsDescription": "Maxsus takliflar va aksiyalar haqida bildirishnoma olish"
+    },
+    "menu": {
+      "profile": "Profil",
+      "notifications": "Bildirishnomalar",
+      "telegram": "Telegram",
+      "security": "Xavfsizlik",
+      "appearance": "Tashqi ko'rinish",
+      "account": "Hisob"
+    },
+    "appearance": {
+      "title": "Tashqi ko'rinish",
+      "subtitle": "Sail ko'rinishini qurilmangizda sozlang",
+      "themeLabel": "Mavzu",
+      "light": "Yorug'",
+      "dark": "Qorong'u",
+      "system": "Tizim",
+      "lightDesc": "Doim yorug' mavzuni ishlatish",
+      "darkDesc": "Doim qorong'u mavzuni ishlatish",
+      "systemDesc": "Tizim sozlamalariga amal qilish",
+      "currentTheme": "Joriy"
+    }
   },
   "locationPicker": {
     "title": "Manzilni tanlang",
@@ -407,6 +570,50 @@
   },
   "lang": {
     "switchRU": "RU",
-    "switchUZ": "UZ"
+    "switchUZ": "UZ",
+    "language": "Til"
+  },
+  "error": {
+    "title": "Nimadir xato ketdi",
+    "message": "Kutilmagan xatolik yuz berdi. Iltimos, qayta urinib ko'ring.",
+    "tryAgain": "Qayta urinish",
+    "goHome": "Bosh sahifaga"
+  },
+  "shortcuts": {
+    "title": "Tezkor tugmalar",
+    "search": "Qidiruvga o'tish",
+    "post": "E'lon yaratish",
+    "home": "Bosh sahifa",
+    "favorites": "Sevimlilar",
+    "myListings": "Mening e'lonlarim",
+    "close": "Yopish",
+    "help": "Yordam ko'rsatish",
+    "hint": "Yordam uchun ? tugmasini bosing"
+  },
+  "toast": {
+    "copied": "Nusxa olindi",
+    "linkCopied": "Havola nusxalandi",
+    "savedToFavorites": "Sevimlilarga qo'shildi",
+    "removedFromFavorites": "Sevimlilardan o'chirildi",
+    "listingCreated": "E'lon yaratildi",
+    "listingUpdated": "E'lon yangilandi",
+    "listingDeleted": "E'lon o'chirildi",
+    "messageSent": "Xabar yuborildi",
+    "errorOccurred": "Xatolik yuz berdi"
+  },
+  "theme": {
+    "light": "Yorug' mavzu",
+    "dark": "Qorong'u mavzu",
+    "system": "Tizim mavzusi"
+  },
+  "pullToRefresh": {
+    "pull": "Yangilash uchun torting",
+    "release": "Yangilash uchun qo'yib yuboring",
+    "refreshing": "Yangilanmoqda..."
+  },
+  "onlineStatus": {
+    "online": "Onlayn",
+    "recently": "Yaqinda faol edi",
+    "unknown": "Noma'lum"
   }
 }

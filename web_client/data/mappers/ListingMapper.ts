@@ -112,7 +112,7 @@ export class ListingMapper {
       })),
       contact_name: payload.contactName,
       contact_email: payload.contactEmail,
-      contact_phone: payload.contactPhone,
+      contact_phone: payload.contactPhone
     };
   }
 

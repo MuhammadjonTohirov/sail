@@ -8,17 +8,23 @@ import {
   useChatThreadActions,
   useSendChatMessage,
 } from '@/hooks';
+import { trustedImageUrl } from '@/config';
+import { Lineicons } from "@lineiconshq/react-lineicons";
+import { ArrowLeftOutlined } from "@lineiconshq/free-icons";
+import { useI18n } from '@/lib/i18n';
 
 interface ChatPanelProps {
   thread: ChatThread;
   viewerId: number | null;
   onThreadChange: (thread: ChatThread) => void;
+  onBack?: () => void;
 }
 
 export function ChatPanel({
   thread,
   viewerId,
   onThreadChange,
+  onBack,
 }: ChatPanelProps) {
   const threadId = thread.id;
   const {
@@ -152,13 +158,25 @@ export function ChatPanel({
   }, []);
 
   const listing = thread.listing;
+  const { t } = useI18n();
+  const isListingUnavailable = listing.availability && listing.availability !== 'available';
 
   return (
     <div className="chat-panel">
       <div className="chat-panel__header">
+        {onBack && (
+          <button
+            type="button"
+            className="chat-panel__back-btn mobile-only"
+            onClick={onBack}
+            aria-label={t('common.back', 'Назад')}
+          >
+            <Lineicons icon={ArrowLeftOutlined} width={24} height={24} />
+          </button>
+        )}
         <div className="chat-panel__listing">
           {listing.thumbnailUrl ? (
-            <img src={listing.thumbnailUrl} alt="" className="chat-panel__thumb" />
+            <img src={trustedImageUrl(listing.thumbnailUrl)} alt="" className="chat-panel__thumb" />
           ) : (
             <div className="chat-panel__thumb chat-panel__thumb--placeholder" aria-hidden>
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
@@ -176,11 +194,19 @@ export function ChatPanel({
               {listing.title}
             </div>
             <div className="chat-panel__subtitle">
-              {listingPrice || thread.otherParticipant?.displayName || 'Чат'}
+              {listingPrice || thread.otherParticipant?.displayName || t('chat.chat', 'Чат')}
             </div>
           </div>
         </div>
       </div>
+
+      {isListingUnavailable && (
+        <div className={`chat-panel__availability-banner chat-panel__availability-banner--${listing.availability}`}>
+          {listing.availability === 'deleted'
+            ? t('chat.listingDeletedBanner', 'Это объявление было удалено')
+            : t('chat.listingUnavailableBanner', 'Это объявление больше не активно')}
+        </div>
+      )}
 
       <div className="chat-panel__body">
         {combinedError ? (

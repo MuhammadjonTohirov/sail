@@ -49,7 +49,7 @@ export const appConfig = {
         500: '#4e618d',  // Main primary color (brand blue)
         600: '#425278',
         700: '#374463',
-        800: '#2b354e',
+        800: '#18191dff',
         900: '#1f2738',
       },
 
@@ -160,7 +160,7 @@ export const appConfig = {
 
   // API Configuration
   api: {
-    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://sail.uz/api/',
+    baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://sail.uz/server/',
     timeout: 30000, // 30 seconds
   },
 

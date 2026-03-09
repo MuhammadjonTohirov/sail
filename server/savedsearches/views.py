@@ -8,8 +8,8 @@ from rest_framework.views import APIView
 
 from .models import SavedSearch
 from .serializers import SavedSearchSerializer
-from searchapp.opensearch_client import get_client
-from searchapp.index import index_name
+from searchapp.views.opensearch_client import get_client
+from searchapp.views.index import index_name
 
 
 class SavedSearchListCreateView(generics.ListCreateAPIView):
@@ -29,6 +29,24 @@ class SavedSearchDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return SavedSearch.objects.filter(user=self.request.user)
+
+
+class SavedSearchMarkViewedView(APIView):
+    """Mark a saved search as viewed (updates last_viewed_at)."""
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, pk: int):
+        from django.utils import timezone
+
+        try:
+            saved = SavedSearch.objects.get(id=pk, user=request.user)
+        except SavedSearch.DoesNotExist:
+            return Response({"detail": "Not found"}, status=404)
+
+        saved.last_viewed_at = timezone.now()
+        saved.save(update_fields=["last_viewed_at"])
+
+        return Response({"success": True, "last_viewed_at": saved.last_viewed_at})
 
 
 class SavedSearchRunNowView(APIView):

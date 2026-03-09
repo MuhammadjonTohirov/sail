@@ -19,9 +19,9 @@ class ListingMediaSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "image_url", "uploaded_at"]
 
     def get_image_url(self, obj):  # pragma: no cover
-        request = self.context.get("request")
-        if request:
-            return request.build_absolute_uri(obj.image.url)
+        return obj.image.url
+
+    def get_image(self, obj):
         return obj.image.url
 
 
@@ -34,6 +34,7 @@ class ListingSerializer(serializers.ModelSerializer):
     location_slug = serializers.SerializerMethodField()
     seller = serializers.SerializerMethodField()
     price_normalized = serializers.SerializerMethodField()
+    favorite_count = serializers.SerializerMethodField()
 
     class Meta:
         model = Listing
@@ -59,12 +60,18 @@ class ListingSerializer(serializers.ModelSerializer):
             "expires_at",
             "quality_score",
             "contact_phone_masked",
+            "contact_name",
+            "contact_email",
+            "contact_phone",
             "lat",
             "lon",
             "media",
             "attributes",
             "seller",
             "price_normalized",
+            "view_count",
+            "favorite_count",
+            "interest_count",
         ]
         read_only_fields = [
             "status",
@@ -74,6 +81,9 @@ class ListingSerializer(serializers.ModelSerializer):
             "quality_score",
             "contact_phone_masked",
             "price_normalized",
+            "view_count",
+            "favorite_count",
+            "interest_count",
         ]
 
     def get_attributes(self, obj: Listing) -> List[Dict[str, Any]]:  # pragma: no cover
@@ -185,6 +195,10 @@ class ListingSerializer(serializers.ModelSerializer):
         )
         return float(normalized)
 
+    def get_favorite_count(self, obj: Listing) -> int:  # pragma: no cover
+        """Return the number of users who favorited this listing"""
+        return obj.favorited_by.count()
+
 
 class ListingAttributeInputSerializer(serializers.Serializer):
     attribute = serializers.JSONField()  # accept id or key; validate handles coercion
@@ -250,6 +264,7 @@ class ListingAttributeInputSerializer(serializers.Serializer):
 
 class ListingCreateSerializer(serializers.ModelSerializer):
     attributes = ListingAttributeInputSerializer(many=True, required=False)
+
     class Meta:
         model = Listing
         fields = [
@@ -266,6 +281,9 @@ class ListingCreateSerializer(serializers.ModelSerializer):
             "location",
             "lat",
             "lon",
+            "contact_name",
+            "contact_email",
+            "contact_phone",
             "attributes",
         ]
         read_only_fields = ["id"]
@@ -273,7 +291,19 @@ class ListingCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         user = self.context["request"].user
         attrs_payload = validated_data.pop("attributes", [])
+
+        # Set default contact info from user profile if not provided
+        if hasattr(user, "profile"):
+            profile = user.profile
+            if not validated_data.get("contact_name") and profile.display_name:
+                validated_data["contact_name"] = profile.display_name
+            if not validated_data.get("contact_email") and profile.email:
+                validated_data["contact_email"] = profile.email
+            if not validated_data.get("contact_phone") and profile.phone_e164:
+                validated_data["contact_phone"] = profile.phone_e164
+
         listing = Listing.objects.create(user=user, **validated_data)
+
         # Simple phone masking from username (which is phone in our OTP flow)
         if hasattr(user, "profile") and user.profile.phone_e164:
             phone = user.profile.phone_e164
@@ -283,6 +313,7 @@ class ListingCreateSerializer(serializers.ModelSerializer):
         listing.save(update_fields=["contact_phone_masked"])
         if attrs_payload:
             self._save_attributes(listing, attrs_payload)
+        
         return listing
 
     def _save_attributes(self, listing: Listing, attrs_payload: List[Dict[str, Any]]):
@@ -401,6 +432,9 @@ class ListingUpdateSerializer(serializers.ModelSerializer):
             "location",
             "lat",
             "lon",
+            "contact_name",
+            "contact_email",
+            "contact_phone",
             "attributes",
         ]
 

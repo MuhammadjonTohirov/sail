@@ -24,6 +24,7 @@ downloads/
 eggs/
 .eggs/
 lib/
+!mobile_client/lib/
 lib64/
 parts/
 sdist/
@@ -149,3 +150,6 @@ server/venv/
 /node_modules
 web_client/node_modules/
 web_client/node_modules
+.next
+.next/
+.next/*

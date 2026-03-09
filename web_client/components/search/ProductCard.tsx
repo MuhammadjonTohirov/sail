@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { FavoriteButton } from '@/components/FavoriteButton';
 import PriceDisplay from '@/components/PriceDisplay';
 import { SearchListing } from '@/domain/models/SearchListing';
+import { trustedImageUrl } from '@/config';
 
 export type ProductHit = {
   id: string;
@@ -16,6 +17,7 @@ export type ProductHit = {
   refreshed_at?: string;
   is_promoted?: boolean;
   condition?: string;
+  seller_name?: string;
 };
 
 interface ProductCardProps {
@@ -37,6 +39,7 @@ export function searchListinToProductHit(listing: SearchListing): ProductHit {
     refreshed_at: listing.refreshedAt ?? '',
     is_promoted: listing.isPromoted ?? false,
     condition: listing.condition ?? '',
+    seller_name: listing.seller?.name ?? '',
   };
 }
 
@@ -71,7 +74,7 @@ export default function ProductCard({ hit, href, locale = 'ru', viewMode = 'grid
         <div className="product-card-image">
           {img && !imageError ? (
             <img
-              src={img}
+              src={trustedImageUrl(img)}
               alt={hit.title}
               onError={() => setImageError(true)}
               className="w-full h-full object-cover"
@@ -120,6 +123,13 @@ export default function ProductCard({ hit, href, locale = 'ru', viewMode = 'grid
         <h3 className="product-card-title">
           {hit.title}
         </h3>
+
+        {/* Seller Name */}
+        {hit.seller_name && (
+          <div className="product-card-seller">
+            {hit.seller_name}
+          </div>
+        )}
 
         {/* Location & Time */}
         <div className="product-card-meta">

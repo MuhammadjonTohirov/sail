@@ -44,6 +44,7 @@ const mergePrefillSources = (sp: SearchParamsLike, overrides?: SearchPrefill): S
   });
   if (overrides) {
     Object.entries(overrides).forEach(([key, value]) => {
+      if (base[key] !== undefined) return;
       base[key] = value;
     });
   }
@@ -108,6 +109,9 @@ const convertAttributePrefill = (entry: AttributePrefillEntry | undefined, attr:
 };
 
 const shallowEqual = (a: any, b: any) => {
+  if (a === b) return true;
+  if (typeof a !== 'object' || a === null || typeof b !== 'object' || b === null) return false;
+  
   if (Array.isArray(a) && Array.isArray(b)) {
     if (a.length !== b.length) return false;
     for (let i = 0; i < a.length; i += 1) {
@@ -115,7 +119,16 @@ const shallowEqual = (a: any, b: any) => {
     }
     return true;
   }
-  return a === b;
+  
+  const keysA = Object.keys(a);
+  const keysB = Object.keys(b);
+  if (keysA.length !== keysB.length) return false;
+  
+  for (const key of keysA) {
+    if (!Object.prototype.hasOwnProperty.call(b, key) || a[key] !== b[key]) return false;
+  }
+  
+  return true;
 };
 
 const isAttrValueEmpty = (value: any) => {
@@ -161,11 +174,24 @@ export interface SearchViewModel {
   results: SearchListing[];
   total: number;
   loading: boolean;
+  loadingMore: boolean;
+  hasMore: boolean;
   runSearch: () => Promise<void> | void;
+  loadMore: () => Promise<void> | void;
   saveCurrentSearch: () => Promise<void> | void;
   selectCategoryFromPicker: (payload: { id: number; path: string }) => void;
   resetFilters: () => void;
   setAttrValue: (key: string, value: any) => void;
+}
+
+interface RunOverrides {
+  q?: string;
+  minPrice?: string;
+  maxPrice?: string;
+  sort?: string;
+  categorySlug?: string;
+  attrValues?: Record<string, any>;
+  clearAllAttributes?: boolean;
 }
 
 export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewModel {
@@ -186,11 +212,20 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
   const [results, setResults] = useState<SearchListing[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(false);
 
   const [prefillOverride, setPrefillOverride] = useState<SearchPrefill | undefined>(initialFilters);
   const [prefillSignature, setPrefillSignature] = useState(() => (initialFilters ? JSON.stringify(initialFilters) : ''));
   const mergedPrefill = useMemo(() => mergePrefillSources(searchParams, prefillOverride), [searchParams, prefillOverride]);
   const attributePrefill = useMemo(() => parseAttributePrefill(mergedPrefill), [mergedPrefill]);
+
+  // Use the server-provided prefill only once per searchParams change so it doesn't override user edits later.
+  useEffect(() => {
+    if (!prefillOverride) return;
+    setPrefillOverride(undefined);
+  }, [searchParams, prefillOverride]);
 
   const [q, setQ] = useState(() => toSingleValue(mergedPrefill.q, ''));
   const [minPrice, setMinPrice] = useState(() => toSingleValue(mergedPrefill.min_price, ''));
@@ -198,7 +233,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
   const [sort, setSort] = useState(() => toSingleValue(mergedPrefill.sort, '') || 'relevance');
   const [categorySlug, setCategorySlug] = useState(() => toSingleValue(mergedPrefill.category_slug, ''));
 
-  const runRef = useRef<() => Promise<void> | void>();
+  const runRef = useRef<(overrides?: RunOverrides) => Promise<void> | void>();
   const hasHandledPrefill = useRef(false);
   const attrPrefillNeedsRun = useRef(false);
 
@@ -279,22 +314,44 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
     });
   }, [attributes, attributePrefill]);
 
-  const run = async () => {
+  const run = async (overrides?: RunOverrides) => {
     setLoading(true);
+    setPage(1);
     try {
-      const params: Record<string, any> = { q, min_price: minPrice, max_price: maxPrice, sort, per_page: perPage };
+      const effectiveQ = overrides?.q ?? q;
+      const effectiveMinPrice = overrides?.minPrice ?? minPrice;
+      const effectiveMaxPrice = overrides?.maxPrice ?? maxPrice;
+      const effectiveSort = overrides?.sort ?? sort;
+      const effectiveCategorySlug = overrides?.categorySlug ?? (selectedCategory?.slug || categorySlug || '');
+      const effectiveAttrValues = overrides?.attrValues ?? attrValues;
+      const clearAllAttributes = overrides?.clearAllAttributes ?? false;
+
+      const params: Record<string, any> = {
+        q: effectiveQ,
+        min_price: effectiveMinPrice,
+        max_price: effectiveMaxPrice,
+        sort: effectiveSort,
+        per_page: perPage,
+        page: 1,
+      };
+      
       const urlAttributeEntries: Array<[string, any]> = [];
       const handledAttrKeys = new Set<string>();
       const fallbackAttrEntries: Array<[string, SearchPrefillValue]> = [];
-      Object.entries(mergedPrefill).forEach(([key, value]) => {
-        if (key.startsWith('attrs.')) {
-          fallbackAttrEntries.push([key, value]);
-        }
-      });
-      const effectiveCategorySlug = selectedCategory?.slug || categorySlug || '';
+      
+      if (!clearAllAttributes) {
+        Object.entries(mergedPrefill).forEach(([key, value]) => {
+          if (key.startsWith('attrs.')) {
+            fallbackAttrEntries.push([key, value]);
+          }
+        });
+      }
+      
+      
       if (effectiveCategorySlug) params.category_slug = effectiveCategorySlug;
+      
       for (const attr of attributes) {
-        const value = attrValues[attr.key];
+        const value = effectiveAttrValues[attr.key];
         if (value === undefined || value === '' || value === null) continue;
         if (attr.type === 'multiselect' && Array.isArray(value)) {
           if (value.length) {
@@ -324,6 +381,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
           handledAttrKeys.add(key);
         }
       }
+      
       fallbackAttrEntries.forEach(([key, raw]) => {
         if (handledAttrKeys.has(key)) return;
         if (raw === undefined || raw === null) return;
@@ -339,16 +397,21 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
         urlAttributeEntries.push([key, raw]);
         handledAttrKeys.add(key);
       });
+      
+      
       const data = await interactorRef.current.fetchListings(params);
-      setResults(data.results || []);
+      const fetchedResults = data.results || [];
+      setResults(fetchedResults);
       setTotal(data.total || 0);
+      setHasMore(fetchedResults.length >= perPage && fetchedResults.length < (data.total || 0));
 
       const usp = new URLSearchParams();
-      if (q) usp.set('q', q);
-      if (minPrice) usp.set('min_price', String(minPrice));
-      if (maxPrice) usp.set('max_price', String(maxPrice));
+      if (effectiveQ) usp.set('q', effectiveQ);
+      if (effectiveMinPrice) usp.set('min_price', String(effectiveMinPrice));
+      if (effectiveMaxPrice) usp.set('max_price', String(effectiveMaxPrice));
       if (effectiveCategorySlug) usp.set('category_slug', effectiveCategorySlug);
-      if (sort && sort !== 'relevance') usp.set('sort', sort);
+      if (effectiveSort && effectiveSort !== 'relevance') usp.set('sort', effectiveSort);
+      
       urlAttributeEntries.forEach(([key, raw]) => {
         if (Array.isArray(raw)) {
           raw.forEach((val) => {
@@ -362,11 +425,58 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
           usp.set(key, String(raw));
         }
       });
-      router.replace(`${basePath}/search?${usp.toString()}`);
+      
+            router.push(`${basePath}/search?${usp.toString()}`);
+      setPrefillOverride(undefined);
     } finally {
       setLoading(false);
     }
   };
+
+  const loadMore = useCallback(async () => {
+    if (loadingMore || loading || !hasMore) return;
+
+    setLoadingMore(true);
+    try {
+      const nextPage = page + 1;
+      const effectiveCategorySlug = selectedCategory?.slug || categorySlug || '';
+
+      const params: Record<string, any> = {
+        q,
+        min_price: minPrice,
+        max_price: maxPrice,
+        sort,
+        per_page: perPage,
+        page: nextPage,
+      };
+
+      if (effectiveCategorySlug) params.category_slug = effectiveCategorySlug;
+
+      // Include current attribute values
+      for (const attr of attributes) {
+        const value = attrValues[attr.key];
+        if (value === undefined || value === '' || value === null) continue;
+        if (attr.type === 'multiselect' && Array.isArray(value)) {
+          if (value.length) params[`attrs.${attr.key}`] = value;
+        } else if (attr.type === 'number' || attr.type === 'range') {
+          const [min, max] = Array.isArray(value) ? value : [value, undefined];
+          if (min !== undefined && min !== '') params[`attrs.${attr.key}_min`] = min;
+          if (max !== undefined && max !== '') params[`attrs.${attr.key}_max`] = max;
+        } else {
+          params[`attrs.${attr.key}`] = value;
+        }
+      }
+
+      const data = await interactorRef.current.fetchListings(params);
+      const fetchedResults = data.results || [];
+
+      setResults((prev) => [...prev, ...fetchedResults]);
+      setPage(nextPage);
+      setHasMore(fetchedResults.length >= perPage && (results.length + fetchedResults.length) < (data.total || 0));
+    } finally {
+      setLoadingMore(false);
+    }
+  }, [loadingMore, loading, hasMore, page, q, minPrice, maxPrice, sort, perPage, selectedCategory?.slug, categorySlug, attributes, attrValues, results.length]);
 
   runRef.current = run;
 
@@ -384,9 +494,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
     runRef.current?.();
   }, [attrValues]);
 
-  useEffect(() => {
-    runRef.current?.();
-  }, []);
+  // Removed the empty dependency array useEffect that caused double fetch
 
   useEffect(() => {
     runRef.current?.();
@@ -410,17 +518,27 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
     setSelectedCategory({ id: payload.id, slug });
     setSelectedCategoryPath(payload.path);
     setCategorySlug(slug);
-    setTimeout(() => runRef.current?.(), 0);
+    // Pass overrides to run immediately with new values
+    runRef.current?.({ categorySlug: slug });
   }, [flatCategories]);
 
   const resetFilters = useCallback(() => {
+    setQ('');
     setSelectedCategory(null);
     setSelectedCategoryPath('');
     setCategorySlug('');
     setMinPrice('');
     setMaxPrice('');
     setAttrValues({});
-    setTimeout(() => runRef.current?.(), 0);
+    // Pass overrides to run immediately with cleared values
+    runRef.current?.({ 
+      q: '', 
+      categorySlug: '', 
+      minPrice: '', 
+      maxPrice: '', 
+      attrValues: {},
+      clearAllAttributes: true
+    });
   }, []);
 
   const saveCurrentSearch = useCallback(async () => {
@@ -486,7 +604,10 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
     results,
     total,
     loading,
+    loadingMore,
+    hasMore,
     runSearch: () => runRef.current?.(),
+    loadMore,
     saveCurrentSearch,
     selectCategoryFromPicker,
     resetFilters,

@@ -23,7 +23,14 @@
       "Bash(git checkout:*)",
       "Bash(npx tsc:*)",
       "Bash(xargs:*)",
-      "Bash(npm run dev:*)"
+      "Bash(npm run dev:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)",
+      "Bash(chmod:*)",
+      "Bash(./gradlew composeApp:dependencies:*)",
+      "Bash(./gradlew composeApp:compileKotlinIosSimulatorArm64:*)",
+      "Bash(./gradlew:*)"
     ],
     "deny": [],
     "ask": []

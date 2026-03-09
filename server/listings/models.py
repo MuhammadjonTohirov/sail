@@ -51,6 +51,15 @@ class Listing(models.Model):
     lat = models.FloatField(null=True, blank=True)
     lon = models.FloatField(null=True, blank=True)
 
+    # Contact information
+    contact_name = models.CharField(max_length=255, blank=True, default="")
+    contact_email = models.EmailField(max_length=255, blank=True, default="")
+    contact_phone = models.CharField(max_length=20, blank=True, default="")
+
+    # Statistics
+    view_count = models.PositiveIntegerField(default=0)
+    interest_count = models.PositiveIntegerField(default=0)
+
     class Meta:
         indexes = [
             models.Index(fields=["status", "category", "location", "refreshed_at"]),

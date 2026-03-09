@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 
 from listings.models import Listing
-from searchapp.index import index_listing, index_name
-from searchapp.opensearch_client import get_client
+from searchapp.views.index import index_listing, index_name
+from searchapp.views.opensearch_client import get_client
 
 
 class Command(BaseCommand):

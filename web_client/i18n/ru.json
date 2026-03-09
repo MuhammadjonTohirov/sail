@@ -9,7 +9,9 @@
     "chats": "Чаты",
     "favorites": "Избранное",
     "settings": "Настройки",
-    "logout": "Выйти"
+    "logout": "Выйти",
+    "openMenu": "Открыть меню",
+    "closeMenu": "Закрыть меню"
   },
   "home": {
     "welcome": "Добро пожаловать",
@@ -18,10 +20,11 @@
     "searchPlaceholder": "Что вы ищете?",
     "searchButton": "Искать",
     "popularCategories": "Популярные категории",
-    "allCategories": "Все категории →",
+    "allCategories": "Все категории",
     "featuredListings": "Продвигаемые объявления",
     "recentListings": "Недавние объявления",
-    "viewAll": "Смотреть все →",
+    "suggestedForYou": "Рекомендуем для вас",
+    "viewAll": "Смотреть все",
     "noListings": "Пока нет объявлений",
     "howItWorks": "Как это работает",
     "step1Title": "1. Создайте объявление",
@@ -53,7 +56,9 @@
     "noResultsTitle": "Объявления не найдены",
     "noResultsDescription": "Попробуйте изменить параметры поиска.",
     "filtersApplied": "{{count}} фильтров",
-    "filtersBack": "Назад к результатам"
+    "filtersBack": "Назад к результатам",
+    "select": "Выбрать",
+    "endOfResults": "Больше объявлений нет"
   },
   "features": {
     "promotions": "Продвижение объявлений",
@@ -93,8 +98,8 @@
       "title": "Вход",
       "subtitle": "Или",
       "registerLink": "зарегистрируйтесь",
-      "loginLabel": "Email или телефон",
-      "loginPlaceholder": "user@example.com или +998901234567",
+      "loginLabel": "Email",
+      "loginPlaceholder": "user@example.com",
       "passwordLabel": "Пароль",
       "passwordPlaceholder": "Введите пароль",
       "forgotPassword": "Забыли пароль?",
@@ -107,9 +112,9 @@
       "title": "Регистрация",
       "subtitle": "Уже есть аккаунт?",
       "loginLink": "Войти",
-      "loginLabel": "Email или телефон",
-      "loginPlaceholder": "user@example.com или +998901234567",
-      "loginHint": "Используйте email или телефон для регистрации",
+      "loginLabel": "Email",
+      "loginPlaceholder": "user@example.com",
+      "loginHint": "Используйте email для регистрации",
       "displayNameLabel": "Имя",
       "displayNamePlaceholder": "Как к вам обращаться?",
       "passwordLabel": "Пароль",
@@ -137,9 +142,9 @@
     },
     "forgotPassword": {
       "title": "Восстановление пароля",
-      "subtitle": "Введите email или телефон для получения кода",
-      "loginLabel": "Email или телефон",
-      "loginPlaceholder": "user@example.com или +998901234567",
+      "subtitle": "Введите email для получения кода",
+      "loginLabel": "Email",
+      "loginPlaceholder": "user@example.com",
       "loginHint": "Мы отправим код для сброса пароля",
       "requestSubmit": "Отправить код",
       "requesting": "Отправка...",
@@ -168,7 +173,15 @@
     "or": "или",
     "telegram": {
       "connecting": "Подключение к Telegram...",
-      "error": "Ошибка входа через Telegram"
+      "error": "Ошибка входа через Telegram",
+      "confirmMessage": "Вы собираетесь войти с этим аккаунтом Telegram. Продолжить?",
+      "continueAs": "Продолжить как {{name}}",
+      "useDifferentAccount": "Использовать другой аккаунт",
+      "cancel": "Отмена",
+      "switchAccountHint": "Чтобы войти с другим аккаунтом, сначала выйдите из Telegram в браузере",
+      "logoutTitle": "Как сменить аккаунт Telegram",
+      "logoutInstructions": "Telegram сохраняет сессию в браузере. Вы можете:\n\n1. Открыть приватное окно (инкогнито) - самый быстрый способ\n2. Очистить данные браузера для telegram.org\n3. Перейти в веб-версию Telegram и выйти из аккаунта там (может не сработать для виджета)",
+      "understoodTryAgain": "Понятно"
     }
   },
   "listing": {
@@ -241,6 +254,11 @@
     "locationTitle": "Местоположение",
     "selectLocation": "Выберите местоположение*",
     "selectRegionCity": "Выберите регион и город",
+    "useMyLocation": "Моё местоположение",
+    "detectingLocation": "Определение...",
+    "locationPermissionDenied": "Доступ к геолокации запрещён",
+    "locationDetectionFailed": "Не удалось определить местоположение",
+    "noLocationFound": "Не удалось найти ближайший город",
     "contactInfo": "Контактная информация",
     "contactInfoNote": "Эта информация будет видна покупателям для связи с вами",
     "contactNameLabel": "Имя контакта",
@@ -298,7 +316,44 @@
     "confirmDelete": "Удалить объявление?",
     "confirmDeleteMessage": "Это действие нельзя отменить. Объявление будет удалено навсегда.",
     "confirmButton": "Да, удалить",
-    "cancelButton": "Отмена"
+    "cancelButton": "Отмена",
+    "stats": {
+      "views": "Просмотров",
+      "favorites": "В избранном",
+      "interests": "Интересуются"
+    },
+    "statisticsTooltip": "Статистика объявления",
+    "statisticsModal": {
+      "title": "Статистика объявления",
+      "activeSince": "Опубликовано",
+      "views": "Просмотров",
+      "favorites": "В избранном",
+      "interests": "Интересуются",
+      "insights": "Аналитика",
+      "daysActive": "Дней активно",
+      "avgViewsPerDay": "Просмотров в день",
+      "conversionRate": "Конверсия",
+      "totalEngagement": "Всего взаимодействий",
+      "tip": "Совет: Регулярно поднимайте объявление, чтобы увеличить количество просмотров и интерес к вашему товару.",
+      "close": "Закрыть"
+    },
+    "shareTooltip": "Поделиться",
+    "shareModal": {
+      "title": "Поделиться объявлением",
+      "copyLink": "Скопировать ссылку",
+      "copied": "Скопировано!",
+      "orShareTo": "или поделиться в",
+      "telegramChats": "Telegram каналы",
+      "loading": "Загрузка...",
+      "loadError": "Не удалось загрузить каналы",
+      "noChats": "Нет доступных каналов",
+      "noChatsHint": "Добавьте бота в Telegram канал или группу",
+      "success": "Успешно отправлено!",
+      "shareError": "Не удалось поделиться",
+      "cancel": "Отмена",
+      "share": "Поделиться",
+      "sharing": "Отправка..."
+    }
   },
   "favorites": {
     "pageTitle": "Избранные объявления",
@@ -320,7 +375,12 @@
     "noSavedSearches": "Нет сохраненных поисков",
     "noSavedSearchesDescription": "Сохраните параметры поиска, чтобы получать уведомления о новых объявлениях",
     "noRecentlyViewed": "Нет недавно просмотренных",
-    "noRecentlyViewedDescription": "Здесь будут отображаться объявления, которые вы недавно просматривали"
+    "noRecentlyViewedDescription": "Здесь будут отображаться объявления, которые вы недавно просматривали",
+    "priceNotSpecified": "не указана",
+    "newItemsFound": "новых объявлений",
+    "noNewItems": "новые объявления не найдены",
+    "confirmDeleteSearch": "Удалить сохраненный поиск?",
+    "deleteSearchError": "Не удалось удалить поиск. Попробуйте еще раз."
   },
   "savedSearches": {
     "pageTitle": "Сохраненные поиски",
@@ -338,11 +398,25 @@
     "pageDescription": "Общайтесь с покупателями и продавцами прямо на платформе.",
     "selectConversation": "Выберите переписку, чтобы продолжить общение.",
     "userChatTitle": "Чат",
-    "userChatDescription": "Все ваши беседы с покупателями и продавцами в одном месте."
+    "userChatDescription": "Все ваши беседы с покупателями и продавцами в одном месте.",
+    "chat": "Чат",
+    "loadingChats": "Загрузка чатов…",
+    "noMessages": "Сообщений пока нет",
+    "noMessagesYet": "Без сообщений",
+    "startConversation": "Начните переписку с продавцом, чтобы она появилась здесь.",
+    "listingDeleted": "Удалено",
+    "listingUnavailable": "Недоступно",
+    "listingDeletedBanner": "Это объявление было удалено",
+    "listingUnavailableBanner": "Это объявление больше не активно"
   },
   "common": {
     "reportListing": "Пожаловаться на объявление",
-    "deliveryNotice": "на {{brand}} нет службы доставки. Все сделки происходят напрямую между покупателем и продавцом."
+    "deliveryNotice": "на {{brand}} нет службы доставки. Все сделки происходят напрямую между покупателем и продавцом.",
+    "retry": "Повторить",
+    "back": "Назад",
+    "loadingMore": "Загружаем ещё...",
+    "share": "Поделиться",
+    "copyLink": "Скопировать ссылку"
   },
   "settings": {
     "pageTitle": "Настройки",
@@ -350,8 +424,14 @@
     "logoAndBanner": "Логотип и баннер",
     "accountManagement": "Управление аккаунтом",
     "location": "Местоположение",
+    "selectLocation": "Выберите местоположение",
     "nameOnOLX": "Ваше имя на {{name}}",
     "saveButton": "Сохранить",
+    "saving": "Сохранение...",
+    "saveSuccess": "Профиль успешно сохранен!",
+    "saveError": "Не удалось сохранить профиль",
+    "deleteError": "Не удалось удалить аккаунт",
+    "loading": "Загрузка...",
     "logo": "Логотип",
     "banner": "Banner",
     "recommendedSize": "Рекомендованный размер",
@@ -359,9 +439,93 @@
     "logoDisplayInfo": "Ваше лого будет размещаться:",
     "logoDisplayBusiness": "на бизнес-странице {{name}} (если она у вас есть)",
     "logoDisplayListings": "на странице объявления (если вы бизнес)",
-    "deleteAccount": "удаление учетных записей",
-    "deleteAccountWarning": "Удаление учетной записи является необратимым, и в результате все ваши данные будут удалены. По юридическим причинам некоторые данные могут быть сохранены нами.",
-    "deleteProfileButton": "Удалить профиль"
+    "deleteAccount": "Удаление аккаунта",
+    "deleteAccountWarning": "Удаление учетной записи является необратимым, и в результате все ваши данные будут удалены. \nПо юридическим причинам некоторые данные могут быть сохранены нами.",
+    "deleteProfileButton": "Удалить профиль",
+    "telegram": {
+      "title": "Подключение Telegram",
+      "connected": "Telegram подключен",
+      "benefitsTitle": "Зачем подключать Telegram?",
+      "benefit1": "Делитесь объявлениями напрямую в Telegram каналы и группы",
+      "benefit2": "Получайте уведомления о новых сообщениях",
+      "benefit3": "Быстрый вход через Telegram без пароля",
+      "linking": "Подключение...",
+      "linkSuccess": "Telegram успешно подключен!",
+      "linkError": "Не удалось подключить Telegram",
+      "unlink": "Отключить",
+      "unlinking": "Отключение...",
+      "unlinkConfirm": "Вы уверены, что хотите отключить Telegram? Вы не сможете делиться объявлениями в Telegram каналы.",
+      "unlinkError": "Не удалось отключить Telegram",
+      "cannotUnlinkOnlyMethod": "Невозможно отключить Telegram, так как это единственный способ входа",
+      "onlyMethodHint": "Установите пароль, чтобы отключить",
+      "confirmMessage": "Вы собираетесь подключить этот аккаунт Telegram. Продолжить?",
+      "connectAs": "Подключить {{name}}",
+      "useDifferentAccount": "Использовать другой аккаунт",
+      "cancel": "Отмена",
+      "switchAccountHint": "Чтобы использовать другой аккаунт, сначала выйдите из Telegram в браузере",
+      "logoutTitle": "Выход из Telegram",
+      "logoutInstructions": "Мы открыли страницу выхода из Telegram. После выхода вернитесь сюда и нажмите кнопку подключения Telegram снова, чтобы подключить другой аккаунт.",
+      "understoodTryAgain": "Понятно, попробовать снова",
+      "connectedChats": "Подключенные чаты",
+      "disconnectChat": "Отключить чат",
+      "disconnectChatConfirm": "Вы уверены, что хотите отключить этот чат? Бот покинет группу/канал.",
+      "disconnectChatError": "Не удалось отключить чат",
+      "loadChatsError": "Не удалось загрузить список чатов",
+      "noChats": "Нет подключенных чатов",
+      "chatInactive": "Неактивен",
+      "chatInactiveHint": "Бот был удален из этого чата или чат удален"
+    },
+    "security": {
+      "title": "Безопасность",
+      "changePasswordDescription": "Измените свой пароль для защиты аккаунта.",
+      "setPasswordDescription": "Установите пароль, чтобы входить по email или телефону.",
+      "currentPassword": "Текущий пароль",
+      "currentPasswordPlaceholder": "Введите текущий пароль",
+      "currentPasswordRequired": "Введите текущий пароль",
+      "newPassword": "Новый пароль",
+      "newPasswordPlaceholder": "Введите новый пароль",
+      "confirmPassword": "Подтвердите пароль",
+      "confirmPasswordPlaceholder": "Введите пароль еще раз",
+      "passwordHint": "Минимум 8 символов",
+      "passwordTooShort": "Пароль должен содержать минимум 8 символов",
+      "passwordMismatch": "Пароли не совпадают",
+      "changeButton": "Изменить пароль",
+      "setButton": "Установить пароль",
+      "changing": "Сохранение...",
+      "changeSuccess": "Пароль успешно изменен!",
+      "changeError": "Не удалось изменить пароль"
+    },
+    "notifications": {
+      "title": "Уведомления",
+      "description": "Настройте уведомления через Telegram",
+      "connectTelegramHint": "Подключите Telegram для получения уведомлений",
+      "newMessages": "Новые сообщения",
+      "newMessagesDescription": "Получать уведомления о новых сообщениях в чатах",
+      "savedSearches": "Сохраненные поиски",
+      "savedSearchesDescription": "Ежедневные уведомления о новых объявлениях по вашим сохраненным поискам",
+      "promotions": "Акции и предложения",
+      "promotionsDescription": "Получать уведомления о специальных предложениях и акциях"
+    },
+    "menu": {
+      "profile": "Профиль",
+      "notifications": "Уведомления",
+      "telegram": "Telegram",
+      "security": "Безопасность",
+      "appearance": "Внешний вид",
+      "account": "Аккаунт"
+    },
+    "appearance": {
+      "title": "Внешний вид",
+      "subtitle": "Настройте внешний вид Sail на вашем устройстве",
+      "themeLabel": "Тема",
+      "light": "Светлая",
+      "dark": "Темная",
+      "system": "Системная",
+      "lightDesc": "Всегда использовать светлую тему",
+      "darkDesc": "Всегда использовать темную тему",
+      "systemDesc": "Следовать настройкам системы",
+      "currentTheme": "Текущая"
+    }
   },
   "locationPicker": {
     "title": "Выберите местоположение",
@@ -407,6 +571,50 @@
   },
   "lang": {
     "switchRU": "RU",
-    "switchUZ": "UZ"
+    "switchUZ": "UZ",
+    "language": "Язык"
+  },
+  "error": {
+    "title": "Что-то пошло не так",
+    "message": "Произошла непредвиденная ошибка. Пожалуйста, попробуйте снова.",
+    "tryAgain": "Попробовать снова",
+    "goHome": "На главную"
+  },
+  "shortcuts": {
+    "title": "Горячие клавиши",
+    "search": "Перейти к поиску",
+    "post": "Создать объявление",
+    "home": "На главную",
+    "favorites": "Избранное",
+    "myListings": "Мои объявления",
+    "close": "Закрыть",
+    "help": "Показать подсказки",
+    "hint": "Нажмите ? для показа подсказок"
+  },
+  "toast": {
+    "copied": "Скопировано в буфер обмена",
+    "linkCopied": "Ссылка скопирована",
+    "savedToFavorites": "Добавлено в избранное",
+    "removedFromFavorites": "Удалено из избранного",
+    "listingCreated": "Объявление создано",
+    "listingUpdated": "Объявление обновлено",
+    "listingDeleted": "Объявление удалено",
+    "messageSent": "Сообщение отправлено",
+    "errorOccurred": "Произошла ошибка"
+  },
+  "theme": {
+    "light": "Светлая тема",
+    "dark": "Тёмная тема",
+    "system": "Системная тема"
+  },
+  "pullToRefresh": {
+    "pull": "Потяните для обновления",
+    "release": "Отпустите для обновления",
+    "refreshing": "Обновление..."
+  },
+  "onlineStatus": {
+    "online": "Онлайн",
+    "recently": "Был недавно",
+    "unknown": "Неизвестно"
   }
 }

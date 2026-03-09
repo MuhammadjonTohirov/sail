@@ -1,26 +1,24 @@
 {
+  "model": "gemini-1.5-pro-latest",
+  "temperature": 0.5,
+  "topK": 32,
+  "topP": 1,
+  "log_level": "info",
+  "history": {
+    "max_entries": 1000
+  },
   "mcpServers": {
-    "filesystem": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-filesystem",
-        "/Users/r/Documents/"
-      ]
-    },
-    "sequentialthinking": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-sequential-thinking"
-      ]
-    },
-    "puppeteer": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "@modelcontextprotocol/server-puppeteer"
+    "figma": {
+      "command": "npx -y figma-developer-mcp --figma-api-key=${API_KEY} --stdio",
+      "env": {
+        "API_KEY": "figd_gSostgv9fIhQsu7Zol-cF9A1Perq7OizwSFC_mK"
+      },
+      "tools": [
+        "download_figma_images",
+        "get_figma_data"
       ]
     }
-  }
+  },
+  "theme": "Atom One",
+  "selectedAuthType": "oauth-personal"
 }

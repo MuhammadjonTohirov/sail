@@ -11,6 +11,7 @@ import { AttributesSection } from './components/AttributesSection';
 import { LocationSection } from './components/LocationSection';
 import { ContactInfoSection } from './components/ContactInfoSection';
 import { FormActions } from './components/FormActions';
+import { TelegramChannelSelector } from '@/components/post/TelegramChannelSelector';
 
 const TITLE_MAX_LENGTH = 70;
 const DESCRIPTION_MAX_LENGTH = 9000;
@@ -28,6 +29,8 @@ function PostPageContent() {
   const pageTitle = vm.isEditMode ? t('post.editTitle') : t('post.createTitle');
   const actionDisabled =
     vm.uploading ||
+    vm.isCompressing ||
+    vm.hasCompressionError ||
     !vm.selectedCat ||
     !vm.locationId ||
     !vm.title ||
@@ -35,7 +38,7 @@ function PostPageContent() {
     (vm.dealType === 'sell' && !vm.negotiable && !vm.price);
 
   return (
-    <div className="page-section page-section--padded post-page">
+    <div className="page-section page-section--padded post-page" style={{paddingLeft: 20, paddingRight: 20}}>
       <h2>{pageTitle}</h2>
       <div className="form-section">
         <DescribeSection
@@ -130,6 +133,16 @@ function PostPageContent() {
           emailMaxLength={CONTACT_MAX_LENGTH}
           phoneMaxLength={PHONE_MAX_LENGTH}
         />
+
+        {!vm.isEditMode && (
+          <div className="mb-8">
+            <TelegramChannelSelector
+              chats={vm.telegramChats}
+              selectedChatIds={vm.selectedTelegramChats}
+              onChange={vm.setSelectedTelegramChats}
+            />
+          </div>
+        )}
 
         <FormActions
           t={t}

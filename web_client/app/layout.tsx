@@ -1,5 +1,5 @@
 import "./globals.css";
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import React from "react";
 import ClientNav from "./navbar/ClientNav";
 import Footer from "@/components/layout/Footer";
@@ -7,12 +7,18 @@ import CurrencyProvider from "@/components/providers/CurrencyProvider";
 import I18nProvider from "@/components/providers/I18nProvider";
 import ActiveStatusProvider from "@/components/providers/ActiveStatusProvider";
 import { FavoritesProvider } from "@/components/providers/FavoritesProvider";
+import { ProfileProvider } from "@/components/providers/ProfileProvider";
+import { AppProviders } from "@/components/providers/AppProviders";
 import { appConfig, buildThemeStyle } from "@/config";
 import { cookies } from "next/headers";
 import { Locale } from "@/i18n/config";
-import { ProfileProvider } from "@/components/providers/ProfileProvider";
-// import type { Locale } from '@/i18n/config';
-// import { cookies } from 'next/headers';
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export const metadata: Metadata = {
   title: {
@@ -22,6 +28,14 @@ export const metadata: Metadata = {
   description: appConfig.seo.description,
   keywords: [...appConfig.seo.keywords],
   applicationName: appConfig.name,
+  icons: {
+    icon: [
+      { url: "/favicon-32x32.png", type: "image/png", sizes: "32x32" },
+      { url: "/favicon-64x64.png", type: "image/png", sizes: "64x64" },
+      { url: "/favicon.ico", type: "image/x-icon" },
+    ],
+    shortcut: "/favicon.ico",
+  },
   other: {
     tagline: appConfig.tagline,
   },
@@ -62,9 +76,11 @@ export default function RootLayout({
             <ActiveStatusProvider>
               <ProfileProvider>
                 <FavoritesProvider>
-                  <ClientNav />
-                  <main className="container page-content">{children}</main>
-                  <Footer />
+                  <AppProviders>
+                    <ClientNav />
+                    <main className="container page-content">{children}</main>
+                    <Footer />
+                  </AppProviders>
                 </FavoritesProvider>
               </ProfileProvider>
             </ActiveStatusProvider>
