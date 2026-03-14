@@ -12,6 +12,7 @@ import '../config/api_config.dart';
 import '../config/app_config.dart';
 import '../storage/secure_storage.dart';
 import 'auth_interceptor.dart';
+import 'envelope_interceptor.dart';
 import 'error_interceptor.dart';
 import 'logging_interceptor.dart';
 
@@ -43,8 +44,9 @@ class ApiClient {
       ),
     );
 
-    // Order matters: Error -> Auth -> Logging
+    // Order matters: Envelope (unwrap {success,data,error,code}) -> Error -> Auth -> Logging
     _dio.interceptors.addAll([
+      EnvelopeInterceptor(logger: _logger),
       ErrorInterceptor(logger: _logger),
       AuthInterceptor(storage: storage, dio: _dio, logger: _logger),
       if (kDebugMode) LoggingInterceptor(logger: _logger),

@@ -56,7 +56,26 @@ class _LoginPageState extends State<LoginPage> {
           },
         ),
       ),
-      body: Container(
+      body: BlocListener<AuthBloc, AuthState>(
+        listener: (context, state) {
+          state.maybeWhen(
+            authenticated: (_) {
+              if (context.canPop()) {
+                context.pop();
+              } else {
+                context.go('/');
+              }
+            },
+            failure: (failure) {
+              ToastManager().show(
+                message: l10n.loginFailed(failure.message),
+                type: ToastType.error,
+              );
+            },
+            orElse: () {},
+          );
+        },
+        child: Container(
         color: AppColors.background,
         height: double.infinity,
         child: SingleChildScrollView(
@@ -82,6 +101,7 @@ class _LoginPageState extends State<LoginPage> {
             ),
           ),
         ),
+      ),
       ),
     );
   }

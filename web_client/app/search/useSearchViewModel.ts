@@ -162,6 +162,8 @@ export interface SearchViewModel {
   setMinPrice: (value: string) => void;
   maxPrice: string;
   setMaxPrice: (value: string) => void;
+  currency: string;
+  setCurrency: (value: string) => void;
   sort: string;
   setSort: (value: string) => void;
   viewMode: 'grid' | 'list';
@@ -188,6 +190,7 @@ interface RunOverrides {
   q?: string;
   minPrice?: string;
   maxPrice?: string;
+  currency?: string;
   sort?: string;
   categorySlug?: string;
   attrValues?: Record<string, any>;
@@ -195,7 +198,7 @@ interface RunOverrides {
 }
 
 export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewModel {
-  const { locale } = useI18n();
+  const { locale, t } = useI18n();
   const basePath = '';
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -231,6 +234,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
   const [minPrice, setMinPrice] = useState(() => toSingleValue(mergedPrefill.min_price, ''));
   const [maxPrice, setMaxPrice] = useState(() => toSingleValue(mergedPrefill.max_price, ''));
   const [sort, setSort] = useState(() => toSingleValue(mergedPrefill.sort, '') || 'relevance');
+  const [currency, setCurrency] = useState(() => toSingleValue(mergedPrefill.currency, ''));
   const [categorySlug, setCategorySlug] = useState(() => toSingleValue(mergedPrefill.category_slug, ''));
 
   const runRef = useRef<(overrides?: RunOverrides) => Promise<void> | void>();
@@ -249,6 +253,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
     setQ(toSingleValue(mergedPrefill.q, ''));
     setMinPrice(toSingleValue(mergedPrefill.min_price, ''));
     setMaxPrice(toSingleValue(mergedPrefill.max_price, ''));
+    setCurrency(toSingleValue(mergedPrefill.currency, ''));
     setSort(toSingleValue(mergedPrefill.sort, '') || 'relevance');
     setCategorySlug(toSingleValue(mergedPrefill.category_slug, ''));
   }, [mergedPrefill]);
@@ -321,6 +326,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
       const effectiveQ = overrides?.q ?? q;
       const effectiveMinPrice = overrides?.minPrice ?? minPrice;
       const effectiveMaxPrice = overrides?.maxPrice ?? maxPrice;
+      const effectiveCurrency = overrides?.currency ?? currency;
       const effectiveSort = overrides?.sort ?? sort;
       const effectiveCategorySlug = overrides?.categorySlug ?? (selectedCategory?.slug || categorySlug || '');
       const effectiveAttrValues = overrides?.attrValues ?? attrValues;
@@ -334,6 +340,8 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
         per_page: perPage,
         page: 1,
       };
+
+      if (effectiveCurrency) params.currency = effectiveCurrency;
       
       const urlAttributeEntries: Array<[string, any]> = [];
       const handledAttrKeys = new Set<string>();
@@ -409,6 +417,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
       if (effectiveQ) usp.set('q', effectiveQ);
       if (effectiveMinPrice) usp.set('min_price', String(effectiveMinPrice));
       if (effectiveMaxPrice) usp.set('max_price', String(effectiveMaxPrice));
+      if (effectiveCurrency) usp.set('currency', effectiveCurrency);
       if (effectiveCategorySlug) usp.set('category_slug', effectiveCategorySlug);
       if (effectiveSort && effectiveSort !== 'relevance') usp.set('sort', effectiveSort);
       
@@ -450,6 +459,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
         page: nextPage,
       };
 
+      if (currency) params.currency = currency;
       if (effectiveCategorySlug) params.category_slug = effectiveCategorySlug;
 
       // Include current attribute values
@@ -476,7 +486,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
     } finally {
       setLoadingMore(false);
     }
-  }, [loadingMore, loading, hasMore, page, q, minPrice, maxPrice, sort, perPage, selectedCategory?.slug, categorySlug, attributes, attrValues, results.length]);
+  }, [loadingMore, loading, hasMore, page, q, minPrice, maxPrice, currency, sort, perPage, selectedCategory?.slug, categorySlug, attributes, attrValues, results.length]);
 
   runRef.current = run;
 
@@ -529,13 +539,15 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
     setCategorySlug('');
     setMinPrice('');
     setMaxPrice('');
+    setCurrency('');
     setAttrValues({});
     // Pass overrides to run immediately with cleared values
-    runRef.current?.({ 
-      q: '', 
-      categorySlug: '', 
-      minPrice: '', 
-      maxPrice: '', 
+    runRef.current?.({
+      q: '',
+      categorySlug: '',
+      minPrice: '',
+      maxPrice: '',
+      currency: '',
       attrValues: {},
       clearAllAttributes: true
     });
@@ -544,7 +556,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
   const saveCurrentSearch = useCallback(async () => {
     if (!features.enableSavedSearches) return;
     const effectiveCategorySlug = selectedCategory?.slug || categorySlug || '';
-    const title = selectedCategoryPath || q || (locale === 'uz' ? 'Qidiruv' : 'Поиск');
+    const title = selectedCategoryPath || q || t('common.mySearch');
 
     // Build attributes params for saving
     const attributesParams: Record<string, any> = {};
@@ -567,6 +579,7 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
         q,
         min_price: minPrice,
         max_price: maxPrice,
+        ...(currency ? { currency } : {}),
         ...(effectiveCategorySlug ? { category_slug: effectiveCategorySlug } : {}),
         ...attributesParams,
       },
@@ -577,11 +590,11 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
     };
     try {
       await interactorRef.current.saveSearch({ title, query });
-      alert(locale === 'uz' ? 'Qidiruv saqlandi' : 'Поиск сохранен');
+      alert(t('common.searchSaved'));
     } catch {
-      alert(locale === 'uz' ? 'Xatolik yuz berdi' : 'Ошибка при сохранении');
+      alert(t('common.searchSaveError'));
     }
-  }, [features.enableSavedSearches, selectedCategory?.slug, categorySlug, selectedCategoryPath, q, minPrice, maxPrice, locale, searchParams, attributes, attrValues]);
+  }, [features.enableSavedSearches, selectedCategory?.slug, categorySlug, selectedCategoryPath, q, minPrice, maxPrice, currency, t, searchParams, attributes, attrValues]);
 
   return {
     locale,
@@ -592,6 +605,8 @@ export function useSearchViewModel(initialFilters?: SearchPrefill): SearchViewMo
     setMinPrice,
     maxPrice,
     setMaxPrice,
+    currency,
+    setCurrency,
     sort,
     setSort,
     viewMode,

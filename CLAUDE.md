@@ -100,6 +100,32 @@ docker-compose up -d  # Start PostgreSQL, Redis, OpenSearch, MinIO
 6. Chat messages → Real-time updates via WebSocket (planned) or polling
 7. Currency conversions → Cached exchange rates (1-hour TTL)
 
+### Standardized API Response Format
+All API responses follow a consistent envelope format:
+```json
+{
+  "success": true,      // boolean - true for 2xx, false otherwise
+  "data": { ... },      // any - main response payload, null on error
+  "error": null,        // string|null - human-readable error message
+  "code": 200           // integer - HTTP status code
+}
+```
+
+**Implementation** (config/api_response.py):
+- `ApiRenderer` - Custom DRF renderer that wraps all responses automatically
+- `api_exception_handler` - Custom exception handler for consistent error envelopes
+- `ApiPagination` - Page-number pagination with envelope-compatible structure
+- Paginated responses include `results`, `count`, `page`, `per_page`, `next`, `previous` inside `data`
+- All error `detail` fields use consistent `"detail"` key
+- Telegram webhook bypasses envelope (uses plain JSONRenderer)
+- Frontend `apiFetch()` automatically unwraps the envelope, returning `data` directly
+
+### Swagger/OpenAPI Documentation
+- **drf-spectacular** with `@extend_schema` decorators on all endpoints
+- **Schema URL**: `/api/schema/`
+- **Swagger UI**: `/api/docs/`
+- Endpoints organized by tags: auth, profile, security, listings, search, chat, favorites, saved-searches, taxonomy, moderation, currency, uploads, telegram, health
+
 ## Key Implementation Details
 
 ### Authentication System

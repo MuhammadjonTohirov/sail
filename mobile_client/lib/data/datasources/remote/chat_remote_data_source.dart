@@ -44,12 +44,13 @@ class ChatRemoteDataSourceImpl implements ChatRemoteDataSource {
   Future<List<ChatThreadDto>> getThreads({bool? archived}) async {
     final queryParams = <String, dynamic>{};
     if (archived != null) queryParams['archived'] = archived.toString();
-    
-    final response = await _api.get<List<dynamic>>(
+
+    final response = await _api.get<Map<String, dynamic>>(
       ApiConfig.chatThreads,
       queryParameters: queryParams,
     );
-    return (response.data!)
+    final results = response.data!['results'] as List<dynamic>? ?? [];
+    return results
         .map((json) => ChatThreadDto.fromJson(json as Map<String, dynamic>))
         .toList();
   }

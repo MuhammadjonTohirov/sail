@@ -28,4 +28,7 @@ abstract class ListingRepository {
   // Social
   Future<Result<void>> shareToTelegram(int listingId, List<int> chatIds);
   Future<Result<void>> trackInterest(int listingId);
+
+  // Contact
+  Future<Result<RevealContactResult>> revealContact(int listingId);
 }

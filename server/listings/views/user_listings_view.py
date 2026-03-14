@@ -1,11 +1,32 @@
 from __future__ import annotations
 
+from drf_spectacular.utils import extend_schema, OpenApiExample
 from rest_framework import generics, permissions
 
 from ..models import Listing
+from ..querysets import listing_fetch_queryset
 from ..serializers import ListingSerializer
 
 
+@extend_schema(
+    tags=["listings"],
+    summary="List user's listings",
+    description="Retrieve all active listings for a specific user. "
+    "Supports filtering by category slug and sorting by newest, oldest, or price.",
+    responses={200: ListingSerializer(many=True)},
+    examples=[
+        OpenApiExample(
+            "Success",
+            value={
+                "success": True,
+                "data": [{"id": 1, "title": "iPhone 15", "status": "active"}],
+                "error": None,
+                "code": 200,
+            },
+            response_only=True,
+        ),
+    ],
+)
 class UserListingsView(generics.ListAPIView):
     """Get all active listings for a specific user (public view)"""
     serializer_class = ListingSerializer
@@ -13,10 +34,10 @@ class UserListingsView(generics.ListAPIView):
 
     def get_queryset(self):
         user_id = self.kwargs.get("user_id")
-        queryset = Listing.objects.filter(
+        queryset = listing_fetch_queryset().filter(
             user_id=user_id,
             status=Listing.Status.ACTIVE
-        ).select_related("category", "location", "user").prefetch_related("media")
+        )
 
         # Apply filters
         category_slug = self.request.query_params.get("category")

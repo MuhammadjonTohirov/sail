@@ -33,6 +33,9 @@ abstract class ListingRemoteDataSource {
   // Social
   Future<void> shareToTelegram(int listingId, List<int> chatIds);
   Future<void> trackInterest(int listingId);
+
+  // Contact
+  Future<Map<String, dynamic>> revealContact(int listingId);
 }
 
 
@@ -121,18 +124,20 @@ class ListingRemoteDataSourceImpl implements ListingRemoteDataSource {
 
   @override
   Future<List<ListingDto>> getMyListings() async {
-    final response = await _api.get<List<dynamic>>(ApiConfig.myListings);
-    return (response.data!)
+    final response = await _api.get<Map<String, dynamic>>(ApiConfig.myListings);
+    final results = response.data!['results'] as List<dynamic>? ?? [];
+    return results
         .map((json) => ListingDto.fromJson(json as Map<String, dynamic>))
         .toList();
   }
 
   @override
   Future<List<ListingDto>> getUserListings(int userId) async {
-    final response = await _api.get<List<dynamic>>(
+    final response = await _api.get<Map<String, dynamic>>(
       ApiConfig.userListings(userId),
     );
-    return (response.data!)
+    final results = response.data!['results'] as List<dynamic>? ?? [];
+    return results
         .map((json) => ListingDto.fromJson(json as Map<String, dynamic>))
         .toList();
   }
@@ -149,5 +154,13 @@ class ListingRemoteDataSourceImpl implements ListingRemoteDataSource {
   @override
   Future<void> trackInterest(int listingId) async {
     await _api.post(ApiConfig.listingInterest(listingId));
+  }
+
+  @override
+  Future<Map<String, dynamic>> revealContact(int listingId) async {
+    final response = await _api.post<Map<String, dynamic>>(
+      ApiConfig.listingRevealContact(listingId),
+    );
+    return response.data!;
   }
 }

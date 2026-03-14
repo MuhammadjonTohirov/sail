@@ -25,9 +25,11 @@ extension ListingMediaDtoMapper on ListingMediaDto {
 extension ListingAttributeDtoMapper on ListingAttributeDto {
   ListingAttribute toEntity() {
     return ListingAttribute(
+      attributeId: attribute,
       key: key,
       value: value,
       label: label,
+      type: type,
     );
   }
 }
@@ -97,6 +99,9 @@ extension ListingDtoMapper on ListingDto {
       contactPhoneMasked: contactPhoneMasked,
       priceNormalized: priceNormalized,
       isPromoted: isPromoted,
+      viewCount: viewCount ?? 0,
+      favoriteCount: favoriteCount ?? 0,
+      interestCount: interestCount ?? 0,
       userId: userId,
       user: user?.toEntity(),
       seller: seller?.toEntity(),

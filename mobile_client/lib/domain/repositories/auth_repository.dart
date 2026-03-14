@@ -37,6 +37,9 @@ abstract class AuthRepository {
   Future<Result<UserProfile>> linkTelegram(Map<String, dynamic> telegramData);
   Future<Result<void>> unlinkTelegram();
 
+  // Activity
+  Future<Result<DateTime?>> markActive();
+
   // Session
   Future<bool> isAuthenticated();
   Future<void> logout();

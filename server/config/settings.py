@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     "searchapp",
     "savedsearches",
     "favorites",
-    "uploads",
+    # "uploads",
     "moderation",
     "chat",
     "currency",
@@ -52,6 +52,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",  # WhiteNoise qo'shildi
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
@@ -127,8 +128,14 @@ TIME_ZONE = os.environ.get("TIME_ZONE", "Asia/Tashkent")
 USE_I18N = True
 USE_TZ = True
 
+# Static files - WhiteNoise sozlamalari
 STATIC_URL = "static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+
+# WhiteNoise static files storage
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+# Media files
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
@@ -142,6 +149,15 @@ else:
     if not origins:
         raise ValueError("CORS_ALLOWED_ORIGINS must be set in production!")
     CORS_ALLOWED_ORIGINS = origins
+    
+    # CSRF trusted origins for production
+    CSRF_TRUSTED_ORIGINS = origins.copy()
+    # Add .onrender.com wildcard if not in origins
+    if not any('.onrender.com' in o for o in origins):
+        CSRF_TRUSTED_ORIGINS.append('https://*.onrender.com')
+
+# CORS credentials
+CORS_ALLOW_CREDENTIALS = True
 
 # Security headers for production
 if not DEBUG:
@@ -172,6 +188,12 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.AllowAny",
     ],
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_RENDERER_CLASSES": [
+        "config.api_response.ApiRenderer",
+    ],
+    "DEFAULT_PAGINATION_CLASS": "config.api_response.ApiPagination",
+    "PAGE_SIZE": 20,
+    "EXCEPTION_HANDLER": "config.api_response.api_exception_handler",
 }
 
 # Enable rate limiting in production
@@ -208,9 +230,37 @@ CELERY_BEAT_SCHEDULE = {
 # SimpleJWT defaults can be overridden via env later if needed
 # drf-spectacular
 SPECTACULAR_SETTINGS = {
-    "TITLE": "OLX Clone API",
-    "DESCRIPTION": "Classifieds platform API",
+    "TITLE": "Sail API",
+    "DESCRIPTION": (
+        "Sail — C2C classifieds marketplace API.\n\n"
+        "All responses follow a standard envelope:\n"
+        "```json\n"
+        '{ "success": true, "data": <payload>, "error": null, "code": 200 }\n'
+        "```"
+    ),
     "VERSION": "1.0.0",
+    "CONTACT": {"name": "Sail Team"},
+    "SCHEMA_PATH_PREFIX": "/api/v1/",
+    "COMPONENT_SPLIT_REQUEST": True,
+    "POSTPROCESSING_HOOKS": [
+        "drf_spectacular.hooks.postprocess_schema_enums",
+    ],
+    "TAGS": [
+        {"name": "auth", "description": "Authentication (OTP, email/password, Telegram)"},
+        {"name": "profile", "description": "User profile management"},
+        {"name": "security", "description": "Password & account linking"},
+        {"name": "listings", "description": "Listing CRUD & media"},
+        {"name": "search", "description": "Full-text search with filters"},
+        {"name": "chat", "description": "Chat threads & messages"},
+        {"name": "favorites", "description": "Favorites & recently viewed"},
+        {"name": "saved-searches", "description": "Saved search management"},
+        {"name": "taxonomy", "description": "Categories, locations, attributes"},
+        {"name": "moderation", "description": "Reporting & moderation queue"},
+        {"name": "currency", "description": "Currency config & conversion"},
+        {"name": "uploads", "description": "S3 presigned uploads"},
+        {"name": "telegram", "description": "Telegram chat configs & webhooks"},
+        {"name": "health", "description": "Health check & i18n"},
+    ],
 }
 
 # Telegram integration (login + bot usage)
@@ -247,3 +297,15 @@ if not _chat_attachment_prefixes:
     if media_url.startswith(("http://", "https://")):
         _chat_attachment_prefixes.append(media_url)
 CHAT_ATTACHMENT_ALLOWED_URL_PREFIXES = _chat_attachment_prefixes
+
+# Security settings for production
+if not DEBUG:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_BROWSER_XSS_FILTER = True
+    SECURE_CONTENT_TYPE_NOSNIFF = True
+    X_FRAME_OPTIONS = 'DENY'
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True

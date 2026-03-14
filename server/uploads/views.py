@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime, timedelta
 
 from django.conf import settings
+from drf_spectacular.utils import OpenApiExample, extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import permissions
@@ -13,6 +14,23 @@ from rest_framework import permissions
 class PresignUploadView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        tags=["uploads"],
+        summary="Get presigned upload URL",
+        description="Get a presigned S3 upload URL for direct file uploads. Falls back to local upload mode if S3 is not configured.",
+        examples=[
+            OpenApiExample(
+                "S3 mode",
+                value={"success": True, "data": {"mode": "s3", "presigned": {"url": "https://s3.example.com/bucket", "fields": {}}, "public_url": "https://s3.example.com/bucket/uploads/abc123"}, "error": None, "code": 200},
+                response_only=True,
+            ),
+            OpenApiExample(
+                "Local mode",
+                value={"success": True, "data": {"mode": "local", "message": "S3 not configured; use local upload endpoint"}, "error": None, "code": 200},
+                response_only=True,
+            ),
+        ],
+    )
     def post(self, request):
         # If S3 env is configured, return a presigned POST; else, indicate local upload
         bucket = os.environ.get("MEDIA_BUCKET")

@@ -1,17 +1,58 @@
 from __future__ import annotations
 
+from drf_spectacular.utils import extend_schema, OpenApiExample
 from rest_framework import permissions
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from ..models import Listing
 from ..serializers import ListingCreateSerializer, ListingSerializer
+from ..utils import get_user_profile, sync_listing_contact_phone_mask
 from taxonomy.models import Category, Location
 
 
 class ListingCreateRawView(APIView):
     permission_classes = [permissions.IsAuthenticated]
 
+    @extend_schema(
+        tags=["listings"],
+        summary="Create a listing (raw)",
+        description="Create a new listing by passing raw JSON fields directly, "
+        "bypassing the serializer validation. Useful for simple clients.",
+        request={
+            "application/json": {
+                "type": "object",
+                "properties": {
+                    "title": {"type": "string"},
+                    "category": {"type": "integer"},
+                    "location": {"type": "integer"},
+                    "description": {"type": "string"},
+                    "price_amount": {"type": "number"},
+                    "price_currency": {"type": "string"},
+                    "condition": {"type": "string"},
+                    "deal_type": {"type": "string"},
+                    "contact_name": {"type": "string"},
+                    "contact_email": {"type": "string"},
+                    "contact_phone": {"type": "string"},
+                    "attributes": {"type": "array", "items": {"type": "object"}},
+                },
+                "required": ["title", "category", "location"],
+            }
+        },
+        responses={201: ListingSerializer},
+        examples=[
+            OpenApiExample(
+                "Success",
+                value={
+                    "success": True,
+                    "data": {"id": 1, "title": "iPhone 15", "status": "draft"},
+                    "error": None,
+                    "code": 201,
+                },
+                response_only=True,
+            ),
+        ],
+    )
     def post(self, request):
         data = request.data or {}
 
@@ -50,6 +91,9 @@ class ListingCreateRawView(APIView):
         lat = data.get("lat")
         lon = data.get("lon")
         attributes = data.get("attributes", [])
+        contact_name = data.get("contact_name", "")
+        contact_email = data.get("contact_email", "")
+        contact_phone = data.get("contact_phone", "")
 
         # Coerce booleans/numbers/enums
         def to_bool(v):
@@ -75,6 +119,14 @@ class ListingCreateRawView(APIView):
         is_price_negotiable = to_bool(is_price_negotiable)
         lat = to_float_or_none(lat)
         lon = to_float_or_none(lon)
+        profile = get_user_profile(request.user)
+
+        if not contact_name and profile and profile.display_name:
+            contact_name = profile.display_name
+        if not contact_email and profile and profile.email:
+            contact_email = profile.email
+        if not contact_phone and profile and profile.phone_e164:
+            contact_phone = profile.phone_e164
 
         if condition not in dict(Listing.Condition.choices):
             return Response({"condition": f"Invalid. Allowed: {list(dict(Listing.Condition.choices).keys())}"}, status=400)
@@ -98,15 +150,12 @@ class ListingCreateRawView(APIView):
             location_id=location_id,
             lat=lat,
             lon=lon,
+            contact_name=contact_name,
+            contact_email=contact_email,
+            contact_phone=contact_phone,
         )
 
-        # Phone mask (same logic as serializer.create)
-        user = request.user
-        if hasattr(user, "profile") and getattr(user.profile, "phone_e164", None):
-            phone = user.profile.phone_e164
-        else:
-            phone = user.username
-        listing.contact_phone_masked = phone#(phone[:4] + "****" + phone[-2:]) if phone else ""
+        sync_listing_contact_phone_mask(listing)
         listing.save(update_fields=["contact_phone_masked"])
 
         # Save attributes using existing logic for consistency

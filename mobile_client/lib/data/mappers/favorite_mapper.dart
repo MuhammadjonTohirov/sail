@@ -9,14 +9,12 @@ extension FavoriteDtoMapper on FavoriteDto {
   Favorite toEntity() {
     return Favorite(
       id: id,
-      listingId: listingId,
-      title: title,
-      price: price,
-      currency: currency,
-      thumbnailUrl: thumbnailUrl,
-      locationName: locationName,
-      status: status,
-      addedAt: addedAt != null ? DateTime.tryParse(addedAt!) : null,
+      listingId: listing,
+      title: listingTitle,
+      price: listingPrice,
+      locationName: listingLocation,
+      mediaUrls: listingMediaUrls,
+      createdAt: createdAt != null ? DateTime.tryParse(createdAt!) : null,
     );
   }
 }
@@ -26,12 +24,11 @@ extension RecentlyViewedDtoMapper on RecentlyViewedDto {
   RecentlyViewedListing toEntity() {
     return RecentlyViewedListing(
       id: id,
-      listingId: listingId,
-      title: title,
-      price: price,
-      currency: currency,
-      thumbnailUrl: thumbnailUrl,
-      locationName: locationName,
+      listingId: listing,
+      title: listingTitle,
+      price: listingPrice,
+      locationName: listingLocation,
+      mediaUrls: listingMediaUrls,
       viewedAt: viewedAt != null ? DateTime.tryParse(viewedAt!) : null,
     );
   }

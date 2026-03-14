@@ -57,7 +57,7 @@ export function KeyboardShortcutsHelp() {
                 ))}
               </div>
               <div className="shortcut-description">
-                {t(shortcut.description, shortcut.description.split(".").pop())}
+                {t(shortcut.description, shortcut.description.split(".").pop() ?? '')}
               </div>
             </div>
           ))}

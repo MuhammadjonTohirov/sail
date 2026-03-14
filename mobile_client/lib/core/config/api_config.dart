@@ -17,7 +17,7 @@ class ApiConfig {
   static String get baseUrl {
     switch (_environment) {
       case Environment.dev:
-        return 'https://sail.uz/server';
+        return 'http://94.158.51.9:8081';
       case Environment.staging:
         return 'https://staging.sail.uz/server';
       case Environment.prod:
@@ -74,6 +74,7 @@ class ApiConfig {
   static String listingDelete(int id) => '$apiPrefix/listings/$id/delete';
   static String listingShare(int id) => '$apiPrefix/listings/$id/share';
   static String listingInterest(int id) => '$apiPrefix/listings/$id/interest';
+  static String listingRevealContact(int id) => '$apiPrefix/listings/$id/reveal-contact';
   static String listingMedia(int id) => '$apiPrefix/listings/$id/media';
   static String listingMediaDelete(int listingId, int mediaId) => 
       '$apiPrefix/listings/$listingId/media/$mediaId';

@@ -858,7 +858,7 @@ as String?,
 /// @nodoc
 mixin _$ListingAttributeDto {
 
- String get key; dynamic get value; String? get label;
+ int? get attribute; String get key; dynamic get value; String? get label; String? get type;
 /// Create a copy of ListingAttributeDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -871,16 +871,16 @@ $ListingAttributeDtoCopyWith<ListingAttributeDto> get copyWith => _$ListingAttri
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListingAttributeDto&&(identical(other.key, key) || other.key == key)&&const DeepCollectionEquality().equals(other.value, value)&&(identical(other.label, label) || other.label == label));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListingAttributeDto&&(identical(other.attribute, attribute) || other.attribute == attribute)&&(identical(other.key, key) || other.key == key)&&const DeepCollectionEquality().equals(other.value, value)&&(identical(other.label, label) || other.label == label)&&(identical(other.type, type) || other.type == type));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,key,const DeepCollectionEquality().hash(value),label);
+int get hashCode => Object.hash(runtimeType,attribute,key,const DeepCollectionEquality().hash(value),label,type);
 
 @override
 String toString() {
-  return 'ListingAttributeDto(key: $key, value: $value, label: $label)';
+  return 'ListingAttributeDto(attribute: $attribute, key: $key, value: $value, label: $label, type: $type)';
 }
 
 
@@ -891,7 +891,7 @@ abstract mixin class $ListingAttributeDtoCopyWith<$Res>  {
   factory $ListingAttributeDtoCopyWith(ListingAttributeDto value, $Res Function(ListingAttributeDto) _then) = _$ListingAttributeDtoCopyWithImpl;
 @useResult
 $Res call({
- String key, dynamic value, String? label
+ int? attribute, String key, dynamic value, String? label, String? type
 });
 
 
@@ -908,11 +908,13 @@ class _$ListingAttributeDtoCopyWithImpl<$Res>
 
 /// Create a copy of ListingAttributeDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? key = null,Object? value = freezed,Object? label = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? attribute = freezed,Object? key = null,Object? value = freezed,Object? label = freezed,Object? type = freezed,}) {
   return _then(_self.copyWith(
-key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+attribute: freezed == attribute ? _self.attribute : attribute // ignore: cast_nullable_to_non_nullable
+as int?,key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
 as String,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
 as dynamic,label: freezed == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
+as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -998,10 +1000,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String key,  dynamic value,  String? label)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? attribute,  String key,  dynamic value,  String? label,  String? type)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ListingAttributeDto() when $default != null:
-return $default(_that.key,_that.value,_that.label);case _:
+return $default(_that.attribute,_that.key,_that.value,_that.label,_that.type);case _:
   return orElse();
 
 }
@@ -1019,10 +1021,10 @@ return $default(_that.key,_that.value,_that.label);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String key,  dynamic value,  String? label)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? attribute,  String key,  dynamic value,  String? label,  String? type)  $default,) {final _that = this;
 switch (_that) {
 case _ListingAttributeDto():
-return $default(_that.key,_that.value,_that.label);case _:
+return $default(_that.attribute,_that.key,_that.value,_that.label,_that.type);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1039,10 +1041,10 @@ return $default(_that.key,_that.value,_that.label);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String key,  dynamic value,  String? label)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? attribute,  String key,  dynamic value,  String? label,  String? type)?  $default,) {final _that = this;
 switch (_that) {
 case _ListingAttributeDto() when $default != null:
-return $default(_that.key,_that.value,_that.label);case _:
+return $default(_that.attribute,_that.key,_that.value,_that.label,_that.type);case _:
   return null;
 
 }
@@ -1054,12 +1056,14 @@ return $default(_that.key,_that.value,_that.label);case _:
 @JsonSerializable()
 
 class _ListingAttributeDto implements ListingAttributeDto {
-  const _ListingAttributeDto({required this.key, required this.value, this.label});
+  const _ListingAttributeDto({this.attribute, required this.key, required this.value, this.label, this.type});
   factory _ListingAttributeDto.fromJson(Map<String, dynamic> json) => _$ListingAttributeDtoFromJson(json);
 
+@override final  int? attribute;
 @override final  String key;
 @override final  dynamic value;
 @override final  String? label;
+@override final  String? type;
 
 /// Create a copy of ListingAttributeDto
 /// with the given fields replaced by the non-null parameter values.
@@ -1074,16 +1078,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListingAttributeDto&&(identical(other.key, key) || other.key == key)&&const DeepCollectionEquality().equals(other.value, value)&&(identical(other.label, label) || other.label == label));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListingAttributeDto&&(identical(other.attribute, attribute) || other.attribute == attribute)&&(identical(other.key, key) || other.key == key)&&const DeepCollectionEquality().equals(other.value, value)&&(identical(other.label, label) || other.label == label)&&(identical(other.type, type) || other.type == type));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,key,const DeepCollectionEquality().hash(value),label);
+int get hashCode => Object.hash(runtimeType,attribute,key,const DeepCollectionEquality().hash(value),label,type);
 
 @override
 String toString() {
-  return 'ListingAttributeDto(key: $key, value: $value, label: $label)';
+  return 'ListingAttributeDto(attribute: $attribute, key: $key, value: $value, label: $label, type: $type)';
 }
 
 
@@ -1094,7 +1098,7 @@ abstract mixin class _$ListingAttributeDtoCopyWith<$Res> implements $ListingAttr
   factory _$ListingAttributeDtoCopyWith(_ListingAttributeDto value, $Res Function(_ListingAttributeDto) _then) = __$ListingAttributeDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String key, dynamic value, String? label
+ int? attribute, String key, dynamic value, String? label, String? type
 });
 
 
@@ -1111,11 +1115,13 @@ class __$ListingAttributeDtoCopyWithImpl<$Res>
 
 /// Create a copy of ListingAttributeDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? key = null,Object? value = freezed,Object? label = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? attribute = freezed,Object? key = null,Object? value = freezed,Object? label = freezed,Object? type = freezed,}) {
   return _then(_ListingAttributeDto(
-key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+attribute: freezed == attribute ? _self.attribute : attribute // ignore: cast_nullable_to_non_nullable
+as int?,key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
 as String,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
 as dynamic,label: freezed == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
+as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -1127,9 +1133,9 @@ as String?,
 /// @nodoc
 mixin _$ListingDto {
 
- int get id; String get title; String? get description;@JsonKey(name: 'price_amount') double get priceAmount;@JsonKey(name: 'price_currency') String get priceCurrency;@JsonKey(name: 'is_price_negotiable') bool? get isPriceNegotiable; String get condition;@JsonKey(name: 'deal_type') String? get dealType;// 'sell', 'exchange', 'free'
+ int get id; String get title; String? get description;@JsonKey(name: 'price_amount', fromJson: _parseDouble) double get priceAmount;@JsonKey(name: 'price_currency') String get priceCurrency;@JsonKey(name: 'is_price_negotiable') bool? get isPriceNegotiable; String get condition;@JsonKey(name: 'deal_type') String? get dealType;// 'sell', 'exchange', 'free'
 @JsonKey(name: 'seller_type') String? get sellerType;// 'person', 'business'
- int? get category;@JsonKey(name: 'category_name') String? get categoryName;@JsonKey(name: 'category_slug') String? get categorySlug; int? get location;@JsonKey(name: 'location_name') String? get locationName;@JsonKey(name: 'location_slug') String? get locationSlug; double? get lat; double? get lon; List<ListingMediaDto>? get media;@JsonKey(name: 'media_urls') List<String>? get mediaUrls; List<ListingAttributeDto>? get attributes; String? get status;@JsonKey(name: 'contact_name') String? get contactName;@JsonKey(name: 'contact_email') String? get contactEmail;@JsonKey(name: 'contact_phone') String? get contactPhone;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'updated_at') String? get updatedAt;@JsonKey(name: 'refreshed_at') String? get refreshedAt;@JsonKey(name: 'expires_at') String? get expiresAt;@JsonKey(name: 'quality_score') double? get qualityScore;@JsonKey(name: 'contact_phone_masked') String? get contactPhoneMasked;@JsonKey(name: 'price_normalized') double? get priceNormalized;@JsonKey(name: 'is_promoted') bool? get isPromoted;@JsonKey(name: 'user_id') int? get userId; ListingUserDto? get user; ListingSellerDto? get seller;
+ int? get category;@JsonKey(name: 'category_name') String? get categoryName;@JsonKey(name: 'category_slug') String? get categorySlug; int? get location;@JsonKey(name: 'location_name') String? get locationName;@JsonKey(name: 'location_slug') String? get locationSlug; double? get lat; double? get lon; List<ListingMediaDto>? get media;@JsonKey(name: 'media_urls') List<String>? get mediaUrls; List<ListingAttributeDto>? get attributes; String? get status;@JsonKey(name: 'contact_name') String? get contactName;@JsonKey(name: 'contact_email') String? get contactEmail;@JsonKey(name: 'contact_phone') String? get contactPhone;@JsonKey(name: 'created_at') String? get createdAt;@JsonKey(name: 'updated_at') String? get updatedAt;@JsonKey(name: 'refreshed_at') String? get refreshedAt;@JsonKey(name: 'expires_at') String? get expiresAt;@JsonKey(name: 'quality_score', fromJson: _parseDoubleNullable) double? get qualityScore;@JsonKey(name: 'contact_phone_masked') String? get contactPhoneMasked;@JsonKey(name: 'price_normalized', fromJson: _parseDoubleNullable) double? get priceNormalized;@JsonKey(name: 'is_promoted') bool? get isPromoted;@JsonKey(name: 'view_count') int? get viewCount;@JsonKey(name: 'favorite_count') int? get favoriteCount;@JsonKey(name: 'interest_count') int? get interestCount;@JsonKey(name: 'user_id') int? get userId; ListingUserDto? get user; ListingSellerDto? get seller;
 /// Create a copy of ListingDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -1142,16 +1148,16 @@ $ListingDtoCopyWith<ListingDto> get copyWith => _$ListingDtoCopyWithImpl<Listing
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListingDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceCurrency, priceCurrency) || other.priceCurrency == priceCurrency)&&(identical(other.isPriceNegotiable, isPriceNegotiable) || other.isPriceNegotiable == isPriceNegotiable)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.dealType, dealType) || other.dealType == dealType)&&(identical(other.sellerType, sellerType) || other.sellerType == sellerType)&&(identical(other.category, category) || other.category == category)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categorySlug, categorySlug) || other.categorySlug == categorySlug)&&(identical(other.location, location) || other.location == location)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.locationSlug, locationSlug) || other.locationSlug == locationSlug)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&const DeepCollectionEquality().equals(other.media, media)&&const DeepCollectionEquality().equals(other.mediaUrls, mediaUrls)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&(identical(other.status, status) || other.status == status)&&(identical(other.contactName, contactName) || other.contactName == contactName)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.refreshedAt, refreshedAt) || other.refreshedAt == refreshedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.qualityScore, qualityScore) || other.qualityScore == qualityScore)&&(identical(other.contactPhoneMasked, contactPhoneMasked) || other.contactPhoneMasked == contactPhoneMasked)&&(identical(other.priceNormalized, priceNormalized) || other.priceNormalized == priceNormalized)&&(identical(other.isPromoted, isPromoted) || other.isPromoted == isPromoted)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.seller, seller) || other.seller == seller));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListingDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceCurrency, priceCurrency) || other.priceCurrency == priceCurrency)&&(identical(other.isPriceNegotiable, isPriceNegotiable) || other.isPriceNegotiable == isPriceNegotiable)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.dealType, dealType) || other.dealType == dealType)&&(identical(other.sellerType, sellerType) || other.sellerType == sellerType)&&(identical(other.category, category) || other.category == category)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categorySlug, categorySlug) || other.categorySlug == categorySlug)&&(identical(other.location, location) || other.location == location)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.locationSlug, locationSlug) || other.locationSlug == locationSlug)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&const DeepCollectionEquality().equals(other.media, media)&&const DeepCollectionEquality().equals(other.mediaUrls, mediaUrls)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&(identical(other.status, status) || other.status == status)&&(identical(other.contactName, contactName) || other.contactName == contactName)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.refreshedAt, refreshedAt) || other.refreshedAt == refreshedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.qualityScore, qualityScore) || other.qualityScore == qualityScore)&&(identical(other.contactPhoneMasked, contactPhoneMasked) || other.contactPhoneMasked == contactPhoneMasked)&&(identical(other.priceNormalized, priceNormalized) || other.priceNormalized == priceNormalized)&&(identical(other.isPromoted, isPromoted) || other.isPromoted == isPromoted)&&(identical(other.viewCount, viewCount) || other.viewCount == viewCount)&&(identical(other.favoriteCount, favoriteCount) || other.favoriteCount == favoriteCount)&&(identical(other.interestCount, interestCount) || other.interestCount == interestCount)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.seller, seller) || other.seller == seller));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,title,description,priceAmount,priceCurrency,isPriceNegotiable,condition,dealType,sellerType,category,categoryName,categorySlug,location,locationName,locationSlug,lat,lon,const DeepCollectionEquality().hash(media),const DeepCollectionEquality().hash(mediaUrls),const DeepCollectionEquality().hash(attributes),status,contactName,contactEmail,contactPhone,createdAt,updatedAt,refreshedAt,expiresAt,qualityScore,contactPhoneMasked,priceNormalized,isPromoted,userId,user,seller]);
+int get hashCode => Object.hashAll([runtimeType,id,title,description,priceAmount,priceCurrency,isPriceNegotiable,condition,dealType,sellerType,category,categoryName,categorySlug,location,locationName,locationSlug,lat,lon,const DeepCollectionEquality().hash(media),const DeepCollectionEquality().hash(mediaUrls),const DeepCollectionEquality().hash(attributes),status,contactName,contactEmail,contactPhone,createdAt,updatedAt,refreshedAt,expiresAt,qualityScore,contactPhoneMasked,priceNormalized,isPromoted,viewCount,favoriteCount,interestCount,userId,user,seller]);
 
 @override
 String toString() {
-  return 'ListingDto(id: $id, title: $title, description: $description, priceAmount: $priceAmount, priceCurrency: $priceCurrency, isPriceNegotiable: $isPriceNegotiable, condition: $condition, dealType: $dealType, sellerType: $sellerType, category: $category, categoryName: $categoryName, categorySlug: $categorySlug, location: $location, locationName: $locationName, locationSlug: $locationSlug, lat: $lat, lon: $lon, media: $media, mediaUrls: $mediaUrls, attributes: $attributes, status: $status, contactName: $contactName, contactEmail: $contactEmail, contactPhone: $contactPhone, createdAt: $createdAt, updatedAt: $updatedAt, refreshedAt: $refreshedAt, expiresAt: $expiresAt, qualityScore: $qualityScore, contactPhoneMasked: $contactPhoneMasked, priceNormalized: $priceNormalized, isPromoted: $isPromoted, userId: $userId, user: $user, seller: $seller)';
+  return 'ListingDto(id: $id, title: $title, description: $description, priceAmount: $priceAmount, priceCurrency: $priceCurrency, isPriceNegotiable: $isPriceNegotiable, condition: $condition, dealType: $dealType, sellerType: $sellerType, category: $category, categoryName: $categoryName, categorySlug: $categorySlug, location: $location, locationName: $locationName, locationSlug: $locationSlug, lat: $lat, lon: $lon, media: $media, mediaUrls: $mediaUrls, attributes: $attributes, status: $status, contactName: $contactName, contactEmail: $contactEmail, contactPhone: $contactPhone, createdAt: $createdAt, updatedAt: $updatedAt, refreshedAt: $refreshedAt, expiresAt: $expiresAt, qualityScore: $qualityScore, contactPhoneMasked: $contactPhoneMasked, priceNormalized: $priceNormalized, isPromoted: $isPromoted, viewCount: $viewCount, favoriteCount: $favoriteCount, interestCount: $interestCount, userId: $userId, user: $user, seller: $seller)';
 }
 
 
@@ -1162,7 +1168,7 @@ abstract mixin class $ListingDtoCopyWith<$Res>  {
   factory $ListingDtoCopyWith(ListingDto value, $Res Function(ListingDto) _then) = _$ListingDtoCopyWithImpl;
 @useResult
 $Res call({
- int id, String title, String? description,@JsonKey(name: 'price_amount') double priceAmount,@JsonKey(name: 'price_currency') String priceCurrency,@JsonKey(name: 'is_price_negotiable') bool? isPriceNegotiable, String condition,@JsonKey(name: 'deal_type') String? dealType,@JsonKey(name: 'seller_type') String? sellerType, int? category,@JsonKey(name: 'category_name') String? categoryName,@JsonKey(name: 'category_slug') String? categorySlug, int? location,@JsonKey(name: 'location_name') String? locationName,@JsonKey(name: 'location_slug') String? locationSlug, double? lat, double? lon, List<ListingMediaDto>? media,@JsonKey(name: 'media_urls') List<String>? mediaUrls, List<ListingAttributeDto>? attributes, String? status,@JsonKey(name: 'contact_name') String? contactName,@JsonKey(name: 'contact_email') String? contactEmail,@JsonKey(name: 'contact_phone') String? contactPhone,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'refreshed_at') String? refreshedAt,@JsonKey(name: 'expires_at') String? expiresAt,@JsonKey(name: 'quality_score') double? qualityScore,@JsonKey(name: 'contact_phone_masked') String? contactPhoneMasked,@JsonKey(name: 'price_normalized') double? priceNormalized,@JsonKey(name: 'is_promoted') bool? isPromoted,@JsonKey(name: 'user_id') int? userId, ListingUserDto? user, ListingSellerDto? seller
+ int id, String title, String? description,@JsonKey(name: 'price_amount', fromJson: _parseDouble) double priceAmount,@JsonKey(name: 'price_currency') String priceCurrency,@JsonKey(name: 'is_price_negotiable') bool? isPriceNegotiable, String condition,@JsonKey(name: 'deal_type') String? dealType,@JsonKey(name: 'seller_type') String? sellerType, int? category,@JsonKey(name: 'category_name') String? categoryName,@JsonKey(name: 'category_slug') String? categorySlug, int? location,@JsonKey(name: 'location_name') String? locationName,@JsonKey(name: 'location_slug') String? locationSlug, double? lat, double? lon, List<ListingMediaDto>? media,@JsonKey(name: 'media_urls') List<String>? mediaUrls, List<ListingAttributeDto>? attributes, String? status,@JsonKey(name: 'contact_name') String? contactName,@JsonKey(name: 'contact_email') String? contactEmail,@JsonKey(name: 'contact_phone') String? contactPhone,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'refreshed_at') String? refreshedAt,@JsonKey(name: 'expires_at') String? expiresAt,@JsonKey(name: 'quality_score', fromJson: _parseDoubleNullable) double? qualityScore,@JsonKey(name: 'contact_phone_masked') String? contactPhoneMasked,@JsonKey(name: 'price_normalized', fromJson: _parseDoubleNullable) double? priceNormalized,@JsonKey(name: 'is_promoted') bool? isPromoted,@JsonKey(name: 'view_count') int? viewCount,@JsonKey(name: 'favorite_count') int? favoriteCount,@JsonKey(name: 'interest_count') int? interestCount,@JsonKey(name: 'user_id') int? userId, ListingUserDto? user, ListingSellerDto? seller
 });
 
 
@@ -1179,7 +1185,7 @@ class _$ListingDtoCopyWithImpl<$Res>
 
 /// Create a copy of ListingDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? priceAmount = null,Object? priceCurrency = null,Object? isPriceNegotiable = freezed,Object? condition = null,Object? dealType = freezed,Object? sellerType = freezed,Object? category = freezed,Object? categoryName = freezed,Object? categorySlug = freezed,Object? location = freezed,Object? locationName = freezed,Object? locationSlug = freezed,Object? lat = freezed,Object? lon = freezed,Object? media = freezed,Object? mediaUrls = freezed,Object? attributes = freezed,Object? status = freezed,Object? contactName = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? refreshedAt = freezed,Object? expiresAt = freezed,Object? qualityScore = freezed,Object? contactPhoneMasked = freezed,Object? priceNormalized = freezed,Object? isPromoted = freezed,Object? userId = freezed,Object? user = freezed,Object? seller = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? priceAmount = null,Object? priceCurrency = null,Object? isPriceNegotiable = freezed,Object? condition = null,Object? dealType = freezed,Object? sellerType = freezed,Object? category = freezed,Object? categoryName = freezed,Object? categorySlug = freezed,Object? location = freezed,Object? locationName = freezed,Object? locationSlug = freezed,Object? lat = freezed,Object? lon = freezed,Object? media = freezed,Object? mediaUrls = freezed,Object? attributes = freezed,Object? status = freezed,Object? contactName = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? refreshedAt = freezed,Object? expiresAt = freezed,Object? qualityScore = freezed,Object? contactPhoneMasked = freezed,Object? priceNormalized = freezed,Object? isPromoted = freezed,Object? viewCount = freezed,Object? favoriteCount = freezed,Object? interestCount = freezed,Object? userId = freezed,Object? user = freezed,Object? seller = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -1213,7 +1219,10 @@ as String?,qualityScore: freezed == qualityScore ? _self.qualityScore : qualityS
 as double?,contactPhoneMasked: freezed == contactPhoneMasked ? _self.contactPhoneMasked : contactPhoneMasked // ignore: cast_nullable_to_non_nullable
 as String?,priceNormalized: freezed == priceNormalized ? _self.priceNormalized : priceNormalized // ignore: cast_nullable_to_non_nullable
 as double?,isPromoted: freezed == isPromoted ? _self.isPromoted : isPromoted // ignore: cast_nullable_to_non_nullable
-as bool?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as bool?,viewCount: freezed == viewCount ? _self.viewCount : viewCount // ignore: cast_nullable_to_non_nullable
+as int?,favoriteCount: freezed == favoriteCount ? _self.favoriteCount : favoriteCount // ignore: cast_nullable_to_non_nullable
+as int?,interestCount: freezed == interestCount ? _self.interestCount : interestCount // ignore: cast_nullable_to_non_nullable
+as int?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int?,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as ListingUserDto?,seller: freezed == seller ? _self.seller : seller // ignore: cast_nullable_to_non_nullable
 as ListingSellerDto?,
@@ -1325,10 +1334,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String? description, @JsonKey(name: 'price_amount')  double priceAmount, @JsonKey(name: 'price_currency')  String priceCurrency, @JsonKey(name: 'is_price_negotiable')  bool? isPriceNegotiable,  String condition, @JsonKey(name: 'deal_type')  String? dealType, @JsonKey(name: 'seller_type')  String? sellerType,  int? category, @JsonKey(name: 'category_name')  String? categoryName, @JsonKey(name: 'category_slug')  String? categorySlug,  int? location, @JsonKey(name: 'location_name')  String? locationName, @JsonKey(name: 'location_slug')  String? locationSlug,  double? lat,  double? lon,  List<ListingMediaDto>? media, @JsonKey(name: 'media_urls')  List<String>? mediaUrls,  List<ListingAttributeDto>? attributes,  String? status, @JsonKey(name: 'contact_name')  String? contactName, @JsonKey(name: 'contact_email')  String? contactEmail, @JsonKey(name: 'contact_phone')  String? contactPhone, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'refreshed_at')  String? refreshedAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'quality_score')  double? qualityScore, @JsonKey(name: 'contact_phone_masked')  String? contactPhoneMasked, @JsonKey(name: 'price_normalized')  double? priceNormalized, @JsonKey(name: 'is_promoted')  bool? isPromoted, @JsonKey(name: 'user_id')  int? userId,  ListingUserDto? user,  ListingSellerDto? seller)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String? description, @JsonKey(name: 'price_amount', fromJson: _parseDouble)  double priceAmount, @JsonKey(name: 'price_currency')  String priceCurrency, @JsonKey(name: 'is_price_negotiable')  bool? isPriceNegotiable,  String condition, @JsonKey(name: 'deal_type')  String? dealType, @JsonKey(name: 'seller_type')  String? sellerType,  int? category, @JsonKey(name: 'category_name')  String? categoryName, @JsonKey(name: 'category_slug')  String? categorySlug,  int? location, @JsonKey(name: 'location_name')  String? locationName, @JsonKey(name: 'location_slug')  String? locationSlug,  double? lat,  double? lon,  List<ListingMediaDto>? media, @JsonKey(name: 'media_urls')  List<String>? mediaUrls,  List<ListingAttributeDto>? attributes,  String? status, @JsonKey(name: 'contact_name')  String? contactName, @JsonKey(name: 'contact_email')  String? contactEmail, @JsonKey(name: 'contact_phone')  String? contactPhone, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'refreshed_at')  String? refreshedAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'quality_score', fromJson: _parseDoubleNullable)  double? qualityScore, @JsonKey(name: 'contact_phone_masked')  String? contactPhoneMasked, @JsonKey(name: 'price_normalized', fromJson: _parseDoubleNullable)  double? priceNormalized, @JsonKey(name: 'is_promoted')  bool? isPromoted, @JsonKey(name: 'view_count')  int? viewCount, @JsonKey(name: 'favorite_count')  int? favoriteCount, @JsonKey(name: 'interest_count')  int? interestCount, @JsonKey(name: 'user_id')  int? userId,  ListingUserDto? user,  ListingSellerDto? seller)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ListingDto() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.category,_that.categoryName,_that.categorySlug,_that.location,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.userId,_that.user,_that.seller);case _:
+return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.category,_that.categoryName,_that.categorySlug,_that.location,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.viewCount,_that.favoriteCount,_that.interestCount,_that.userId,_that.user,_that.seller);case _:
   return orElse();
 
 }
@@ -1346,10 +1355,10 @@ return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.p
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String? description, @JsonKey(name: 'price_amount')  double priceAmount, @JsonKey(name: 'price_currency')  String priceCurrency, @JsonKey(name: 'is_price_negotiable')  bool? isPriceNegotiable,  String condition, @JsonKey(name: 'deal_type')  String? dealType, @JsonKey(name: 'seller_type')  String? sellerType,  int? category, @JsonKey(name: 'category_name')  String? categoryName, @JsonKey(name: 'category_slug')  String? categorySlug,  int? location, @JsonKey(name: 'location_name')  String? locationName, @JsonKey(name: 'location_slug')  String? locationSlug,  double? lat,  double? lon,  List<ListingMediaDto>? media, @JsonKey(name: 'media_urls')  List<String>? mediaUrls,  List<ListingAttributeDto>? attributes,  String? status, @JsonKey(name: 'contact_name')  String? contactName, @JsonKey(name: 'contact_email')  String? contactEmail, @JsonKey(name: 'contact_phone')  String? contactPhone, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'refreshed_at')  String? refreshedAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'quality_score')  double? qualityScore, @JsonKey(name: 'contact_phone_masked')  String? contactPhoneMasked, @JsonKey(name: 'price_normalized')  double? priceNormalized, @JsonKey(name: 'is_promoted')  bool? isPromoted, @JsonKey(name: 'user_id')  int? userId,  ListingUserDto? user,  ListingSellerDto? seller)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String? description, @JsonKey(name: 'price_amount', fromJson: _parseDouble)  double priceAmount, @JsonKey(name: 'price_currency')  String priceCurrency, @JsonKey(name: 'is_price_negotiable')  bool? isPriceNegotiable,  String condition, @JsonKey(name: 'deal_type')  String? dealType, @JsonKey(name: 'seller_type')  String? sellerType,  int? category, @JsonKey(name: 'category_name')  String? categoryName, @JsonKey(name: 'category_slug')  String? categorySlug,  int? location, @JsonKey(name: 'location_name')  String? locationName, @JsonKey(name: 'location_slug')  String? locationSlug,  double? lat,  double? lon,  List<ListingMediaDto>? media, @JsonKey(name: 'media_urls')  List<String>? mediaUrls,  List<ListingAttributeDto>? attributes,  String? status, @JsonKey(name: 'contact_name')  String? contactName, @JsonKey(name: 'contact_email')  String? contactEmail, @JsonKey(name: 'contact_phone')  String? contactPhone, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'refreshed_at')  String? refreshedAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'quality_score', fromJson: _parseDoubleNullable)  double? qualityScore, @JsonKey(name: 'contact_phone_masked')  String? contactPhoneMasked, @JsonKey(name: 'price_normalized', fromJson: _parseDoubleNullable)  double? priceNormalized, @JsonKey(name: 'is_promoted')  bool? isPromoted, @JsonKey(name: 'view_count')  int? viewCount, @JsonKey(name: 'favorite_count')  int? favoriteCount, @JsonKey(name: 'interest_count')  int? interestCount, @JsonKey(name: 'user_id')  int? userId,  ListingUserDto? user,  ListingSellerDto? seller)  $default,) {final _that = this;
 switch (_that) {
 case _ListingDto():
-return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.category,_that.categoryName,_that.categorySlug,_that.location,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.userId,_that.user,_that.seller);case _:
+return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.category,_that.categoryName,_that.categorySlug,_that.location,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.viewCount,_that.favoriteCount,_that.interestCount,_that.userId,_that.user,_that.seller);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -1366,10 +1375,10 @@ return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.p
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String? description, @JsonKey(name: 'price_amount')  double priceAmount, @JsonKey(name: 'price_currency')  String priceCurrency, @JsonKey(name: 'is_price_negotiable')  bool? isPriceNegotiable,  String condition, @JsonKey(name: 'deal_type')  String? dealType, @JsonKey(name: 'seller_type')  String? sellerType,  int? category, @JsonKey(name: 'category_name')  String? categoryName, @JsonKey(name: 'category_slug')  String? categorySlug,  int? location, @JsonKey(name: 'location_name')  String? locationName, @JsonKey(name: 'location_slug')  String? locationSlug,  double? lat,  double? lon,  List<ListingMediaDto>? media, @JsonKey(name: 'media_urls')  List<String>? mediaUrls,  List<ListingAttributeDto>? attributes,  String? status, @JsonKey(name: 'contact_name')  String? contactName, @JsonKey(name: 'contact_email')  String? contactEmail, @JsonKey(name: 'contact_phone')  String? contactPhone, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'refreshed_at')  String? refreshedAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'quality_score')  double? qualityScore, @JsonKey(name: 'contact_phone_masked')  String? contactPhoneMasked, @JsonKey(name: 'price_normalized')  double? priceNormalized, @JsonKey(name: 'is_promoted')  bool? isPromoted, @JsonKey(name: 'user_id')  int? userId,  ListingUserDto? user,  ListingSellerDto? seller)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String? description, @JsonKey(name: 'price_amount', fromJson: _parseDouble)  double priceAmount, @JsonKey(name: 'price_currency')  String priceCurrency, @JsonKey(name: 'is_price_negotiable')  bool? isPriceNegotiable,  String condition, @JsonKey(name: 'deal_type')  String? dealType, @JsonKey(name: 'seller_type')  String? sellerType,  int? category, @JsonKey(name: 'category_name')  String? categoryName, @JsonKey(name: 'category_slug')  String? categorySlug,  int? location, @JsonKey(name: 'location_name')  String? locationName, @JsonKey(name: 'location_slug')  String? locationSlug,  double? lat,  double? lon,  List<ListingMediaDto>? media, @JsonKey(name: 'media_urls')  List<String>? mediaUrls,  List<ListingAttributeDto>? attributes,  String? status, @JsonKey(name: 'contact_name')  String? contactName, @JsonKey(name: 'contact_email')  String? contactEmail, @JsonKey(name: 'contact_phone')  String? contactPhone, @JsonKey(name: 'created_at')  String? createdAt, @JsonKey(name: 'updated_at')  String? updatedAt, @JsonKey(name: 'refreshed_at')  String? refreshedAt, @JsonKey(name: 'expires_at')  String? expiresAt, @JsonKey(name: 'quality_score', fromJson: _parseDoubleNullable)  double? qualityScore, @JsonKey(name: 'contact_phone_masked')  String? contactPhoneMasked, @JsonKey(name: 'price_normalized', fromJson: _parseDoubleNullable)  double? priceNormalized, @JsonKey(name: 'is_promoted')  bool? isPromoted, @JsonKey(name: 'view_count')  int? viewCount, @JsonKey(name: 'favorite_count')  int? favoriteCount, @JsonKey(name: 'interest_count')  int? interestCount, @JsonKey(name: 'user_id')  int? userId,  ListingUserDto? user,  ListingSellerDto? seller)?  $default,) {final _that = this;
 switch (_that) {
 case _ListingDto() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.category,_that.categoryName,_that.categorySlug,_that.location,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.userId,_that.user,_that.seller);case _:
+return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.category,_that.categoryName,_that.categorySlug,_that.location,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.viewCount,_that.favoriteCount,_that.interestCount,_that.userId,_that.user,_that.seller);case _:
   return null;
 
 }
@@ -1381,13 +1390,13 @@ return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.p
 @JsonSerializable()
 
 class _ListingDto implements ListingDto {
-  const _ListingDto({required this.id, required this.title, this.description, @JsonKey(name: 'price_amount') required this.priceAmount, @JsonKey(name: 'price_currency') required this.priceCurrency, @JsonKey(name: 'is_price_negotiable') this.isPriceNegotiable, required this.condition, @JsonKey(name: 'deal_type') this.dealType, @JsonKey(name: 'seller_type') this.sellerType, this.category, @JsonKey(name: 'category_name') this.categoryName, @JsonKey(name: 'category_slug') this.categorySlug, this.location, @JsonKey(name: 'location_name') this.locationName, @JsonKey(name: 'location_slug') this.locationSlug, this.lat, this.lon, final  List<ListingMediaDto>? media, @JsonKey(name: 'media_urls') final  List<String>? mediaUrls, final  List<ListingAttributeDto>? attributes, this.status, @JsonKey(name: 'contact_name') this.contactName, @JsonKey(name: 'contact_email') this.contactEmail, @JsonKey(name: 'contact_phone') this.contactPhone, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt, @JsonKey(name: 'refreshed_at') this.refreshedAt, @JsonKey(name: 'expires_at') this.expiresAt, @JsonKey(name: 'quality_score') this.qualityScore, @JsonKey(name: 'contact_phone_masked') this.contactPhoneMasked, @JsonKey(name: 'price_normalized') this.priceNormalized, @JsonKey(name: 'is_promoted') this.isPromoted, @JsonKey(name: 'user_id') this.userId, this.user, this.seller}): _media = media,_mediaUrls = mediaUrls,_attributes = attributes;
+  const _ListingDto({required this.id, required this.title, this.description, @JsonKey(name: 'price_amount', fromJson: _parseDouble) required this.priceAmount, @JsonKey(name: 'price_currency') required this.priceCurrency, @JsonKey(name: 'is_price_negotiable') this.isPriceNegotiable, required this.condition, @JsonKey(name: 'deal_type') this.dealType, @JsonKey(name: 'seller_type') this.sellerType, this.category, @JsonKey(name: 'category_name') this.categoryName, @JsonKey(name: 'category_slug') this.categorySlug, this.location, @JsonKey(name: 'location_name') this.locationName, @JsonKey(name: 'location_slug') this.locationSlug, this.lat, this.lon, final  List<ListingMediaDto>? media, @JsonKey(name: 'media_urls') final  List<String>? mediaUrls, final  List<ListingAttributeDto>? attributes, this.status, @JsonKey(name: 'contact_name') this.contactName, @JsonKey(name: 'contact_email') this.contactEmail, @JsonKey(name: 'contact_phone') this.contactPhone, @JsonKey(name: 'created_at') this.createdAt, @JsonKey(name: 'updated_at') this.updatedAt, @JsonKey(name: 'refreshed_at') this.refreshedAt, @JsonKey(name: 'expires_at') this.expiresAt, @JsonKey(name: 'quality_score', fromJson: _parseDoubleNullable) this.qualityScore, @JsonKey(name: 'contact_phone_masked') this.contactPhoneMasked, @JsonKey(name: 'price_normalized', fromJson: _parseDoubleNullable) this.priceNormalized, @JsonKey(name: 'is_promoted') this.isPromoted, @JsonKey(name: 'view_count') this.viewCount, @JsonKey(name: 'favorite_count') this.favoriteCount, @JsonKey(name: 'interest_count') this.interestCount, @JsonKey(name: 'user_id') this.userId, this.user, this.seller}): _media = media,_mediaUrls = mediaUrls,_attributes = attributes;
   factory _ListingDto.fromJson(Map<String, dynamic> json) => _$ListingDtoFromJson(json);
 
 @override final  int id;
 @override final  String title;
 @override final  String? description;
-@override@JsonKey(name: 'price_amount') final  double priceAmount;
+@override@JsonKey(name: 'price_amount', fromJson: _parseDouble) final  double priceAmount;
 @override@JsonKey(name: 'price_currency') final  String priceCurrency;
 @override@JsonKey(name: 'is_price_negotiable') final  bool? isPriceNegotiable;
 @override final  String condition;
@@ -1438,10 +1447,13 @@ class _ListingDto implements ListingDto {
 @override@JsonKey(name: 'updated_at') final  String? updatedAt;
 @override@JsonKey(name: 'refreshed_at') final  String? refreshedAt;
 @override@JsonKey(name: 'expires_at') final  String? expiresAt;
-@override@JsonKey(name: 'quality_score') final  double? qualityScore;
+@override@JsonKey(name: 'quality_score', fromJson: _parseDoubleNullable) final  double? qualityScore;
 @override@JsonKey(name: 'contact_phone_masked') final  String? contactPhoneMasked;
-@override@JsonKey(name: 'price_normalized') final  double? priceNormalized;
+@override@JsonKey(name: 'price_normalized', fromJson: _parseDoubleNullable) final  double? priceNormalized;
 @override@JsonKey(name: 'is_promoted') final  bool? isPromoted;
+@override@JsonKey(name: 'view_count') final  int? viewCount;
+@override@JsonKey(name: 'favorite_count') final  int? favoriteCount;
+@override@JsonKey(name: 'interest_count') final  int? interestCount;
 @override@JsonKey(name: 'user_id') final  int? userId;
 @override final  ListingUserDto? user;
 @override final  ListingSellerDto? seller;
@@ -1459,16 +1471,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListingDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceCurrency, priceCurrency) || other.priceCurrency == priceCurrency)&&(identical(other.isPriceNegotiable, isPriceNegotiable) || other.isPriceNegotiable == isPriceNegotiable)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.dealType, dealType) || other.dealType == dealType)&&(identical(other.sellerType, sellerType) || other.sellerType == sellerType)&&(identical(other.category, category) || other.category == category)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categorySlug, categorySlug) || other.categorySlug == categorySlug)&&(identical(other.location, location) || other.location == location)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.locationSlug, locationSlug) || other.locationSlug == locationSlug)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&const DeepCollectionEquality().equals(other._media, _media)&&const DeepCollectionEquality().equals(other._mediaUrls, _mediaUrls)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&(identical(other.status, status) || other.status == status)&&(identical(other.contactName, contactName) || other.contactName == contactName)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.refreshedAt, refreshedAt) || other.refreshedAt == refreshedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.qualityScore, qualityScore) || other.qualityScore == qualityScore)&&(identical(other.contactPhoneMasked, contactPhoneMasked) || other.contactPhoneMasked == contactPhoneMasked)&&(identical(other.priceNormalized, priceNormalized) || other.priceNormalized == priceNormalized)&&(identical(other.isPromoted, isPromoted) || other.isPromoted == isPromoted)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.seller, seller) || other.seller == seller));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListingDto&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceCurrency, priceCurrency) || other.priceCurrency == priceCurrency)&&(identical(other.isPriceNegotiable, isPriceNegotiable) || other.isPriceNegotiable == isPriceNegotiable)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.dealType, dealType) || other.dealType == dealType)&&(identical(other.sellerType, sellerType) || other.sellerType == sellerType)&&(identical(other.category, category) || other.category == category)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categorySlug, categorySlug) || other.categorySlug == categorySlug)&&(identical(other.location, location) || other.location == location)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.locationSlug, locationSlug) || other.locationSlug == locationSlug)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&const DeepCollectionEquality().equals(other._media, _media)&&const DeepCollectionEquality().equals(other._mediaUrls, _mediaUrls)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&(identical(other.status, status) || other.status == status)&&(identical(other.contactName, contactName) || other.contactName == contactName)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.refreshedAt, refreshedAt) || other.refreshedAt == refreshedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.qualityScore, qualityScore) || other.qualityScore == qualityScore)&&(identical(other.contactPhoneMasked, contactPhoneMasked) || other.contactPhoneMasked == contactPhoneMasked)&&(identical(other.priceNormalized, priceNormalized) || other.priceNormalized == priceNormalized)&&(identical(other.isPromoted, isPromoted) || other.isPromoted == isPromoted)&&(identical(other.viewCount, viewCount) || other.viewCount == viewCount)&&(identical(other.favoriteCount, favoriteCount) || other.favoriteCount == favoriteCount)&&(identical(other.interestCount, interestCount) || other.interestCount == interestCount)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.seller, seller) || other.seller == seller));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hashAll([runtimeType,id,title,description,priceAmount,priceCurrency,isPriceNegotiable,condition,dealType,sellerType,category,categoryName,categorySlug,location,locationName,locationSlug,lat,lon,const DeepCollectionEquality().hash(_media),const DeepCollectionEquality().hash(_mediaUrls),const DeepCollectionEquality().hash(_attributes),status,contactName,contactEmail,contactPhone,createdAt,updatedAt,refreshedAt,expiresAt,qualityScore,contactPhoneMasked,priceNormalized,isPromoted,userId,user,seller]);
+int get hashCode => Object.hashAll([runtimeType,id,title,description,priceAmount,priceCurrency,isPriceNegotiable,condition,dealType,sellerType,category,categoryName,categorySlug,location,locationName,locationSlug,lat,lon,const DeepCollectionEquality().hash(_media),const DeepCollectionEquality().hash(_mediaUrls),const DeepCollectionEquality().hash(_attributes),status,contactName,contactEmail,contactPhone,createdAt,updatedAt,refreshedAt,expiresAt,qualityScore,contactPhoneMasked,priceNormalized,isPromoted,viewCount,favoriteCount,interestCount,userId,user,seller]);
 
 @override
 String toString() {
-  return 'ListingDto(id: $id, title: $title, description: $description, priceAmount: $priceAmount, priceCurrency: $priceCurrency, isPriceNegotiable: $isPriceNegotiable, condition: $condition, dealType: $dealType, sellerType: $sellerType, category: $category, categoryName: $categoryName, categorySlug: $categorySlug, location: $location, locationName: $locationName, locationSlug: $locationSlug, lat: $lat, lon: $lon, media: $media, mediaUrls: $mediaUrls, attributes: $attributes, status: $status, contactName: $contactName, contactEmail: $contactEmail, contactPhone: $contactPhone, createdAt: $createdAt, updatedAt: $updatedAt, refreshedAt: $refreshedAt, expiresAt: $expiresAt, qualityScore: $qualityScore, contactPhoneMasked: $contactPhoneMasked, priceNormalized: $priceNormalized, isPromoted: $isPromoted, userId: $userId, user: $user, seller: $seller)';
+  return 'ListingDto(id: $id, title: $title, description: $description, priceAmount: $priceAmount, priceCurrency: $priceCurrency, isPriceNegotiable: $isPriceNegotiable, condition: $condition, dealType: $dealType, sellerType: $sellerType, category: $category, categoryName: $categoryName, categorySlug: $categorySlug, location: $location, locationName: $locationName, locationSlug: $locationSlug, lat: $lat, lon: $lon, media: $media, mediaUrls: $mediaUrls, attributes: $attributes, status: $status, contactName: $contactName, contactEmail: $contactEmail, contactPhone: $contactPhone, createdAt: $createdAt, updatedAt: $updatedAt, refreshedAt: $refreshedAt, expiresAt: $expiresAt, qualityScore: $qualityScore, contactPhoneMasked: $contactPhoneMasked, priceNormalized: $priceNormalized, isPromoted: $isPromoted, viewCount: $viewCount, favoriteCount: $favoriteCount, interestCount: $interestCount, userId: $userId, user: $user, seller: $seller)';
 }
 
 
@@ -1479,7 +1491,7 @@ abstract mixin class _$ListingDtoCopyWith<$Res> implements $ListingDtoCopyWith<$
   factory _$ListingDtoCopyWith(_ListingDto value, $Res Function(_ListingDto) _then) = __$ListingDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String title, String? description,@JsonKey(name: 'price_amount') double priceAmount,@JsonKey(name: 'price_currency') String priceCurrency,@JsonKey(name: 'is_price_negotiable') bool? isPriceNegotiable, String condition,@JsonKey(name: 'deal_type') String? dealType,@JsonKey(name: 'seller_type') String? sellerType, int? category,@JsonKey(name: 'category_name') String? categoryName,@JsonKey(name: 'category_slug') String? categorySlug, int? location,@JsonKey(name: 'location_name') String? locationName,@JsonKey(name: 'location_slug') String? locationSlug, double? lat, double? lon, List<ListingMediaDto>? media,@JsonKey(name: 'media_urls') List<String>? mediaUrls, List<ListingAttributeDto>? attributes, String? status,@JsonKey(name: 'contact_name') String? contactName,@JsonKey(name: 'contact_email') String? contactEmail,@JsonKey(name: 'contact_phone') String? contactPhone,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'refreshed_at') String? refreshedAt,@JsonKey(name: 'expires_at') String? expiresAt,@JsonKey(name: 'quality_score') double? qualityScore,@JsonKey(name: 'contact_phone_masked') String? contactPhoneMasked,@JsonKey(name: 'price_normalized') double? priceNormalized,@JsonKey(name: 'is_promoted') bool? isPromoted,@JsonKey(name: 'user_id') int? userId, ListingUserDto? user, ListingSellerDto? seller
+ int id, String title, String? description,@JsonKey(name: 'price_amount', fromJson: _parseDouble) double priceAmount,@JsonKey(name: 'price_currency') String priceCurrency,@JsonKey(name: 'is_price_negotiable') bool? isPriceNegotiable, String condition,@JsonKey(name: 'deal_type') String? dealType,@JsonKey(name: 'seller_type') String? sellerType, int? category,@JsonKey(name: 'category_name') String? categoryName,@JsonKey(name: 'category_slug') String? categorySlug, int? location,@JsonKey(name: 'location_name') String? locationName,@JsonKey(name: 'location_slug') String? locationSlug, double? lat, double? lon, List<ListingMediaDto>? media,@JsonKey(name: 'media_urls') List<String>? mediaUrls, List<ListingAttributeDto>? attributes, String? status,@JsonKey(name: 'contact_name') String? contactName,@JsonKey(name: 'contact_email') String? contactEmail,@JsonKey(name: 'contact_phone') String? contactPhone,@JsonKey(name: 'created_at') String? createdAt,@JsonKey(name: 'updated_at') String? updatedAt,@JsonKey(name: 'refreshed_at') String? refreshedAt,@JsonKey(name: 'expires_at') String? expiresAt,@JsonKey(name: 'quality_score', fromJson: _parseDoubleNullable) double? qualityScore,@JsonKey(name: 'contact_phone_masked') String? contactPhoneMasked,@JsonKey(name: 'price_normalized', fromJson: _parseDoubleNullable) double? priceNormalized,@JsonKey(name: 'is_promoted') bool? isPromoted,@JsonKey(name: 'view_count') int? viewCount,@JsonKey(name: 'favorite_count') int? favoriteCount,@JsonKey(name: 'interest_count') int? interestCount,@JsonKey(name: 'user_id') int? userId, ListingUserDto? user, ListingSellerDto? seller
 });
 
 
@@ -1496,7 +1508,7 @@ class __$ListingDtoCopyWithImpl<$Res>
 
 /// Create a copy of ListingDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? priceAmount = null,Object? priceCurrency = null,Object? isPriceNegotiable = freezed,Object? condition = null,Object? dealType = freezed,Object? sellerType = freezed,Object? category = freezed,Object? categoryName = freezed,Object? categorySlug = freezed,Object? location = freezed,Object? locationName = freezed,Object? locationSlug = freezed,Object? lat = freezed,Object? lon = freezed,Object? media = freezed,Object? mediaUrls = freezed,Object? attributes = freezed,Object? status = freezed,Object? contactName = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? refreshedAt = freezed,Object? expiresAt = freezed,Object? qualityScore = freezed,Object? contactPhoneMasked = freezed,Object? priceNormalized = freezed,Object? isPromoted = freezed,Object? userId = freezed,Object? user = freezed,Object? seller = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? priceAmount = null,Object? priceCurrency = null,Object? isPriceNegotiable = freezed,Object? condition = null,Object? dealType = freezed,Object? sellerType = freezed,Object? category = freezed,Object? categoryName = freezed,Object? categorySlug = freezed,Object? location = freezed,Object? locationName = freezed,Object? locationSlug = freezed,Object? lat = freezed,Object? lon = freezed,Object? media = freezed,Object? mediaUrls = freezed,Object? attributes = freezed,Object? status = freezed,Object? contactName = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? refreshedAt = freezed,Object? expiresAt = freezed,Object? qualityScore = freezed,Object? contactPhoneMasked = freezed,Object? priceNormalized = freezed,Object? isPromoted = freezed,Object? viewCount = freezed,Object? favoriteCount = freezed,Object? interestCount = freezed,Object? userId = freezed,Object? user = freezed,Object? seller = freezed,}) {
   return _then(_ListingDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -1530,7 +1542,10 @@ as String?,qualityScore: freezed == qualityScore ? _self.qualityScore : qualityS
 as double?,contactPhoneMasked: freezed == contactPhoneMasked ? _self.contactPhoneMasked : contactPhoneMasked // ignore: cast_nullable_to_non_nullable
 as String?,priceNormalized: freezed == priceNormalized ? _self.priceNormalized : priceNormalized // ignore: cast_nullable_to_non_nullable
 as double?,isPromoted: freezed == isPromoted ? _self.isPromoted : isPromoted // ignore: cast_nullable_to_non_nullable
-as bool?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as bool?,viewCount: freezed == viewCount ? _self.viewCount : viewCount // ignore: cast_nullable_to_non_nullable
+as int?,favoriteCount: freezed == favoriteCount ? _self.favoriteCount : favoriteCount // ignore: cast_nullable_to_non_nullable
+as int?,interestCount: freezed == interestCount ? _self.interestCount : interestCount // ignore: cast_nullable_to_non_nullable
+as int?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int?,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as ListingUserDto?,seller: freezed == seller ? _self.seller : seller // ignore: cast_nullable_to_non_nullable
 as ListingSellerDto?,

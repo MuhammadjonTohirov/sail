@@ -28,8 +28,9 @@ class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
 
   @override
   Future<List<FavoriteDto>> getFavorites() async {
-    final response = await _api.get<List<dynamic>>(ApiConfig.favorites);
-    return (response.data!)
+    final response = await _api.get<Map<String, dynamic>>(ApiConfig.favorites);
+    final results = response.data!['results'] as List<dynamic>? ?? [];
+    return results
         .map((json) => FavoriteDto.fromJson(json as Map<String, dynamic>))
         .toList();
   }
@@ -49,8 +50,9 @@ class FavoritesRemoteDataSourceImpl implements FavoritesRemoteDataSource {
 
   @override
   Future<List<RecentlyViewedDto>> getRecentlyViewed() async {
-    final response = await _api.get<List<dynamic>>(ApiConfig.recentlyViewed);
-    return (response.data!)
+    final response = await _api.get<Map<String, dynamic>>(ApiConfig.recentlyViewed);
+    final results = response.data!['results'] as List<dynamic>? ?? [];
+    return results
         .map((json) => RecentlyViewedDto.fromJson(json as Map<String, dynamic>))
         .toList();
   }

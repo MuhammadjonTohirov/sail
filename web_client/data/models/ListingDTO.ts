@@ -28,11 +28,18 @@ export interface ListingUserDTO {
   phone_e164?: string;
 }
 
+export interface RevealContactResultDTO {
+  contact_name?: string;
+  contact_phone?: string;
+  contact_email?: string;
+  tracked: boolean;
+}
+
 export interface ListingDTO {
   id: number;
   title: string;
   description?: string;
-  price_amount: number;
+  price_amount: number | string;
   price_currency: string;
   is_price_negotiable?: boolean;
   condition: string;
@@ -48,7 +55,7 @@ export interface ListingDTO {
   lon?: number;
   media?: ListingMediaDTO[];
   media_urls?: string[];
-  attributes?: Array<{ key: string; value: unknown; label?: string }>;
+  attributes?: Array<{ attribute?: number; key: string; label?: string; type?: string; value: unknown }>;
   contact_name?: string;
   contact_email?: string;
   contact_phone?: string;
@@ -61,6 +68,9 @@ export interface ListingDTO {
   contact_phone_masked?: string | null;
   price_normalized?: number | null;
   is_promoted?: boolean | null;
+  view_count?: number;
+  favorite_count?: number;
+  interest_count?: number;
   user_id?: number;
   user?: ListingUserDTO;
   seller?: ListingSellerDTO;

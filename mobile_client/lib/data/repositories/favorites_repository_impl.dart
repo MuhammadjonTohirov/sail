@@ -36,7 +36,7 @@ class FavoritesRepositoryImpl implements FavoritesRepository {
   Future<Result<bool>> toggleFavorite(int listingId) async {
     try {
       final dto = await _remote.toggleFavorite(listingId);
-      return dto.isFavorite.asSuccess;
+      return dto.favorited.asSuccess;
     } on AppException catch (e) {
       return e.toFailure().asFail();
     } catch (e) {

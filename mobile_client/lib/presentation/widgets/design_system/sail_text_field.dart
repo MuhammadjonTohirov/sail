@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SailTextField extends StatefulWidget {
   final TextEditingController? controller;
@@ -7,10 +8,14 @@ class SailTextField extends StatefulWidget {
   final String? helperText;
   final String? Function(String?)? validator;
   final bool isPassword;
+  final bool enabled;
   final TextInputType keyboardType;
   final Widget? prefixIcon;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onFieldSubmitted;
+  final int? maxLength;
+  final int? maxLines;
+  final List<TextInputFormatter>? inputFormatters;
 
   const SailTextField({
     super.key,
@@ -20,10 +25,14 @@ class SailTextField extends StatefulWidget {
     this.helperText,
     this.validator,
     this.isPassword = false,
+    this.enabled = true,
     this.keyboardType = TextInputType.text,
     this.prefixIcon,
     this.textInputAction,
     this.onFieldSubmitted,
+    this.maxLength,
+    this.maxLines,
+    this.inputFormatters,
   });
 
   @override
@@ -56,6 +65,13 @@ class _SailTextFieldState extends State<SailTextField> {
           textInputAction: widget.textInputAction,
           onFieldSubmitted: widget.onFieldSubmitted,
           validator: widget.validator,
+          enabled: widget.enabled,
+          maxLines: widget.isPassword ? 1 : (widget.maxLines ?? 1),
+          maxLength: widget.maxLength,
+          inputFormatters: widget.inputFormatters,
+          buildCounter: widget.maxLength != null
+              ? (_, {required currentLength, required isFocused, required maxLength}) => null
+              : null,
           decoration: InputDecoration(
             hintText: widget.hintText,
             helperText: widget.helperText,

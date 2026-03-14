@@ -8,63 +8,55 @@ part of 'favorites_dto.dart';
 
 _FavoriteDto _$FavoriteDtoFromJson(Map<String, dynamic> json) => _FavoriteDto(
   id: (json['id'] as num).toInt(),
-  listingId: (json['listing_id'] as num).toInt(),
-  title: json['title'] as String,
-  price: (json['price'] as num?)?.toDouble(),
-  currency: json['currency'] as String?,
-  thumbnailUrl: json['thumbnail_url'] as String?,
-  locationName: json['location_name'] as String?,
-  status: json['status'] as String?,
-  addedAt: json['added_at'] as String?,
+  listing: (json['listing'] as num).toInt(),
+  listingTitle: json['listing_title'] as String,
+  listingPrice: _parsePrice(json['listing_price']),
+  listingLocation: json['listing_location'] as String?,
+  listingMediaUrls: (json['listing_media_urls'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  createdAt: json['created_at'] as String?,
 );
 
 Map<String, dynamic> _$FavoriteDtoToJson(_FavoriteDto instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'listing_id': instance.listingId,
-      'title': instance.title,
-      'price': instance.price,
-      'currency': instance.currency,
-      'thumbnail_url': instance.thumbnailUrl,
-      'location_name': instance.locationName,
-      'status': instance.status,
-      'added_at': instance.addedAt,
+      'listing': instance.listing,
+      'listing_title': instance.listingTitle,
+      'listing_price': instance.listingPrice,
+      'listing_location': instance.listingLocation,
+      'listing_media_urls': instance.listingMediaUrls,
+      'created_at': instance.createdAt,
     };
 
 _FavoriteToggleResponseDto _$FavoriteToggleResponseDtoFromJson(
   Map<String, dynamic> json,
-) => _FavoriteToggleResponseDto(
-  isFavorite: json['is_favorite'] as bool,
-  listingId: (json['listing_id'] as num).toInt(),
-);
+) => _FavoriteToggleResponseDto(favorited: json['favorited'] as bool);
 
 Map<String, dynamic> _$FavoriteToggleResponseDtoToJson(
   _FavoriteToggleResponseDto instance,
-) => <String, dynamic>{
-  'is_favorite': instance.isFavorite,
-  'listing_id': instance.listingId,
-};
+) => <String, dynamic>{'favorited': instance.favorited};
 
 _RecentlyViewedDto _$RecentlyViewedDtoFromJson(Map<String, dynamic> json) =>
     _RecentlyViewedDto(
       id: (json['id'] as num).toInt(),
-      listingId: (json['listing_id'] as num).toInt(),
-      title: json['title'] as String,
-      price: (json['price'] as num?)?.toDouble(),
-      currency: json['currency'] as String?,
-      thumbnailUrl: json['thumbnail_url'] as String?,
-      locationName: json['location_name'] as String?,
+      listing: (json['listing'] as num).toInt(),
+      listingTitle: json['listing_title'] as String,
+      listingPrice: _parsePrice(json['listing_price']),
+      listingLocation: json['listing_location'] as String?,
+      listingMediaUrls: (json['listing_media_urls'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
       viewedAt: json['viewed_at'] as String?,
     );
 
 Map<String, dynamic> _$RecentlyViewedDtoToJson(_RecentlyViewedDto instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'listing_id': instance.listingId,
-      'title': instance.title,
-      'price': instance.price,
-      'currency': instance.currency,
-      'thumbnail_url': instance.thumbnailUrl,
-      'location_name': instance.locationName,
+      'listing': instance.listing,
+      'listing_title': instance.listingTitle,
+      'listing_price': instance.listingPrice,
+      'listing_location': instance.listingLocation,
+      'listing_media_urls': instance.listingMediaUrls,
       'viewed_at': instance.viewedAt,
     };

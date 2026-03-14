@@ -280,6 +280,20 @@ class AuthRepositoryImpl implements AuthRepository {
   }
 
   @override
+  Future<Result<DateTime?>> markActive() async {
+    try {
+      final data = await _remote.markActive();
+      final lastActiveStr = data['last_active_at'] as String?;
+      final lastActive = lastActiveStr != null ? DateTime.tryParse(lastActiveStr) : null;
+      return lastActive.asSuccess;
+    } on AppException catch (e) {
+      return e.toFailure().asFail();
+    } catch (e) {
+      return UnknownFailure(e.toString()).asFail();
+    }
+  }
+
+  @override
   Future<bool> isAuthenticated() async {
     return _storage.isAuthenticated();
   }

@@ -20,10 +20,16 @@ class AppTheme {
     ),
     scaffoldBackgroundColor: AppColors.background,
     appBarTheme: const AppBarTheme(
-      centerTitle: true,
-      elevation: 0,
-      backgroundColor: Colors.transparent,
+      centerTitle: false,
+      elevation: 1,
+      backgroundColor: Colors.white,
       foregroundColor: Colors.black, // Or AppColors.neutral.shade900
+    ),
+    navigationBarTheme: NavigationBarThemeData(
+      backgroundColor: AppColors.surface,
+      surfaceTintColor: Colors.white,
+      elevation: 1,
+      shadowColor: AppColors.neutral.shade200,
     ),
     inputDecorationTheme: InputDecorationTheme(
       border: OutlineInputBorder(

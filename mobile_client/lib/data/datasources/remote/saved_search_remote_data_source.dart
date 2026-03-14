@@ -25,8 +25,9 @@ class SavedSearchRemoteDataSourceImpl implements SavedSearchRemoteDataSource {
 
   @override
   Future<List<SavedSearchDto>> getSavedSearches() async {
-    final response = await _api.get<List<dynamic>>(ApiConfig.savedSearches);
-    return (response.data!)
+    final response = await _api.get<Map<String, dynamic>>(ApiConfig.savedSearches);
+    final results = response.data!['results'] as List<dynamic>? ?? [];
+    return results
         .map((json) => SavedSearchDto.fromJson(json as Map<String, dynamic>))
         .toList();
   }

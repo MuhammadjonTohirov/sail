@@ -15,8 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$FavoriteDto {
 
- int get id;@JsonKey(name: 'listing_id') int get listingId; String get title; double? get price; String? get currency;@JsonKey(name: 'thumbnail_url') String? get thumbnailUrl;@JsonKey(name: 'location_name') String? get locationName; String? get status;// 'active', 'sold', 'expired', etc.
-@JsonKey(name: 'added_at') String? get addedAt;
+ int get id; int get listing;@JsonKey(name: 'listing_title') String get listingTitle;@JsonKey(name: 'listing_price', fromJson: _parsePrice) double? get listingPrice;@JsonKey(name: 'listing_location') String? get listingLocation;@JsonKey(name: 'listing_media_urls') List<String>? get listingMediaUrls;@JsonKey(name: 'created_at') String? get createdAt;
 /// Create a copy of FavoriteDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -29,16 +28,16 @@ $FavoriteDtoCopyWith<FavoriteDto> get copyWith => _$FavoriteDtoCopyWithImpl<Favo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoriteDto&&(identical(other.id, id) || other.id == id)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.status, status) || other.status == status)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoriteDto&&(identical(other.id, id) || other.id == id)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.listingTitle, listingTitle) || other.listingTitle == listingTitle)&&(identical(other.listingPrice, listingPrice) || other.listingPrice == listingPrice)&&(identical(other.listingLocation, listingLocation) || other.listingLocation == listingLocation)&&const DeepCollectionEquality().equals(other.listingMediaUrls, listingMediaUrls)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,listingId,title,price,currency,thumbnailUrl,locationName,status,addedAt);
+int get hashCode => Object.hash(runtimeType,id,listing,listingTitle,listingPrice,listingLocation,const DeepCollectionEquality().hash(listingMediaUrls),createdAt);
 
 @override
 String toString() {
-  return 'FavoriteDto(id: $id, listingId: $listingId, title: $title, price: $price, currency: $currency, thumbnailUrl: $thumbnailUrl, locationName: $locationName, status: $status, addedAt: $addedAt)';
+  return 'FavoriteDto(id: $id, listing: $listing, listingTitle: $listingTitle, listingPrice: $listingPrice, listingLocation: $listingLocation, listingMediaUrls: $listingMediaUrls, createdAt: $createdAt)';
 }
 
 
@@ -49,7 +48,7 @@ abstract mixin class $FavoriteDtoCopyWith<$Res>  {
   factory $FavoriteDtoCopyWith(FavoriteDto value, $Res Function(FavoriteDto) _then) = _$FavoriteDtoCopyWithImpl;
 @useResult
 $Res call({
- int id,@JsonKey(name: 'listing_id') int listingId, String title, double? price, String? currency,@JsonKey(name: 'thumbnail_url') String? thumbnailUrl,@JsonKey(name: 'location_name') String? locationName, String? status,@JsonKey(name: 'added_at') String? addedAt
+ int id, int listing,@JsonKey(name: 'listing_title') String listingTitle,@JsonKey(name: 'listing_price', fromJson: _parsePrice) double? listingPrice,@JsonKey(name: 'listing_location') String? listingLocation,@JsonKey(name: 'listing_media_urls') List<String>? listingMediaUrls,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
@@ -66,17 +65,15 @@ class _$FavoriteDtoCopyWithImpl<$Res>
 
 /// Create a copy of FavoriteDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? listingId = null,Object? title = null,Object? price = freezed,Object? currency = freezed,Object? thumbnailUrl = freezed,Object? locationName = freezed,Object? status = freezed,Object? addedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? listing = null,Object? listingTitle = null,Object? listingPrice = freezed,Object? listingLocation = freezed,Object? listingMediaUrls = freezed,Object? createdAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
-as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as double?,currency: freezed == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
-as String?,thumbnailUrl: freezed == thumbnailUrl ? _self.thumbnailUrl : thumbnailUrl // ignore: cast_nullable_to_non_nullable
-as String?,locationName: freezed == locationName ? _self.locationName : locationName // ignore: cast_nullable_to_non_nullable
-as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String?,addedAt: freezed == addedAt ? _self.addedAt : addedAt // ignore: cast_nullable_to_non_nullable
+as int,listing: null == listing ? _self.listing : listing // ignore: cast_nullable_to_non_nullable
+as int,listingTitle: null == listingTitle ? _self.listingTitle : listingTitle // ignore: cast_nullable_to_non_nullable
+as String,listingPrice: freezed == listingPrice ? _self.listingPrice : listingPrice // ignore: cast_nullable_to_non_nullable
+as double?,listingLocation: freezed == listingLocation ? _self.listingLocation : listingLocation // ignore: cast_nullable_to_non_nullable
+as String?,listingMediaUrls: freezed == listingMediaUrls ? _self.listingMediaUrls : listingMediaUrls // ignore: cast_nullable_to_non_nullable
+as List<String>?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -162,10 +159,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'listing_id')  int listingId,  String title,  double? price,  String? currency, @JsonKey(name: 'thumbnail_url')  String? thumbnailUrl, @JsonKey(name: 'location_name')  String? locationName,  String? status, @JsonKey(name: 'added_at')  String? addedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int listing, @JsonKey(name: 'listing_title')  String listingTitle, @JsonKey(name: 'listing_price', fromJson: _parsePrice)  double? listingPrice, @JsonKey(name: 'listing_location')  String? listingLocation, @JsonKey(name: 'listing_media_urls')  List<String>? listingMediaUrls, @JsonKey(name: 'created_at')  String? createdAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FavoriteDto() when $default != null:
-return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,_that.thumbnailUrl,_that.locationName,_that.status,_that.addedAt);case _:
+return $default(_that.id,_that.listing,_that.listingTitle,_that.listingPrice,_that.listingLocation,_that.listingMediaUrls,_that.createdAt);case _:
   return orElse();
 
 }
@@ -183,10 +180,10 @@ return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'listing_id')  int listingId,  String title,  double? price,  String? currency, @JsonKey(name: 'thumbnail_url')  String? thumbnailUrl, @JsonKey(name: 'location_name')  String? locationName,  String? status, @JsonKey(name: 'added_at')  String? addedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int listing, @JsonKey(name: 'listing_title')  String listingTitle, @JsonKey(name: 'listing_price', fromJson: _parsePrice)  double? listingPrice, @JsonKey(name: 'listing_location')  String? listingLocation, @JsonKey(name: 'listing_media_urls')  List<String>? listingMediaUrls, @JsonKey(name: 'created_at')  String? createdAt)  $default,) {final _that = this;
 switch (_that) {
 case _FavoriteDto():
-return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,_that.thumbnailUrl,_that.locationName,_that.status,_that.addedAt);case _:
+return $default(_that.id,_that.listing,_that.listingTitle,_that.listingPrice,_that.listingLocation,_that.listingMediaUrls,_that.createdAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -203,10 +200,10 @@ return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'listing_id')  int listingId,  String title,  double? price,  String? currency, @JsonKey(name: 'thumbnail_url')  String? thumbnailUrl, @JsonKey(name: 'location_name')  String? locationName,  String? status, @JsonKey(name: 'added_at')  String? addedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int listing, @JsonKey(name: 'listing_title')  String listingTitle, @JsonKey(name: 'listing_price', fromJson: _parsePrice)  double? listingPrice, @JsonKey(name: 'listing_location')  String? listingLocation, @JsonKey(name: 'listing_media_urls')  List<String>? listingMediaUrls, @JsonKey(name: 'created_at')  String? createdAt)?  $default,) {final _that = this;
 switch (_that) {
 case _FavoriteDto() when $default != null:
-return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,_that.thumbnailUrl,_that.locationName,_that.status,_that.addedAt);case _:
+return $default(_that.id,_that.listing,_that.listingTitle,_that.listingPrice,_that.listingLocation,_that.listingMediaUrls,_that.createdAt);case _:
   return null;
 
 }
@@ -218,19 +215,24 @@ return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,
 @JsonSerializable()
 
 class _FavoriteDto implements FavoriteDto {
-  const _FavoriteDto({required this.id, @JsonKey(name: 'listing_id') required this.listingId, required this.title, this.price, this.currency, @JsonKey(name: 'thumbnail_url') this.thumbnailUrl, @JsonKey(name: 'location_name') this.locationName, this.status, @JsonKey(name: 'added_at') this.addedAt});
+  const _FavoriteDto({required this.id, required this.listing, @JsonKey(name: 'listing_title') required this.listingTitle, @JsonKey(name: 'listing_price', fromJson: _parsePrice) this.listingPrice, @JsonKey(name: 'listing_location') this.listingLocation, @JsonKey(name: 'listing_media_urls') final  List<String>? listingMediaUrls, @JsonKey(name: 'created_at') this.createdAt}): _listingMediaUrls = listingMediaUrls;
   factory _FavoriteDto.fromJson(Map<String, dynamic> json) => _$FavoriteDtoFromJson(json);
 
 @override final  int id;
-@override@JsonKey(name: 'listing_id') final  int listingId;
-@override final  String title;
-@override final  double? price;
-@override final  String? currency;
-@override@JsonKey(name: 'thumbnail_url') final  String? thumbnailUrl;
-@override@JsonKey(name: 'location_name') final  String? locationName;
-@override final  String? status;
-// 'active', 'sold', 'expired', etc.
-@override@JsonKey(name: 'added_at') final  String? addedAt;
+@override final  int listing;
+@override@JsonKey(name: 'listing_title') final  String listingTitle;
+@override@JsonKey(name: 'listing_price', fromJson: _parsePrice) final  double? listingPrice;
+@override@JsonKey(name: 'listing_location') final  String? listingLocation;
+ final  List<String>? _listingMediaUrls;
+@override@JsonKey(name: 'listing_media_urls') List<String>? get listingMediaUrls {
+  final value = _listingMediaUrls;
+  if (value == null) return null;
+  if (_listingMediaUrls is EqualUnmodifiableListView) return _listingMediaUrls;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
+@override@JsonKey(name: 'created_at') final  String? createdAt;
 
 /// Create a copy of FavoriteDto
 /// with the given fields replaced by the non-null parameter values.
@@ -245,16 +247,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FavoriteDto&&(identical(other.id, id) || other.id == id)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.status, status) || other.status == status)&&(identical(other.addedAt, addedAt) || other.addedAt == addedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FavoriteDto&&(identical(other.id, id) || other.id == id)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.listingTitle, listingTitle) || other.listingTitle == listingTitle)&&(identical(other.listingPrice, listingPrice) || other.listingPrice == listingPrice)&&(identical(other.listingLocation, listingLocation) || other.listingLocation == listingLocation)&&const DeepCollectionEquality().equals(other._listingMediaUrls, _listingMediaUrls)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,listingId,title,price,currency,thumbnailUrl,locationName,status,addedAt);
+int get hashCode => Object.hash(runtimeType,id,listing,listingTitle,listingPrice,listingLocation,const DeepCollectionEquality().hash(_listingMediaUrls),createdAt);
 
 @override
 String toString() {
-  return 'FavoriteDto(id: $id, listingId: $listingId, title: $title, price: $price, currency: $currency, thumbnailUrl: $thumbnailUrl, locationName: $locationName, status: $status, addedAt: $addedAt)';
+  return 'FavoriteDto(id: $id, listing: $listing, listingTitle: $listingTitle, listingPrice: $listingPrice, listingLocation: $listingLocation, listingMediaUrls: $listingMediaUrls, createdAt: $createdAt)';
 }
 
 
@@ -265,7 +267,7 @@ abstract mixin class _$FavoriteDtoCopyWith<$Res> implements $FavoriteDtoCopyWith
   factory _$FavoriteDtoCopyWith(_FavoriteDto value, $Res Function(_FavoriteDto) _then) = __$FavoriteDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id,@JsonKey(name: 'listing_id') int listingId, String title, double? price, String? currency,@JsonKey(name: 'thumbnail_url') String? thumbnailUrl,@JsonKey(name: 'location_name') String? locationName, String? status,@JsonKey(name: 'added_at') String? addedAt
+ int id, int listing,@JsonKey(name: 'listing_title') String listingTitle,@JsonKey(name: 'listing_price', fromJson: _parsePrice) double? listingPrice,@JsonKey(name: 'listing_location') String? listingLocation,@JsonKey(name: 'listing_media_urls') List<String>? listingMediaUrls,@JsonKey(name: 'created_at') String? createdAt
 });
 
 
@@ -282,17 +284,15 @@ class __$FavoriteDtoCopyWithImpl<$Res>
 
 /// Create a copy of FavoriteDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? listingId = null,Object? title = null,Object? price = freezed,Object? currency = freezed,Object? thumbnailUrl = freezed,Object? locationName = freezed,Object? status = freezed,Object? addedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? listing = null,Object? listingTitle = null,Object? listingPrice = freezed,Object? listingLocation = freezed,Object? listingMediaUrls = freezed,Object? createdAt = freezed,}) {
   return _then(_FavoriteDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
-as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as double?,currency: freezed == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
-as String?,thumbnailUrl: freezed == thumbnailUrl ? _self.thumbnailUrl : thumbnailUrl // ignore: cast_nullable_to_non_nullable
-as String?,locationName: freezed == locationName ? _self.locationName : locationName // ignore: cast_nullable_to_non_nullable
-as String?,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String?,addedAt: freezed == addedAt ? _self.addedAt : addedAt // ignore: cast_nullable_to_non_nullable
+as int,listing: null == listing ? _self.listing : listing // ignore: cast_nullable_to_non_nullable
+as int,listingTitle: null == listingTitle ? _self.listingTitle : listingTitle // ignore: cast_nullable_to_non_nullable
+as String,listingPrice: freezed == listingPrice ? _self.listingPrice : listingPrice // ignore: cast_nullable_to_non_nullable
+as double?,listingLocation: freezed == listingLocation ? _self.listingLocation : listingLocation // ignore: cast_nullable_to_non_nullable
+as String?,listingMediaUrls: freezed == listingMediaUrls ? _self._listingMediaUrls : listingMediaUrls // ignore: cast_nullable_to_non_nullable
+as List<String>?,createdAt: freezed == createdAt ? _self.createdAt : createdAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -304,7 +304,7 @@ as String?,
 /// @nodoc
 mixin _$FavoriteToggleResponseDto {
 
-@JsonKey(name: 'is_favorite') bool get isFavorite;@JsonKey(name: 'listing_id') int get listingId;
+ bool get favorited;
 /// Create a copy of FavoriteToggleResponseDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -317,16 +317,16 @@ $FavoriteToggleResponseDtoCopyWith<FavoriteToggleResponseDto> get copyWith => _$
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoriteToggleResponseDto&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.listingId, listingId) || other.listingId == listingId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FavoriteToggleResponseDto&&(identical(other.favorited, favorited) || other.favorited == favorited));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isFavorite,listingId);
+int get hashCode => Object.hash(runtimeType,favorited);
 
 @override
 String toString() {
-  return 'FavoriteToggleResponseDto(isFavorite: $isFavorite, listingId: $listingId)';
+  return 'FavoriteToggleResponseDto(favorited: $favorited)';
 }
 
 
@@ -337,7 +337,7 @@ abstract mixin class $FavoriteToggleResponseDtoCopyWith<$Res>  {
   factory $FavoriteToggleResponseDtoCopyWith(FavoriteToggleResponseDto value, $Res Function(FavoriteToggleResponseDto) _then) = _$FavoriteToggleResponseDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'is_favorite') bool isFavorite,@JsonKey(name: 'listing_id') int listingId
+ bool favorited
 });
 
 
@@ -354,11 +354,10 @@ class _$FavoriteToggleResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of FavoriteToggleResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isFavorite = null,Object? listingId = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? favorited = null,}) {
   return _then(_self.copyWith(
-isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
-as bool,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
-as int,
+favorited: null == favorited ? _self.favorited : favorited // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -443,10 +442,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'is_favorite')  bool isFavorite, @JsonKey(name: 'listing_id')  int listingId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool favorited)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _FavoriteToggleResponseDto() when $default != null:
-return $default(_that.isFavorite,_that.listingId);case _:
+return $default(_that.favorited);case _:
   return orElse();
 
 }
@@ -464,10 +463,10 @@ return $default(_that.isFavorite,_that.listingId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'is_favorite')  bool isFavorite, @JsonKey(name: 'listing_id')  int listingId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool favorited)  $default,) {final _that = this;
 switch (_that) {
 case _FavoriteToggleResponseDto():
-return $default(_that.isFavorite,_that.listingId);case _:
+return $default(_that.favorited);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -484,10 +483,10 @@ return $default(_that.isFavorite,_that.listingId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'is_favorite')  bool isFavorite, @JsonKey(name: 'listing_id')  int listingId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool favorited)?  $default,) {final _that = this;
 switch (_that) {
 case _FavoriteToggleResponseDto() when $default != null:
-return $default(_that.isFavorite,_that.listingId);case _:
+return $default(_that.favorited);case _:
   return null;
 
 }
@@ -499,11 +498,10 @@ return $default(_that.isFavorite,_that.listingId);case _:
 @JsonSerializable()
 
 class _FavoriteToggleResponseDto implements FavoriteToggleResponseDto {
-  const _FavoriteToggleResponseDto({@JsonKey(name: 'is_favorite') required this.isFavorite, @JsonKey(name: 'listing_id') required this.listingId});
+  const _FavoriteToggleResponseDto({required this.favorited});
   factory _FavoriteToggleResponseDto.fromJson(Map<String, dynamic> json) => _$FavoriteToggleResponseDtoFromJson(json);
 
-@override@JsonKey(name: 'is_favorite') final  bool isFavorite;
-@override@JsonKey(name: 'listing_id') final  int listingId;
+@override final  bool favorited;
 
 /// Create a copy of FavoriteToggleResponseDto
 /// with the given fields replaced by the non-null parameter values.
@@ -518,16 +516,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FavoriteToggleResponseDto&&(identical(other.isFavorite, isFavorite) || other.isFavorite == isFavorite)&&(identical(other.listingId, listingId) || other.listingId == listingId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _FavoriteToggleResponseDto&&(identical(other.favorited, favorited) || other.favorited == favorited));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,isFavorite,listingId);
+int get hashCode => Object.hash(runtimeType,favorited);
 
 @override
 String toString() {
-  return 'FavoriteToggleResponseDto(isFavorite: $isFavorite, listingId: $listingId)';
+  return 'FavoriteToggleResponseDto(favorited: $favorited)';
 }
 
 
@@ -538,7 +536,7 @@ abstract mixin class _$FavoriteToggleResponseDtoCopyWith<$Res> implements $Favor
   factory _$FavoriteToggleResponseDtoCopyWith(_FavoriteToggleResponseDto value, $Res Function(_FavoriteToggleResponseDto) _then) = __$FavoriteToggleResponseDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'is_favorite') bool isFavorite,@JsonKey(name: 'listing_id') int listingId
+ bool favorited
 });
 
 
@@ -555,11 +553,10 @@ class __$FavoriteToggleResponseDtoCopyWithImpl<$Res>
 
 /// Create a copy of FavoriteToggleResponseDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isFavorite = null,Object? listingId = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? favorited = null,}) {
   return _then(_FavoriteToggleResponseDto(
-isFavorite: null == isFavorite ? _self.isFavorite : isFavorite // ignore: cast_nullable_to_non_nullable
-as bool,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
-as int,
+favorited: null == favorited ? _self.favorited : favorited // ignore: cast_nullable_to_non_nullable
+as bool,
   ));
 }
 
@@ -570,7 +567,7 @@ as int,
 /// @nodoc
 mixin _$RecentlyViewedDto {
 
- int get id;@JsonKey(name: 'listing_id') int get listingId; String get title; double? get price; String? get currency;@JsonKey(name: 'thumbnail_url') String? get thumbnailUrl;@JsonKey(name: 'location_name') String? get locationName;@JsonKey(name: 'viewed_at') String? get viewedAt;
+ int get id; int get listing;@JsonKey(name: 'listing_title') String get listingTitle;@JsonKey(name: 'listing_price', fromJson: _parsePrice) double? get listingPrice;@JsonKey(name: 'listing_location') String? get listingLocation;@JsonKey(name: 'listing_media_urls') List<String>? get listingMediaUrls;@JsonKey(name: 'viewed_at') String? get viewedAt;
 /// Create a copy of RecentlyViewedDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -583,16 +580,16 @@ $RecentlyViewedDtoCopyWith<RecentlyViewedDto> get copyWith => _$RecentlyViewedDt
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecentlyViewedDto&&(identical(other.id, id) || other.id == id)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.viewedAt, viewedAt) || other.viewedAt == viewedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RecentlyViewedDto&&(identical(other.id, id) || other.id == id)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.listingTitle, listingTitle) || other.listingTitle == listingTitle)&&(identical(other.listingPrice, listingPrice) || other.listingPrice == listingPrice)&&(identical(other.listingLocation, listingLocation) || other.listingLocation == listingLocation)&&const DeepCollectionEquality().equals(other.listingMediaUrls, listingMediaUrls)&&(identical(other.viewedAt, viewedAt) || other.viewedAt == viewedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,listingId,title,price,currency,thumbnailUrl,locationName,viewedAt);
+int get hashCode => Object.hash(runtimeType,id,listing,listingTitle,listingPrice,listingLocation,const DeepCollectionEquality().hash(listingMediaUrls),viewedAt);
 
 @override
 String toString() {
-  return 'RecentlyViewedDto(id: $id, listingId: $listingId, title: $title, price: $price, currency: $currency, thumbnailUrl: $thumbnailUrl, locationName: $locationName, viewedAt: $viewedAt)';
+  return 'RecentlyViewedDto(id: $id, listing: $listing, listingTitle: $listingTitle, listingPrice: $listingPrice, listingLocation: $listingLocation, listingMediaUrls: $listingMediaUrls, viewedAt: $viewedAt)';
 }
 
 
@@ -603,7 +600,7 @@ abstract mixin class $RecentlyViewedDtoCopyWith<$Res>  {
   factory $RecentlyViewedDtoCopyWith(RecentlyViewedDto value, $Res Function(RecentlyViewedDto) _then) = _$RecentlyViewedDtoCopyWithImpl;
 @useResult
 $Res call({
- int id,@JsonKey(name: 'listing_id') int listingId, String title, double? price, String? currency,@JsonKey(name: 'thumbnail_url') String? thumbnailUrl,@JsonKey(name: 'location_name') String? locationName,@JsonKey(name: 'viewed_at') String? viewedAt
+ int id, int listing,@JsonKey(name: 'listing_title') String listingTitle,@JsonKey(name: 'listing_price', fromJson: _parsePrice) double? listingPrice,@JsonKey(name: 'listing_location') String? listingLocation,@JsonKey(name: 'listing_media_urls') List<String>? listingMediaUrls,@JsonKey(name: 'viewed_at') String? viewedAt
 });
 
 
@@ -620,16 +617,15 @@ class _$RecentlyViewedDtoCopyWithImpl<$Res>
 
 /// Create a copy of RecentlyViewedDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? listingId = null,Object? title = null,Object? price = freezed,Object? currency = freezed,Object? thumbnailUrl = freezed,Object? locationName = freezed,Object? viewedAt = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? listing = null,Object? listingTitle = null,Object? listingPrice = freezed,Object? listingLocation = freezed,Object? listingMediaUrls = freezed,Object? viewedAt = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
-as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as double?,currency: freezed == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
-as String?,thumbnailUrl: freezed == thumbnailUrl ? _self.thumbnailUrl : thumbnailUrl // ignore: cast_nullable_to_non_nullable
-as String?,locationName: freezed == locationName ? _self.locationName : locationName // ignore: cast_nullable_to_non_nullable
-as String?,viewedAt: freezed == viewedAt ? _self.viewedAt : viewedAt // ignore: cast_nullable_to_non_nullable
+as int,listing: null == listing ? _self.listing : listing // ignore: cast_nullable_to_non_nullable
+as int,listingTitle: null == listingTitle ? _self.listingTitle : listingTitle // ignore: cast_nullable_to_non_nullable
+as String,listingPrice: freezed == listingPrice ? _self.listingPrice : listingPrice // ignore: cast_nullable_to_non_nullable
+as double?,listingLocation: freezed == listingLocation ? _self.listingLocation : listingLocation // ignore: cast_nullable_to_non_nullable
+as String?,listingMediaUrls: freezed == listingMediaUrls ? _self.listingMediaUrls : listingMediaUrls // ignore: cast_nullable_to_non_nullable
+as List<String>?,viewedAt: freezed == viewedAt ? _self.viewedAt : viewedAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -715,10 +711,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'listing_id')  int listingId,  String title,  double? price,  String? currency, @JsonKey(name: 'thumbnail_url')  String? thumbnailUrl, @JsonKey(name: 'location_name')  String? locationName, @JsonKey(name: 'viewed_at')  String? viewedAt)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int listing, @JsonKey(name: 'listing_title')  String listingTitle, @JsonKey(name: 'listing_price', fromJson: _parsePrice)  double? listingPrice, @JsonKey(name: 'listing_location')  String? listingLocation, @JsonKey(name: 'listing_media_urls')  List<String>? listingMediaUrls, @JsonKey(name: 'viewed_at')  String? viewedAt)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _RecentlyViewedDto() when $default != null:
-return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,_that.thumbnailUrl,_that.locationName,_that.viewedAt);case _:
+return $default(_that.id,_that.listing,_that.listingTitle,_that.listingPrice,_that.listingLocation,_that.listingMediaUrls,_that.viewedAt);case _:
   return orElse();
 
 }
@@ -736,10 +732,10 @@ return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id, @JsonKey(name: 'listing_id')  int listingId,  String title,  double? price,  String? currency, @JsonKey(name: 'thumbnail_url')  String? thumbnailUrl, @JsonKey(name: 'location_name')  String? locationName, @JsonKey(name: 'viewed_at')  String? viewedAt)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int listing, @JsonKey(name: 'listing_title')  String listingTitle, @JsonKey(name: 'listing_price', fromJson: _parsePrice)  double? listingPrice, @JsonKey(name: 'listing_location')  String? listingLocation, @JsonKey(name: 'listing_media_urls')  List<String>? listingMediaUrls, @JsonKey(name: 'viewed_at')  String? viewedAt)  $default,) {final _that = this;
 switch (_that) {
 case _RecentlyViewedDto():
-return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,_that.thumbnailUrl,_that.locationName,_that.viewedAt);case _:
+return $default(_that.id,_that.listing,_that.listingTitle,_that.listingPrice,_that.listingLocation,_that.listingMediaUrls,_that.viewedAt);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -756,10 +752,10 @@ return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id, @JsonKey(name: 'listing_id')  int listingId,  String title,  double? price,  String? currency, @JsonKey(name: 'thumbnail_url')  String? thumbnailUrl, @JsonKey(name: 'location_name')  String? locationName, @JsonKey(name: 'viewed_at')  String? viewedAt)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int listing, @JsonKey(name: 'listing_title')  String listingTitle, @JsonKey(name: 'listing_price', fromJson: _parsePrice)  double? listingPrice, @JsonKey(name: 'listing_location')  String? listingLocation, @JsonKey(name: 'listing_media_urls')  List<String>? listingMediaUrls, @JsonKey(name: 'viewed_at')  String? viewedAt)?  $default,) {final _that = this;
 switch (_that) {
 case _RecentlyViewedDto() when $default != null:
-return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,_that.thumbnailUrl,_that.locationName,_that.viewedAt);case _:
+return $default(_that.id,_that.listing,_that.listingTitle,_that.listingPrice,_that.listingLocation,_that.listingMediaUrls,_that.viewedAt);case _:
   return null;
 
 }
@@ -771,16 +767,23 @@ return $default(_that.id,_that.listingId,_that.title,_that.price,_that.currency,
 @JsonSerializable()
 
 class _RecentlyViewedDto implements RecentlyViewedDto {
-  const _RecentlyViewedDto({required this.id, @JsonKey(name: 'listing_id') required this.listingId, required this.title, this.price, this.currency, @JsonKey(name: 'thumbnail_url') this.thumbnailUrl, @JsonKey(name: 'location_name') this.locationName, @JsonKey(name: 'viewed_at') this.viewedAt});
+  const _RecentlyViewedDto({required this.id, required this.listing, @JsonKey(name: 'listing_title') required this.listingTitle, @JsonKey(name: 'listing_price', fromJson: _parsePrice) this.listingPrice, @JsonKey(name: 'listing_location') this.listingLocation, @JsonKey(name: 'listing_media_urls') final  List<String>? listingMediaUrls, @JsonKey(name: 'viewed_at') this.viewedAt}): _listingMediaUrls = listingMediaUrls;
   factory _RecentlyViewedDto.fromJson(Map<String, dynamic> json) => _$RecentlyViewedDtoFromJson(json);
 
 @override final  int id;
-@override@JsonKey(name: 'listing_id') final  int listingId;
-@override final  String title;
-@override final  double? price;
-@override final  String? currency;
-@override@JsonKey(name: 'thumbnail_url') final  String? thumbnailUrl;
-@override@JsonKey(name: 'location_name') final  String? locationName;
+@override final  int listing;
+@override@JsonKey(name: 'listing_title') final  String listingTitle;
+@override@JsonKey(name: 'listing_price', fromJson: _parsePrice) final  double? listingPrice;
+@override@JsonKey(name: 'listing_location') final  String? listingLocation;
+ final  List<String>? _listingMediaUrls;
+@override@JsonKey(name: 'listing_media_urls') List<String>? get listingMediaUrls {
+  final value = _listingMediaUrls;
+  if (value == null) return null;
+  if (_listingMediaUrls is EqualUnmodifiableListView) return _listingMediaUrls;
+  // ignore: implicit_dynamic_type
+  return EqualUnmodifiableListView(value);
+}
+
 @override@JsonKey(name: 'viewed_at') final  String? viewedAt;
 
 /// Create a copy of RecentlyViewedDto
@@ -796,16 +799,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecentlyViewedDto&&(identical(other.id, id) || other.id == id)&&(identical(other.listingId, listingId) || other.listingId == listingId)&&(identical(other.title, title) || other.title == title)&&(identical(other.price, price) || other.price == price)&&(identical(other.currency, currency) || other.currency == currency)&&(identical(other.thumbnailUrl, thumbnailUrl) || other.thumbnailUrl == thumbnailUrl)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.viewedAt, viewedAt) || other.viewedAt == viewedAt));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RecentlyViewedDto&&(identical(other.id, id) || other.id == id)&&(identical(other.listing, listing) || other.listing == listing)&&(identical(other.listingTitle, listingTitle) || other.listingTitle == listingTitle)&&(identical(other.listingPrice, listingPrice) || other.listingPrice == listingPrice)&&(identical(other.listingLocation, listingLocation) || other.listingLocation == listingLocation)&&const DeepCollectionEquality().equals(other._listingMediaUrls, _listingMediaUrls)&&(identical(other.viewedAt, viewedAt) || other.viewedAt == viewedAt));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,listingId,title,price,currency,thumbnailUrl,locationName,viewedAt);
+int get hashCode => Object.hash(runtimeType,id,listing,listingTitle,listingPrice,listingLocation,const DeepCollectionEquality().hash(_listingMediaUrls),viewedAt);
 
 @override
 String toString() {
-  return 'RecentlyViewedDto(id: $id, listingId: $listingId, title: $title, price: $price, currency: $currency, thumbnailUrl: $thumbnailUrl, locationName: $locationName, viewedAt: $viewedAt)';
+  return 'RecentlyViewedDto(id: $id, listing: $listing, listingTitle: $listingTitle, listingPrice: $listingPrice, listingLocation: $listingLocation, listingMediaUrls: $listingMediaUrls, viewedAt: $viewedAt)';
 }
 
 
@@ -816,7 +819,7 @@ abstract mixin class _$RecentlyViewedDtoCopyWith<$Res> implements $RecentlyViewe
   factory _$RecentlyViewedDtoCopyWith(_RecentlyViewedDto value, $Res Function(_RecentlyViewedDto) _then) = __$RecentlyViewedDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id,@JsonKey(name: 'listing_id') int listingId, String title, double? price, String? currency,@JsonKey(name: 'thumbnail_url') String? thumbnailUrl,@JsonKey(name: 'location_name') String? locationName,@JsonKey(name: 'viewed_at') String? viewedAt
+ int id, int listing,@JsonKey(name: 'listing_title') String listingTitle,@JsonKey(name: 'listing_price', fromJson: _parsePrice) double? listingPrice,@JsonKey(name: 'listing_location') String? listingLocation,@JsonKey(name: 'listing_media_urls') List<String>? listingMediaUrls,@JsonKey(name: 'viewed_at') String? viewedAt
 });
 
 
@@ -833,16 +836,15 @@ class __$RecentlyViewedDtoCopyWithImpl<$Res>
 
 /// Create a copy of RecentlyViewedDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? listingId = null,Object? title = null,Object? price = freezed,Object? currency = freezed,Object? thumbnailUrl = freezed,Object? locationName = freezed,Object? viewedAt = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? listing = null,Object? listingTitle = null,Object? listingPrice = freezed,Object? listingLocation = freezed,Object? listingMediaUrls = freezed,Object? viewedAt = freezed,}) {
   return _then(_RecentlyViewedDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,listingId: null == listingId ? _self.listingId : listingId // ignore: cast_nullable_to_non_nullable
-as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
-as String,price: freezed == price ? _self.price : price // ignore: cast_nullable_to_non_nullable
-as double?,currency: freezed == currency ? _self.currency : currency // ignore: cast_nullable_to_non_nullable
-as String?,thumbnailUrl: freezed == thumbnailUrl ? _self.thumbnailUrl : thumbnailUrl // ignore: cast_nullable_to_non_nullable
-as String?,locationName: freezed == locationName ? _self.locationName : locationName // ignore: cast_nullable_to_non_nullable
-as String?,viewedAt: freezed == viewedAt ? _self.viewedAt : viewedAt // ignore: cast_nullable_to_non_nullable
+as int,listing: null == listing ? _self.listing : listing // ignore: cast_nullable_to_non_nullable
+as int,listingTitle: null == listingTitle ? _self.listingTitle : listingTitle // ignore: cast_nullable_to_non_nullable
+as String,listingPrice: freezed == listingPrice ? _self.listingPrice : listingPrice // ignore: cast_nullable_to_non_nullable
+as double?,listingLocation: freezed == listingLocation ? _self.listingLocation : listingLocation // ignore: cast_nullable_to_non_nullable
+as String?,listingMediaUrls: freezed == listingMediaUrls ? _self._listingMediaUrls : listingMediaUrls // ignore: cast_nullable_to_non_nullable
+as List<String>?,viewedAt: freezed == viewedAt ? _self.viewedAt : viewedAt // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }

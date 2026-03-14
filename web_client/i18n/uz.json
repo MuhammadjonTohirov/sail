@@ -58,7 +58,9 @@
     "filtersApplied": "{{count}} ta filtr",
     "filtersBack": "Natijalarga qaytish",
     "select": "Tanlash",
-    "endOfResults": "Boshqa e'lonlar yo'q"
+    "endOfResults": "Boshqa e'lonlar yo'q",
+    "currencyLabel": "Valyuta",
+    "allCurrencies": "Barchasi"
   },
   "features": {
     "promotions": "Reklama qilingan eʼlonlar",
@@ -202,6 +204,7 @@
     "sendMessage": "Xabar yozish",
     "ownListing": "Bu sizning e'loningiz",
     "showPhone": "Telefonni ko'rsatish",
+    "showContact": "Kontaktni ko'rsatish",
     "seller": "Sotuvchi",
     "user": "Foydalanuvchi",
     "onSiteSince": "Saytda",
@@ -416,7 +419,23 @@
     "back": "Orqaga",
     "loadingMore": "Ko'proq yuklanmoqda...",
     "share": "Ulashish",
-    "copyLink": "Havolani nusxalash"
+    "copyLink": "Havolani nusxalash",
+    "free": "Bepul",
+    "today": "Bugun",
+    "yesterday": "Kecha",
+    "daysAgo": "{{count}} kun oldin",
+    "top": "TOP",
+    "yes": "Ha",
+    "mySearch": "Mening qidiruvim",
+    "priceLabel": "Narxi:",
+    "searchSaved": "Qidiruv saqlandi",
+    "searchSaveError": "Xatolik yuz berdi",
+    "searchAlreadySaved": "Bu qidiruv allaqachon saqlangan",
+    "searchSavedSuccess": "Qidiruv saqlandi! Yangi e'lonlar haqida xabarnoma olasiz.",
+    "searchSaveLoginRequired": "Qidiruvni saqlab bo'lmadi. Iltimos, tizimga kiring.",
+    "saving": "Saqlanmoqda...",
+    "saved": "Qidiruv saqlandi",
+    "saveSearch": "Qidiruvni saqlash"
   },
   "settings": {
     "pageTitle": "Sozlamalar",

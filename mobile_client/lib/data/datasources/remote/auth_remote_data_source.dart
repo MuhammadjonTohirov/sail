@@ -31,6 +31,9 @@ abstract class AuthRemoteDataSource {
   Future<ProfileDto> updateProfile({String? displayName, int? locationId});
   Future<void> deleteAccount();
   
+  // Activity
+  Future<Map<String, dynamic>> markActive();
+
   // Security
   Future<SecurityInfoDto> getSecurityInfo();
   Future<void> changePassword(ChangePasswordRequestDto request);
@@ -161,5 +164,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   @override
   Future<void> unlinkTelegram() async {
     await _api.post(ApiConfig.securityUnlinkTelegram);
+  }
+
+  @override
+  Future<Map<String, dynamic>> markActive() async {
+    final response = await _api.post<Map<String, dynamic>>(
+      ApiConfig.profileActive,
+    );
+    return response.data ?? {};
   }
 }

@@ -292,7 +292,7 @@ as String?,
 /// @nodoc
 mixin _$ListingAttribute {
 
- String get key; dynamic get value; String? get label;
+ int? get attributeId; String get key; dynamic get value; String? get label; String? get type;
 /// Create a copy of ListingAttribute
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -303,16 +303,16 @@ $ListingAttributeCopyWith<ListingAttribute> get copyWith => _$ListingAttributeCo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListingAttribute&&(identical(other.key, key) || other.key == key)&&const DeepCollectionEquality().equals(other.value, value)&&(identical(other.label, label) || other.label == label));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ListingAttribute&&(identical(other.attributeId, attributeId) || other.attributeId == attributeId)&&(identical(other.key, key) || other.key == key)&&const DeepCollectionEquality().equals(other.value, value)&&(identical(other.label, label) || other.label == label)&&(identical(other.type, type) || other.type == type));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,key,const DeepCollectionEquality().hash(value),label);
+int get hashCode => Object.hash(runtimeType,attributeId,key,const DeepCollectionEquality().hash(value),label,type);
 
 @override
 String toString() {
-  return 'ListingAttribute(key: $key, value: $value, label: $label)';
+  return 'ListingAttribute(attributeId: $attributeId, key: $key, value: $value, label: $label, type: $type)';
 }
 
 
@@ -323,7 +323,7 @@ abstract mixin class $ListingAttributeCopyWith<$Res>  {
   factory $ListingAttributeCopyWith(ListingAttribute value, $Res Function(ListingAttribute) _then) = _$ListingAttributeCopyWithImpl;
 @useResult
 $Res call({
- String key, dynamic value, String? label
+ int? attributeId, String key, dynamic value, String? label, String? type
 });
 
 
@@ -340,11 +340,13 @@ class _$ListingAttributeCopyWithImpl<$Res>
 
 /// Create a copy of ListingAttribute
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? key = null,Object? value = freezed,Object? label = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? attributeId = freezed,Object? key = null,Object? value = freezed,Object? label = freezed,Object? type = freezed,}) {
   return _then(_self.copyWith(
-key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+attributeId: freezed == attributeId ? _self.attributeId : attributeId // ignore: cast_nullable_to_non_nullable
+as int?,key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
 as String,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
 as dynamic,label: freezed == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
+as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -430,10 +432,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String key,  dynamic value,  String? label)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? attributeId,  String key,  dynamic value,  String? label,  String? type)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ListingAttribute() when $default != null:
-return $default(_that.key,_that.value,_that.label);case _:
+return $default(_that.attributeId,_that.key,_that.value,_that.label,_that.type);case _:
   return orElse();
 
 }
@@ -451,10 +453,10 @@ return $default(_that.key,_that.value,_that.label);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String key,  dynamic value,  String? label)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? attributeId,  String key,  dynamic value,  String? label,  String? type)  $default,) {final _that = this;
 switch (_that) {
 case _ListingAttribute():
-return $default(_that.key,_that.value,_that.label);case _:
+return $default(_that.attributeId,_that.key,_that.value,_that.label,_that.type);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -471,10 +473,10 @@ return $default(_that.key,_that.value,_that.label);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String key,  dynamic value,  String? label)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? attributeId,  String key,  dynamic value,  String? label,  String? type)?  $default,) {final _that = this;
 switch (_that) {
 case _ListingAttribute() when $default != null:
-return $default(_that.key,_that.value,_that.label);case _:
+return $default(_that.attributeId,_that.key,_that.value,_that.label,_that.type);case _:
   return null;
 
 }
@@ -486,12 +488,14 @@ return $default(_that.key,_that.value,_that.label);case _:
 
 
 class _ListingAttribute implements ListingAttribute {
-  const _ListingAttribute({required this.key, required this.value, this.label});
+  const _ListingAttribute({this.attributeId, required this.key, required this.value, this.label, this.type});
   
 
+@override final  int? attributeId;
 @override final  String key;
 @override final  dynamic value;
 @override final  String? label;
+@override final  String? type;
 
 /// Create a copy of ListingAttribute
 /// with the given fields replaced by the non-null parameter values.
@@ -503,16 +507,16 @@ _$ListingAttributeCopyWith<_ListingAttribute> get copyWith => __$ListingAttribut
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListingAttribute&&(identical(other.key, key) || other.key == key)&&const DeepCollectionEquality().equals(other.value, value)&&(identical(other.label, label) || other.label == label));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ListingAttribute&&(identical(other.attributeId, attributeId) || other.attributeId == attributeId)&&(identical(other.key, key) || other.key == key)&&const DeepCollectionEquality().equals(other.value, value)&&(identical(other.label, label) || other.label == label)&&(identical(other.type, type) || other.type == type));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,key,const DeepCollectionEquality().hash(value),label);
+int get hashCode => Object.hash(runtimeType,attributeId,key,const DeepCollectionEquality().hash(value),label,type);
 
 @override
 String toString() {
-  return 'ListingAttribute(key: $key, value: $value, label: $label)';
+  return 'ListingAttribute(attributeId: $attributeId, key: $key, value: $value, label: $label, type: $type)';
 }
 
 
@@ -523,7 +527,7 @@ abstract mixin class _$ListingAttributeCopyWith<$Res> implements $ListingAttribu
   factory _$ListingAttributeCopyWith(_ListingAttribute value, $Res Function(_ListingAttribute) _then) = __$ListingAttributeCopyWithImpl;
 @override @useResult
 $Res call({
- String key, dynamic value, String? label
+ int? attributeId, String key, dynamic value, String? label, String? type
 });
 
 
@@ -540,11 +544,13 @@ class __$ListingAttributeCopyWithImpl<$Res>
 
 /// Create a copy of ListingAttribute
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? key = null,Object? value = freezed,Object? label = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? attributeId = freezed,Object? key = null,Object? value = freezed,Object? label = freezed,Object? type = freezed,}) {
   return _then(_ListingAttribute(
-key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
+attributeId: freezed == attributeId ? _self.attributeId : attributeId // ignore: cast_nullable_to_non_nullable
+as int?,key: null == key ? _self.key : key // ignore: cast_nullable_to_non_nullable
 as String,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
 as dynamic,label: freezed == label ? _self.label : label // ignore: cast_nullable_to_non_nullable
+as String?,type: freezed == type ? _self.type : type // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
 }
@@ -557,7 +563,7 @@ mixin _$Listing {
 
  int get id; String get title; String? get description; double get priceAmount; String get priceCurrency; bool? get isPriceNegotiable; String get condition; String? get dealType;// 'sell', 'exchange', 'free'
  String? get sellerType;// 'person', 'business'
- int get categoryId; String? get categoryName; String? get categorySlug; int get locationId; String? get locationName; String? get locationSlug; double? get lat; double? get lon; List<ListingMedia>? get media; List<String>? get mediaUrls; List<ListingAttribute>? get attributes; String? get status; String? get contactName; String? get contactEmail; String? get contactPhone; DateTime? get createdAt; DateTime? get updatedAt; DateTime? get refreshedAt; DateTime? get expiresAt; double? get qualityScore; String? get contactPhoneMasked; double? get priceNormalized; bool? get isPromoted; int? get userId; ListingUser? get user; ListingSeller? get seller;
+ int get categoryId; String? get categoryName; String? get categorySlug; int get locationId; String? get locationName; String? get locationSlug; double? get lat; double? get lon; List<ListingMedia>? get media; List<String>? get mediaUrls; List<ListingAttribute>? get attributes; String? get status; String? get contactName; String? get contactEmail; String? get contactPhone; DateTime? get createdAt; DateTime? get updatedAt; DateTime? get refreshedAt; DateTime? get expiresAt; double? get qualityScore; String? get contactPhoneMasked; double? get priceNormalized; bool? get isPromoted; int get viewCount; int get favoriteCount; int get interestCount; int? get userId; ListingUser? get user; ListingSeller? get seller;
 /// Create a copy of Listing
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -568,16 +574,16 @@ $ListingCopyWith<Listing> get copyWith => _$ListingCopyWithImpl<Listing>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Listing&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceCurrency, priceCurrency) || other.priceCurrency == priceCurrency)&&(identical(other.isPriceNegotiable, isPriceNegotiable) || other.isPriceNegotiable == isPriceNegotiable)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.dealType, dealType) || other.dealType == dealType)&&(identical(other.sellerType, sellerType) || other.sellerType == sellerType)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categorySlug, categorySlug) || other.categorySlug == categorySlug)&&(identical(other.locationId, locationId) || other.locationId == locationId)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.locationSlug, locationSlug) || other.locationSlug == locationSlug)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&const DeepCollectionEquality().equals(other.media, media)&&const DeepCollectionEquality().equals(other.mediaUrls, mediaUrls)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&(identical(other.status, status) || other.status == status)&&(identical(other.contactName, contactName) || other.contactName == contactName)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.refreshedAt, refreshedAt) || other.refreshedAt == refreshedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.qualityScore, qualityScore) || other.qualityScore == qualityScore)&&(identical(other.contactPhoneMasked, contactPhoneMasked) || other.contactPhoneMasked == contactPhoneMasked)&&(identical(other.priceNormalized, priceNormalized) || other.priceNormalized == priceNormalized)&&(identical(other.isPromoted, isPromoted) || other.isPromoted == isPromoted)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.seller, seller) || other.seller == seller));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is Listing&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceCurrency, priceCurrency) || other.priceCurrency == priceCurrency)&&(identical(other.isPriceNegotiable, isPriceNegotiable) || other.isPriceNegotiable == isPriceNegotiable)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.dealType, dealType) || other.dealType == dealType)&&(identical(other.sellerType, sellerType) || other.sellerType == sellerType)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categorySlug, categorySlug) || other.categorySlug == categorySlug)&&(identical(other.locationId, locationId) || other.locationId == locationId)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.locationSlug, locationSlug) || other.locationSlug == locationSlug)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&const DeepCollectionEquality().equals(other.media, media)&&const DeepCollectionEquality().equals(other.mediaUrls, mediaUrls)&&const DeepCollectionEquality().equals(other.attributes, attributes)&&(identical(other.status, status) || other.status == status)&&(identical(other.contactName, contactName) || other.contactName == contactName)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.refreshedAt, refreshedAt) || other.refreshedAt == refreshedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.qualityScore, qualityScore) || other.qualityScore == qualityScore)&&(identical(other.contactPhoneMasked, contactPhoneMasked) || other.contactPhoneMasked == contactPhoneMasked)&&(identical(other.priceNormalized, priceNormalized) || other.priceNormalized == priceNormalized)&&(identical(other.isPromoted, isPromoted) || other.isPromoted == isPromoted)&&(identical(other.viewCount, viewCount) || other.viewCount == viewCount)&&(identical(other.favoriteCount, favoriteCount) || other.favoriteCount == favoriteCount)&&(identical(other.interestCount, interestCount) || other.interestCount == interestCount)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.seller, seller) || other.seller == seller));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,title,description,priceAmount,priceCurrency,isPriceNegotiable,condition,dealType,sellerType,categoryId,categoryName,categorySlug,locationId,locationName,locationSlug,lat,lon,const DeepCollectionEquality().hash(media),const DeepCollectionEquality().hash(mediaUrls),const DeepCollectionEquality().hash(attributes),status,contactName,contactEmail,contactPhone,createdAt,updatedAt,refreshedAt,expiresAt,qualityScore,contactPhoneMasked,priceNormalized,isPromoted,userId,user,seller]);
+int get hashCode => Object.hashAll([runtimeType,id,title,description,priceAmount,priceCurrency,isPriceNegotiable,condition,dealType,sellerType,categoryId,categoryName,categorySlug,locationId,locationName,locationSlug,lat,lon,const DeepCollectionEquality().hash(media),const DeepCollectionEquality().hash(mediaUrls),const DeepCollectionEquality().hash(attributes),status,contactName,contactEmail,contactPhone,createdAt,updatedAt,refreshedAt,expiresAt,qualityScore,contactPhoneMasked,priceNormalized,isPromoted,viewCount,favoriteCount,interestCount,userId,user,seller]);
 
 @override
 String toString() {
-  return 'Listing(id: $id, title: $title, description: $description, priceAmount: $priceAmount, priceCurrency: $priceCurrency, isPriceNegotiable: $isPriceNegotiable, condition: $condition, dealType: $dealType, sellerType: $sellerType, categoryId: $categoryId, categoryName: $categoryName, categorySlug: $categorySlug, locationId: $locationId, locationName: $locationName, locationSlug: $locationSlug, lat: $lat, lon: $lon, media: $media, mediaUrls: $mediaUrls, attributes: $attributes, status: $status, contactName: $contactName, contactEmail: $contactEmail, contactPhone: $contactPhone, createdAt: $createdAt, updatedAt: $updatedAt, refreshedAt: $refreshedAt, expiresAt: $expiresAt, qualityScore: $qualityScore, contactPhoneMasked: $contactPhoneMasked, priceNormalized: $priceNormalized, isPromoted: $isPromoted, userId: $userId, user: $user, seller: $seller)';
+  return 'Listing(id: $id, title: $title, description: $description, priceAmount: $priceAmount, priceCurrency: $priceCurrency, isPriceNegotiable: $isPriceNegotiable, condition: $condition, dealType: $dealType, sellerType: $sellerType, categoryId: $categoryId, categoryName: $categoryName, categorySlug: $categorySlug, locationId: $locationId, locationName: $locationName, locationSlug: $locationSlug, lat: $lat, lon: $lon, media: $media, mediaUrls: $mediaUrls, attributes: $attributes, status: $status, contactName: $contactName, contactEmail: $contactEmail, contactPhone: $contactPhone, createdAt: $createdAt, updatedAt: $updatedAt, refreshedAt: $refreshedAt, expiresAt: $expiresAt, qualityScore: $qualityScore, contactPhoneMasked: $contactPhoneMasked, priceNormalized: $priceNormalized, isPromoted: $isPromoted, viewCount: $viewCount, favoriteCount: $favoriteCount, interestCount: $interestCount, userId: $userId, user: $user, seller: $seller)';
 }
 
 
@@ -588,7 +594,7 @@ abstract mixin class $ListingCopyWith<$Res>  {
   factory $ListingCopyWith(Listing value, $Res Function(Listing) _then) = _$ListingCopyWithImpl;
 @useResult
 $Res call({
- int id, String title, String? description, double priceAmount, String priceCurrency, bool? isPriceNegotiable, String condition, String? dealType, String? sellerType, int categoryId, String? categoryName, String? categorySlug, int locationId, String? locationName, String? locationSlug, double? lat, double? lon, List<ListingMedia>? media, List<String>? mediaUrls, List<ListingAttribute>? attributes, String? status, String? contactName, String? contactEmail, String? contactPhone, DateTime? createdAt, DateTime? updatedAt, DateTime? refreshedAt, DateTime? expiresAt, double? qualityScore, String? contactPhoneMasked, double? priceNormalized, bool? isPromoted, int? userId, ListingUser? user, ListingSeller? seller
+ int id, String title, String? description, double priceAmount, String priceCurrency, bool? isPriceNegotiable, String condition, String? dealType, String? sellerType, int categoryId, String? categoryName, String? categorySlug, int locationId, String? locationName, String? locationSlug, double? lat, double? lon, List<ListingMedia>? media, List<String>? mediaUrls, List<ListingAttribute>? attributes, String? status, String? contactName, String? contactEmail, String? contactPhone, DateTime? createdAt, DateTime? updatedAt, DateTime? refreshedAt, DateTime? expiresAt, double? qualityScore, String? contactPhoneMasked, double? priceNormalized, bool? isPromoted, int viewCount, int favoriteCount, int interestCount, int? userId, ListingUser? user, ListingSeller? seller
 });
 
 
@@ -605,7 +611,7 @@ class _$ListingCopyWithImpl<$Res>
 
 /// Create a copy of Listing
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? priceAmount = null,Object? priceCurrency = null,Object? isPriceNegotiable = freezed,Object? condition = null,Object? dealType = freezed,Object? sellerType = freezed,Object? categoryId = null,Object? categoryName = freezed,Object? categorySlug = freezed,Object? locationId = null,Object? locationName = freezed,Object? locationSlug = freezed,Object? lat = freezed,Object? lon = freezed,Object? media = freezed,Object? mediaUrls = freezed,Object? attributes = freezed,Object? status = freezed,Object? contactName = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? refreshedAt = freezed,Object? expiresAt = freezed,Object? qualityScore = freezed,Object? contactPhoneMasked = freezed,Object? priceNormalized = freezed,Object? isPromoted = freezed,Object? userId = freezed,Object? user = freezed,Object? seller = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? priceAmount = null,Object? priceCurrency = null,Object? isPriceNegotiable = freezed,Object? condition = null,Object? dealType = freezed,Object? sellerType = freezed,Object? categoryId = null,Object? categoryName = freezed,Object? categorySlug = freezed,Object? locationId = null,Object? locationName = freezed,Object? locationSlug = freezed,Object? lat = freezed,Object? lon = freezed,Object? media = freezed,Object? mediaUrls = freezed,Object? attributes = freezed,Object? status = freezed,Object? contactName = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? refreshedAt = freezed,Object? expiresAt = freezed,Object? qualityScore = freezed,Object? contactPhoneMasked = freezed,Object? priceNormalized = freezed,Object? isPromoted = freezed,Object? viewCount = null,Object? favoriteCount = null,Object? interestCount = null,Object? userId = freezed,Object? user = freezed,Object? seller = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -639,7 +645,10 @@ as DateTime?,qualityScore: freezed == qualityScore ? _self.qualityScore : qualit
 as double?,contactPhoneMasked: freezed == contactPhoneMasked ? _self.contactPhoneMasked : contactPhoneMasked // ignore: cast_nullable_to_non_nullable
 as String?,priceNormalized: freezed == priceNormalized ? _self.priceNormalized : priceNormalized // ignore: cast_nullable_to_non_nullable
 as double?,isPromoted: freezed == isPromoted ? _self.isPromoted : isPromoted // ignore: cast_nullable_to_non_nullable
-as bool?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as bool?,viewCount: null == viewCount ? _self.viewCount : viewCount // ignore: cast_nullable_to_non_nullable
+as int,favoriteCount: null == favoriteCount ? _self.favoriteCount : favoriteCount // ignore: cast_nullable_to_non_nullable
+as int,interestCount: null == interestCount ? _self.interestCount : interestCount // ignore: cast_nullable_to_non_nullable
+as int,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int?,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as ListingUser?,seller: freezed == seller ? _self.seller : seller // ignore: cast_nullable_to_non_nullable
 as ListingSeller?,
@@ -751,10 +760,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String? description,  double priceAmount,  String priceCurrency,  bool? isPriceNegotiable,  String condition,  String? dealType,  String? sellerType,  int categoryId,  String? categoryName,  String? categorySlug,  int locationId,  String? locationName,  String? locationSlug,  double? lat,  double? lon,  List<ListingMedia>? media,  List<String>? mediaUrls,  List<ListingAttribute>? attributes,  String? status,  String? contactName,  String? contactEmail,  String? contactPhone,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? refreshedAt,  DateTime? expiresAt,  double? qualityScore,  String? contactPhoneMasked,  double? priceNormalized,  bool? isPromoted,  int? userId,  ListingUser? user,  ListingSeller? seller)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String title,  String? description,  double priceAmount,  String priceCurrency,  bool? isPriceNegotiable,  String condition,  String? dealType,  String? sellerType,  int categoryId,  String? categoryName,  String? categorySlug,  int locationId,  String? locationName,  String? locationSlug,  double? lat,  double? lon,  List<ListingMedia>? media,  List<String>? mediaUrls,  List<ListingAttribute>? attributes,  String? status,  String? contactName,  String? contactEmail,  String? contactPhone,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? refreshedAt,  DateTime? expiresAt,  double? qualityScore,  String? contactPhoneMasked,  double? priceNormalized,  bool? isPromoted,  int viewCount,  int favoriteCount,  int interestCount,  int? userId,  ListingUser? user,  ListingSeller? seller)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Listing() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.categoryId,_that.categoryName,_that.categorySlug,_that.locationId,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.userId,_that.user,_that.seller);case _:
+return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.categoryId,_that.categoryName,_that.categorySlug,_that.locationId,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.viewCount,_that.favoriteCount,_that.interestCount,_that.userId,_that.user,_that.seller);case _:
   return orElse();
 
 }
@@ -772,10 +781,10 @@ return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.p
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String? description,  double priceAmount,  String priceCurrency,  bool? isPriceNegotiable,  String condition,  String? dealType,  String? sellerType,  int categoryId,  String? categoryName,  String? categorySlug,  int locationId,  String? locationName,  String? locationSlug,  double? lat,  double? lon,  List<ListingMedia>? media,  List<String>? mediaUrls,  List<ListingAttribute>? attributes,  String? status,  String? contactName,  String? contactEmail,  String? contactPhone,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? refreshedAt,  DateTime? expiresAt,  double? qualityScore,  String? contactPhoneMasked,  double? priceNormalized,  bool? isPromoted,  int? userId,  ListingUser? user,  ListingSeller? seller)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String title,  String? description,  double priceAmount,  String priceCurrency,  bool? isPriceNegotiable,  String condition,  String? dealType,  String? sellerType,  int categoryId,  String? categoryName,  String? categorySlug,  int locationId,  String? locationName,  String? locationSlug,  double? lat,  double? lon,  List<ListingMedia>? media,  List<String>? mediaUrls,  List<ListingAttribute>? attributes,  String? status,  String? contactName,  String? contactEmail,  String? contactPhone,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? refreshedAt,  DateTime? expiresAt,  double? qualityScore,  String? contactPhoneMasked,  double? priceNormalized,  bool? isPromoted,  int viewCount,  int favoriteCount,  int interestCount,  int? userId,  ListingUser? user,  ListingSeller? seller)  $default,) {final _that = this;
 switch (_that) {
 case _Listing():
-return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.categoryId,_that.categoryName,_that.categorySlug,_that.locationId,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.userId,_that.user,_that.seller);case _:
+return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.categoryId,_that.categoryName,_that.categorySlug,_that.locationId,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.viewCount,_that.favoriteCount,_that.interestCount,_that.userId,_that.user,_that.seller);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -792,10 +801,10 @@ return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.p
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String? description,  double priceAmount,  String priceCurrency,  bool? isPriceNegotiable,  String condition,  String? dealType,  String? sellerType,  int categoryId,  String? categoryName,  String? categorySlug,  int locationId,  String? locationName,  String? locationSlug,  double? lat,  double? lon,  List<ListingMedia>? media,  List<String>? mediaUrls,  List<ListingAttribute>? attributes,  String? status,  String? contactName,  String? contactEmail,  String? contactPhone,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? refreshedAt,  DateTime? expiresAt,  double? qualityScore,  String? contactPhoneMasked,  double? priceNormalized,  bool? isPromoted,  int? userId,  ListingUser? user,  ListingSeller? seller)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String title,  String? description,  double priceAmount,  String priceCurrency,  bool? isPriceNegotiable,  String condition,  String? dealType,  String? sellerType,  int categoryId,  String? categoryName,  String? categorySlug,  int locationId,  String? locationName,  String? locationSlug,  double? lat,  double? lon,  List<ListingMedia>? media,  List<String>? mediaUrls,  List<ListingAttribute>? attributes,  String? status,  String? contactName,  String? contactEmail,  String? contactPhone,  DateTime? createdAt,  DateTime? updatedAt,  DateTime? refreshedAt,  DateTime? expiresAt,  double? qualityScore,  String? contactPhoneMasked,  double? priceNormalized,  bool? isPromoted,  int viewCount,  int favoriteCount,  int interestCount,  int? userId,  ListingUser? user,  ListingSeller? seller)?  $default,) {final _that = this;
 switch (_that) {
 case _Listing() when $default != null:
-return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.categoryId,_that.categoryName,_that.categorySlug,_that.locationId,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.userId,_that.user,_that.seller);case _:
+return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.priceCurrency,_that.isPriceNegotiable,_that.condition,_that.dealType,_that.sellerType,_that.categoryId,_that.categoryName,_that.categorySlug,_that.locationId,_that.locationName,_that.locationSlug,_that.lat,_that.lon,_that.media,_that.mediaUrls,_that.attributes,_that.status,_that.contactName,_that.contactEmail,_that.contactPhone,_that.createdAt,_that.updatedAt,_that.refreshedAt,_that.expiresAt,_that.qualityScore,_that.contactPhoneMasked,_that.priceNormalized,_that.isPromoted,_that.viewCount,_that.favoriteCount,_that.interestCount,_that.userId,_that.user,_that.seller);case _:
   return null;
 
 }
@@ -807,7 +816,7 @@ return $default(_that.id,_that.title,_that.description,_that.priceAmount,_that.p
 
 
 class _Listing implements Listing {
-  const _Listing({required this.id, required this.title, this.description, required this.priceAmount, required this.priceCurrency, this.isPriceNegotiable, required this.condition, this.dealType, this.sellerType, required this.categoryId, this.categoryName, this.categorySlug, required this.locationId, this.locationName, this.locationSlug, this.lat, this.lon, final  List<ListingMedia>? media, final  List<String>? mediaUrls, final  List<ListingAttribute>? attributes, this.status, this.contactName, this.contactEmail, this.contactPhone, this.createdAt, this.updatedAt, this.refreshedAt, this.expiresAt, this.qualityScore, this.contactPhoneMasked, this.priceNormalized, this.isPromoted, this.userId, this.user, this.seller}): _media = media,_mediaUrls = mediaUrls,_attributes = attributes;
+  const _Listing({required this.id, required this.title, this.description, required this.priceAmount, required this.priceCurrency, this.isPriceNegotiable, required this.condition, this.dealType, this.sellerType, required this.categoryId, this.categoryName, this.categorySlug, required this.locationId, this.locationName, this.locationSlug, this.lat, this.lon, final  List<ListingMedia>? media, final  List<String>? mediaUrls, final  List<ListingAttribute>? attributes, this.status, this.contactName, this.contactEmail, this.contactPhone, this.createdAt, this.updatedAt, this.refreshedAt, this.expiresAt, this.qualityScore, this.contactPhoneMasked, this.priceNormalized, this.isPromoted, this.viewCount = 0, this.favoriteCount = 0, this.interestCount = 0, this.userId, this.user, this.seller}): _media = media,_mediaUrls = mediaUrls,_attributes = attributes;
   
 
 @override final  int id;
@@ -868,6 +877,9 @@ class _Listing implements Listing {
 @override final  String? contactPhoneMasked;
 @override final  double? priceNormalized;
 @override final  bool? isPromoted;
+@override@JsonKey() final  int viewCount;
+@override@JsonKey() final  int favoriteCount;
+@override@JsonKey() final  int interestCount;
 @override final  int? userId;
 @override final  ListingUser? user;
 @override final  ListingSeller? seller;
@@ -882,16 +894,16 @@ _$ListingCopyWith<_Listing> get copyWith => __$ListingCopyWithImpl<_Listing>(thi
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Listing&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceCurrency, priceCurrency) || other.priceCurrency == priceCurrency)&&(identical(other.isPriceNegotiable, isPriceNegotiable) || other.isPriceNegotiable == isPriceNegotiable)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.dealType, dealType) || other.dealType == dealType)&&(identical(other.sellerType, sellerType) || other.sellerType == sellerType)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categorySlug, categorySlug) || other.categorySlug == categorySlug)&&(identical(other.locationId, locationId) || other.locationId == locationId)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.locationSlug, locationSlug) || other.locationSlug == locationSlug)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&const DeepCollectionEquality().equals(other._media, _media)&&const DeepCollectionEquality().equals(other._mediaUrls, _mediaUrls)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&(identical(other.status, status) || other.status == status)&&(identical(other.contactName, contactName) || other.contactName == contactName)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.refreshedAt, refreshedAt) || other.refreshedAt == refreshedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.qualityScore, qualityScore) || other.qualityScore == qualityScore)&&(identical(other.contactPhoneMasked, contactPhoneMasked) || other.contactPhoneMasked == contactPhoneMasked)&&(identical(other.priceNormalized, priceNormalized) || other.priceNormalized == priceNormalized)&&(identical(other.isPromoted, isPromoted) || other.isPromoted == isPromoted)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.seller, seller) || other.seller == seller));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Listing&&(identical(other.id, id) || other.id == id)&&(identical(other.title, title) || other.title == title)&&(identical(other.description, description) || other.description == description)&&(identical(other.priceAmount, priceAmount) || other.priceAmount == priceAmount)&&(identical(other.priceCurrency, priceCurrency) || other.priceCurrency == priceCurrency)&&(identical(other.isPriceNegotiable, isPriceNegotiable) || other.isPriceNegotiable == isPriceNegotiable)&&(identical(other.condition, condition) || other.condition == condition)&&(identical(other.dealType, dealType) || other.dealType == dealType)&&(identical(other.sellerType, sellerType) || other.sellerType == sellerType)&&(identical(other.categoryId, categoryId) || other.categoryId == categoryId)&&(identical(other.categoryName, categoryName) || other.categoryName == categoryName)&&(identical(other.categorySlug, categorySlug) || other.categorySlug == categorySlug)&&(identical(other.locationId, locationId) || other.locationId == locationId)&&(identical(other.locationName, locationName) || other.locationName == locationName)&&(identical(other.locationSlug, locationSlug) || other.locationSlug == locationSlug)&&(identical(other.lat, lat) || other.lat == lat)&&(identical(other.lon, lon) || other.lon == lon)&&const DeepCollectionEquality().equals(other._media, _media)&&const DeepCollectionEquality().equals(other._mediaUrls, _mediaUrls)&&const DeepCollectionEquality().equals(other._attributes, _attributes)&&(identical(other.status, status) || other.status == status)&&(identical(other.contactName, contactName) || other.contactName == contactName)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.createdAt, createdAt) || other.createdAt == createdAt)&&(identical(other.updatedAt, updatedAt) || other.updatedAt == updatedAt)&&(identical(other.refreshedAt, refreshedAt) || other.refreshedAt == refreshedAt)&&(identical(other.expiresAt, expiresAt) || other.expiresAt == expiresAt)&&(identical(other.qualityScore, qualityScore) || other.qualityScore == qualityScore)&&(identical(other.contactPhoneMasked, contactPhoneMasked) || other.contactPhoneMasked == contactPhoneMasked)&&(identical(other.priceNormalized, priceNormalized) || other.priceNormalized == priceNormalized)&&(identical(other.isPromoted, isPromoted) || other.isPromoted == isPromoted)&&(identical(other.viewCount, viewCount) || other.viewCount == viewCount)&&(identical(other.favoriteCount, favoriteCount) || other.favoriteCount == favoriteCount)&&(identical(other.interestCount, interestCount) || other.interestCount == interestCount)&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.user, user) || other.user == user)&&(identical(other.seller, seller) || other.seller == seller));
 }
 
 
 @override
-int get hashCode => Object.hashAll([runtimeType,id,title,description,priceAmount,priceCurrency,isPriceNegotiable,condition,dealType,sellerType,categoryId,categoryName,categorySlug,locationId,locationName,locationSlug,lat,lon,const DeepCollectionEquality().hash(_media),const DeepCollectionEquality().hash(_mediaUrls),const DeepCollectionEquality().hash(_attributes),status,contactName,contactEmail,contactPhone,createdAt,updatedAt,refreshedAt,expiresAt,qualityScore,contactPhoneMasked,priceNormalized,isPromoted,userId,user,seller]);
+int get hashCode => Object.hashAll([runtimeType,id,title,description,priceAmount,priceCurrency,isPriceNegotiable,condition,dealType,sellerType,categoryId,categoryName,categorySlug,locationId,locationName,locationSlug,lat,lon,const DeepCollectionEquality().hash(_media),const DeepCollectionEquality().hash(_mediaUrls),const DeepCollectionEquality().hash(_attributes),status,contactName,contactEmail,contactPhone,createdAt,updatedAt,refreshedAt,expiresAt,qualityScore,contactPhoneMasked,priceNormalized,isPromoted,viewCount,favoriteCount,interestCount,userId,user,seller]);
 
 @override
 String toString() {
-  return 'Listing(id: $id, title: $title, description: $description, priceAmount: $priceAmount, priceCurrency: $priceCurrency, isPriceNegotiable: $isPriceNegotiable, condition: $condition, dealType: $dealType, sellerType: $sellerType, categoryId: $categoryId, categoryName: $categoryName, categorySlug: $categorySlug, locationId: $locationId, locationName: $locationName, locationSlug: $locationSlug, lat: $lat, lon: $lon, media: $media, mediaUrls: $mediaUrls, attributes: $attributes, status: $status, contactName: $contactName, contactEmail: $contactEmail, contactPhone: $contactPhone, createdAt: $createdAt, updatedAt: $updatedAt, refreshedAt: $refreshedAt, expiresAt: $expiresAt, qualityScore: $qualityScore, contactPhoneMasked: $contactPhoneMasked, priceNormalized: $priceNormalized, isPromoted: $isPromoted, userId: $userId, user: $user, seller: $seller)';
+  return 'Listing(id: $id, title: $title, description: $description, priceAmount: $priceAmount, priceCurrency: $priceCurrency, isPriceNegotiable: $isPriceNegotiable, condition: $condition, dealType: $dealType, sellerType: $sellerType, categoryId: $categoryId, categoryName: $categoryName, categorySlug: $categorySlug, locationId: $locationId, locationName: $locationName, locationSlug: $locationSlug, lat: $lat, lon: $lon, media: $media, mediaUrls: $mediaUrls, attributes: $attributes, status: $status, contactName: $contactName, contactEmail: $contactEmail, contactPhone: $contactPhone, createdAt: $createdAt, updatedAt: $updatedAt, refreshedAt: $refreshedAt, expiresAt: $expiresAt, qualityScore: $qualityScore, contactPhoneMasked: $contactPhoneMasked, priceNormalized: $priceNormalized, isPromoted: $isPromoted, viewCount: $viewCount, favoriteCount: $favoriteCount, interestCount: $interestCount, userId: $userId, user: $user, seller: $seller)';
 }
 
 
@@ -902,7 +914,7 @@ abstract mixin class _$ListingCopyWith<$Res> implements $ListingCopyWith<$Res> {
   factory _$ListingCopyWith(_Listing value, $Res Function(_Listing) _then) = __$ListingCopyWithImpl;
 @override @useResult
 $Res call({
- int id, String title, String? description, double priceAmount, String priceCurrency, bool? isPriceNegotiable, String condition, String? dealType, String? sellerType, int categoryId, String? categoryName, String? categorySlug, int locationId, String? locationName, String? locationSlug, double? lat, double? lon, List<ListingMedia>? media, List<String>? mediaUrls, List<ListingAttribute>? attributes, String? status, String? contactName, String? contactEmail, String? contactPhone, DateTime? createdAt, DateTime? updatedAt, DateTime? refreshedAt, DateTime? expiresAt, double? qualityScore, String? contactPhoneMasked, double? priceNormalized, bool? isPromoted, int? userId, ListingUser? user, ListingSeller? seller
+ int id, String title, String? description, double priceAmount, String priceCurrency, bool? isPriceNegotiable, String condition, String? dealType, String? sellerType, int categoryId, String? categoryName, String? categorySlug, int locationId, String? locationName, String? locationSlug, double? lat, double? lon, List<ListingMedia>? media, List<String>? mediaUrls, List<ListingAttribute>? attributes, String? status, String? contactName, String? contactEmail, String? contactPhone, DateTime? createdAt, DateTime? updatedAt, DateTime? refreshedAt, DateTime? expiresAt, double? qualityScore, String? contactPhoneMasked, double? priceNormalized, bool? isPromoted, int viewCount, int favoriteCount, int interestCount, int? userId, ListingUser? user, ListingSeller? seller
 });
 
 
@@ -919,7 +931,7 @@ class __$ListingCopyWithImpl<$Res>
 
 /// Create a copy of Listing
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? priceAmount = null,Object? priceCurrency = null,Object? isPriceNegotiable = freezed,Object? condition = null,Object? dealType = freezed,Object? sellerType = freezed,Object? categoryId = null,Object? categoryName = freezed,Object? categorySlug = freezed,Object? locationId = null,Object? locationName = freezed,Object? locationSlug = freezed,Object? lat = freezed,Object? lon = freezed,Object? media = freezed,Object? mediaUrls = freezed,Object? attributes = freezed,Object? status = freezed,Object? contactName = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? refreshedAt = freezed,Object? expiresAt = freezed,Object? qualityScore = freezed,Object? contactPhoneMasked = freezed,Object? priceNormalized = freezed,Object? isPromoted = freezed,Object? userId = freezed,Object? user = freezed,Object? seller = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? title = null,Object? description = freezed,Object? priceAmount = null,Object? priceCurrency = null,Object? isPriceNegotiable = freezed,Object? condition = null,Object? dealType = freezed,Object? sellerType = freezed,Object? categoryId = null,Object? categoryName = freezed,Object? categorySlug = freezed,Object? locationId = null,Object? locationName = freezed,Object? locationSlug = freezed,Object? lat = freezed,Object? lon = freezed,Object? media = freezed,Object? mediaUrls = freezed,Object? attributes = freezed,Object? status = freezed,Object? contactName = freezed,Object? contactEmail = freezed,Object? contactPhone = freezed,Object? createdAt = freezed,Object? updatedAt = freezed,Object? refreshedAt = freezed,Object? expiresAt = freezed,Object? qualityScore = freezed,Object? contactPhoneMasked = freezed,Object? priceNormalized = freezed,Object? isPromoted = freezed,Object? viewCount = null,Object? favoriteCount = null,Object? interestCount = null,Object? userId = freezed,Object? user = freezed,Object? seller = freezed,}) {
   return _then(_Listing(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,title: null == title ? _self.title : title // ignore: cast_nullable_to_non_nullable
@@ -953,7 +965,10 @@ as DateTime?,qualityScore: freezed == qualityScore ? _self.qualityScore : qualit
 as double?,contactPhoneMasked: freezed == contactPhoneMasked ? _self.contactPhoneMasked : contactPhoneMasked // ignore: cast_nullable_to_non_nullable
 as String?,priceNormalized: freezed == priceNormalized ? _self.priceNormalized : priceNormalized // ignore: cast_nullable_to_non_nullable
 as double?,isPromoted: freezed == isPromoted ? _self.isPromoted : isPromoted // ignore: cast_nullable_to_non_nullable
-as bool?,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as bool?,viewCount: null == viewCount ? _self.viewCount : viewCount // ignore: cast_nullable_to_non_nullable
+as int,favoriteCount: null == favoriteCount ? _self.favoriteCount : favoriteCount // ignore: cast_nullable_to_non_nullable
+as int,interestCount: null == interestCount ? _self.interestCount : interestCount // ignore: cast_nullable_to_non_nullable
+as int,userId: freezed == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
 as int?,user: freezed == user ? _self.user : user // ignore: cast_nullable_to_non_nullable
 as ListingUser?,seller: freezed == seller ? _self.seller : seller // ignore: cast_nullable_to_non_nullable
 as ListingSeller?,
@@ -1551,6 +1566,269 @@ class __$ListingAttributePayloadCopyWithImpl<$Res>
 attributeId: null == attributeId ? _self.attributeId : attributeId // ignore: cast_nullable_to_non_nullable
 as int,value: freezed == value ? _self.value : value // ignore: cast_nullable_to_non_nullable
 as dynamic,
+  ));
+}
+
+
+}
+
+/// @nodoc
+mixin _$RevealContactResult {
+
+ String? get contactPhone; String? get contactEmail; String? get contactName;
+/// Create a copy of RevealContactResult
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$RevealContactResultCopyWith<RevealContactResult> get copyWith => _$RevealContactResultCopyWithImpl<RevealContactResult>(this as RevealContactResult, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is RevealContactResult&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactName, contactName) || other.contactName == contactName));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,contactPhone,contactEmail,contactName);
+
+@override
+String toString() {
+  return 'RevealContactResult(contactPhone: $contactPhone, contactEmail: $contactEmail, contactName: $contactName)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $RevealContactResultCopyWith<$Res>  {
+  factory $RevealContactResultCopyWith(RevealContactResult value, $Res Function(RevealContactResult) _then) = _$RevealContactResultCopyWithImpl;
+@useResult
+$Res call({
+ String? contactPhone, String? contactEmail, String? contactName
+});
+
+
+
+
+}
+/// @nodoc
+class _$RevealContactResultCopyWithImpl<$Res>
+    implements $RevealContactResultCopyWith<$Res> {
+  _$RevealContactResultCopyWithImpl(this._self, this._then);
+
+  final RevealContactResult _self;
+  final $Res Function(RevealContactResult) _then;
+
+/// Create a copy of RevealContactResult
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') @override $Res call({Object? contactPhone = freezed,Object? contactEmail = freezed,Object? contactName = freezed,}) {
+  return _then(_self.copyWith(
+contactPhone: freezed == contactPhone ? _self.contactPhone : contactPhone // ignore: cast_nullable_to_non_nullable
+as String?,contactEmail: freezed == contactEmail ? _self.contactEmail : contactEmail // ignore: cast_nullable_to_non_nullable
+as String?,contactName: freezed == contactName ? _self.contactName : contactName // ignore: cast_nullable_to_non_nullable
+as String?,
+  ));
+}
+
+}
+
+
+/// Adds pattern-matching-related methods to [RevealContactResult].
+extension RevealContactResultPatterns on RevealContactResult {
+/// A variant of `map` that fallback to returning `orElse`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>(TResult Function( _RevealContactResult value)?  $default,{required TResult orElse(),}){
+final _that = this;
+switch (_that) {
+case _RevealContactResult() when $default != null:
+return $default(_that);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// Callbacks receives the raw object, upcasted.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case final Subclass2 value:
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult map<TResult extends Object?>(TResult Function( _RevealContactResult value)  $default,){
+final _that = this;
+switch (_that) {
+case _RevealContactResult():
+return $default(_that);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `map` that fallback to returning `null`.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case final Subclass value:
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>(TResult? Function( _RevealContactResult value)?  $default,){
+final _that = this;
+switch (_that) {
+case _RevealContactResult() when $default != null:
+return $default(_that);case _:
+  return null;
+
+}
+}
+/// A variant of `when` that fallback to an `orElse` callback.
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return orElse();
+/// }
+/// ```
+
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String? contactPhone,  String? contactEmail,  String? contactName)?  $default,{required TResult orElse(),}) {final _that = this;
+switch (_that) {
+case _RevealContactResult() when $default != null:
+return $default(_that.contactPhone,_that.contactEmail,_that.contactName);case _:
+  return orElse();
+
+}
+}
+/// A `switch`-like method, using callbacks.
+///
+/// As opposed to `map`, this offers destructuring.
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case Subclass2(:final field2):
+///     return ...;
+/// }
+/// ```
+
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String? contactPhone,  String? contactEmail,  String? contactName)  $default,) {final _that = this;
+switch (_that) {
+case _RevealContactResult():
+return $default(_that.contactPhone,_that.contactEmail,_that.contactName);case _:
+  throw StateError('Unexpected subclass');
+
+}
+}
+/// A variant of `when` that fallback to returning `null`
+///
+/// It is equivalent to doing:
+/// ```dart
+/// switch (sealedClass) {
+///   case Subclass(:final field):
+///     return ...;
+///   case _:
+///     return null;
+/// }
+/// ```
+
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String? contactPhone,  String? contactEmail,  String? contactName)?  $default,) {final _that = this;
+switch (_that) {
+case _RevealContactResult() when $default != null:
+return $default(_that.contactPhone,_that.contactEmail,_that.contactName);case _:
+  return null;
+
+}
+}
+
+}
+
+/// @nodoc
+
+
+class _RevealContactResult implements RevealContactResult {
+  const _RevealContactResult({this.contactPhone, this.contactEmail, this.contactName});
+  
+
+@override final  String? contactPhone;
+@override final  String? contactEmail;
+@override final  String? contactName;
+
+/// Create a copy of RevealContactResult
+/// with the given fields replaced by the non-null parameter values.
+@override @JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+_$RevealContactResultCopyWith<_RevealContactResult> get copyWith => __$RevealContactResultCopyWithImpl<_RevealContactResult>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _RevealContactResult&&(identical(other.contactPhone, contactPhone) || other.contactPhone == contactPhone)&&(identical(other.contactEmail, contactEmail) || other.contactEmail == contactEmail)&&(identical(other.contactName, contactName) || other.contactName == contactName));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,contactPhone,contactEmail,contactName);
+
+@override
+String toString() {
+  return 'RevealContactResult(contactPhone: $contactPhone, contactEmail: $contactEmail, contactName: $contactName)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class _$RevealContactResultCopyWith<$Res> implements $RevealContactResultCopyWith<$Res> {
+  factory _$RevealContactResultCopyWith(_RevealContactResult value, $Res Function(_RevealContactResult) _then) = __$RevealContactResultCopyWithImpl;
+@override @useResult
+$Res call({
+ String? contactPhone, String? contactEmail, String? contactName
+});
+
+
+
+
+}
+/// @nodoc
+class __$RevealContactResultCopyWithImpl<$Res>
+    implements _$RevealContactResultCopyWith<$Res> {
+  __$RevealContactResultCopyWithImpl(this._self, this._then);
+
+  final _RevealContactResult _self;
+  final $Res Function(_RevealContactResult) _then;
+
+/// Create a copy of RevealContactResult
+/// with the given fields replaced by the non-null parameter values.
+@override @pragma('vm:prefer-inline') $Res call({Object? contactPhone = freezed,Object? contactEmail = freezed,Object? contactName = freezed,}) {
+  return _then(_RevealContactResult(
+contactPhone: freezed == contactPhone ? _self.contactPhone : contactPhone // ignore: cast_nullable_to_non_nullable
+as String?,contactEmail: freezed == contactEmail ? _self.contactEmail : contactEmail // ignore: cast_nullable_to_non_nullable
+as String?,contactName: freezed == contactName ? _self.contactName : contactName // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

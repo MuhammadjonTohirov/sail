@@ -3,6 +3,20 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'listing_dto.freezed.dart';
 part 'listing_dto.g.dart';
 
+/// Parses a value that may be a string or number into a double.
+/// Server sends price_amount as "800.00" (string) in some endpoints.
+double _parseDouble(dynamic value) {
+  if (value is double) return value;
+  if (value is int) return value.toDouble();
+  if (value is String) return double.tryParse(value) ?? 0.0;
+  return 0.0;
+}
+
+double? _parseDoubleNullable(dynamic value) {
+  if (value == null) return null;
+  return _parseDouble(value);
+}
+
 /// Listing media DTO matching server response.
 @freezed
 abstract class ListingMediaDto with _$ListingMediaDto {
@@ -54,13 +68,15 @@ abstract class ListingUserDto with _$ListingUserDto {
       _$ListingUserDtoFromJson(json);
 }
 
-/// Listing attribute value DTO.
+/// Listing attribute value DTO matching server ListingSerializer.get_attributes.
 @freezed
 abstract class ListingAttributeDto with _$ListingAttributeDto {
   const factory ListingAttributeDto({
+    int? attribute,
     required String key,
     required dynamic value,
     String? label,
+    String? type,
   }) = _ListingAttributeDto;
 
   factory ListingAttributeDto.fromJson(Map<String, dynamic> json) =>
@@ -76,7 +92,7 @@ abstract class ListingDto with _$ListingDto {
     required int id,
     required String title,
     String? description,
-    @JsonKey(name: 'price_amount') required double priceAmount,
+    @JsonKey(name: 'price_amount', fromJson: _parseDouble) required double priceAmount,
     @JsonKey(name: 'price_currency') required String priceCurrency,
     @JsonKey(name: 'is_price_negotiable') bool? isPriceNegotiable,
     required String condition,
@@ -101,10 +117,13 @@ abstract class ListingDto with _$ListingDto {
     @JsonKey(name: 'updated_at') String? updatedAt,
     @JsonKey(name: 'refreshed_at') String? refreshedAt,
     @JsonKey(name: 'expires_at') String? expiresAt,
-    @JsonKey(name: 'quality_score') double? qualityScore,
+    @JsonKey(name: 'quality_score', fromJson: _parseDoubleNullable) double? qualityScore,
     @JsonKey(name: 'contact_phone_masked') String? contactPhoneMasked,
-    @JsonKey(name: 'price_normalized') double? priceNormalized,
+    @JsonKey(name: 'price_normalized', fromJson: _parseDoubleNullable) double? priceNormalized,
     @JsonKey(name: 'is_promoted') bool? isPromoted,
+    @JsonKey(name: 'view_count') int? viewCount,
+    @JsonKey(name: 'favorite_count') int? favoriteCount,
+    @JsonKey(name: 'interest_count') int? interestCount,
     @JsonKey(name: 'user_id') int? userId,
     ListingUserDto? user,
     ListingSellerDto? seller,

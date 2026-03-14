@@ -74,24 +74,28 @@ Map<String, dynamic> _$ListingUserDtoToJson(_ListingUserDto instance) =>
 
 _ListingAttributeDto _$ListingAttributeDtoFromJson(Map<String, dynamic> json) =>
     _ListingAttributeDto(
+      attribute: (json['attribute'] as num?)?.toInt(),
       key: json['key'] as String,
       value: json['value'],
       label: json['label'] as String?,
+      type: json['type'] as String?,
     );
 
 Map<String, dynamic> _$ListingAttributeDtoToJson(
   _ListingAttributeDto instance,
 ) => <String, dynamic>{
+  'attribute': instance.attribute,
   'key': instance.key,
   'value': instance.value,
   'label': instance.label,
+  'type': instance.type,
 };
 
 _ListingDto _$ListingDtoFromJson(Map<String, dynamic> json) => _ListingDto(
   id: (json['id'] as num).toInt(),
   title: json['title'] as String,
   description: json['description'] as String?,
-  priceAmount: (json['price_amount'] as num).toDouble(),
+  priceAmount: _parseDouble(json['price_amount']),
   priceCurrency: json['price_currency'] as String,
   isPriceNegotiable: json['is_price_negotiable'] as bool?,
   condition: json['condition'] as String,
@@ -122,10 +126,13 @@ _ListingDto _$ListingDtoFromJson(Map<String, dynamic> json) => _ListingDto(
   updatedAt: json['updated_at'] as String?,
   refreshedAt: json['refreshed_at'] as String?,
   expiresAt: json['expires_at'] as String?,
-  qualityScore: (json['quality_score'] as num?)?.toDouble(),
+  qualityScore: _parseDoubleNullable(json['quality_score']),
   contactPhoneMasked: json['contact_phone_masked'] as String?,
-  priceNormalized: (json['price_normalized'] as num?)?.toDouble(),
+  priceNormalized: _parseDoubleNullable(json['price_normalized']),
   isPromoted: json['is_promoted'] as bool?,
+  viewCount: (json['view_count'] as num?)?.toInt(),
+  favoriteCount: (json['favorite_count'] as num?)?.toInt(),
+  interestCount: (json['interest_count'] as num?)?.toInt(),
   userId: (json['user_id'] as num?)?.toInt(),
   user: json['user'] == null
       ? null
@@ -169,6 +176,9 @@ Map<String, dynamic> _$ListingDtoToJson(_ListingDto instance) =>
       'contact_phone_masked': instance.contactPhoneMasked,
       'price_normalized': instance.priceNormalized,
       'is_promoted': instance.isPromoted,
+      'view_count': instance.viewCount,
+      'favorite_count': instance.favoriteCount,
+      'interest_count': instance.interestCount,
       'user_id': instance.userId,
       'user': instance.user,
       'seller': instance.seller,

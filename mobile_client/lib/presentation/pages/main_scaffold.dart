@@ -63,32 +63,29 @@ class MainScaffold extends StatelessWidget {
     switch (index) {
       case 0:
         context.go('/');
-        break;
       case 1:
-        // context.go('/search');
-        break;
+        context.go('/search');
       case 2:
-        // context.go('/post');
-        break;
+        _requireAuth(context, () => context.go('/post'));
       case 3:
-        // context.go('/chat');
+        // TODO: context.go('/chat');
         break;
       case 4:
-        final authState = context.read<AuthBloc>().state;
-        
-        authState.maybeWhen(
-          authenticated: (_) {
-            context.go('/profile');
-          },
-          orElse: () {
-            ToastManager().show(
-              message: AppLocalizations.of(context)!.loginRequiredMessage,
-              type: ToastType.warning,
-            );
-            context.push('/login');
-          },
-        );
-        break;
+        _requireAuth(context, () => context.go('/profile'));
     }
+  }
+
+  void _requireAuth(BuildContext context, VoidCallback onAuthenticated) {
+    final authState = context.read<AuthBloc>().state;
+    authState.maybeWhen(
+      authenticated: (_) => onAuthenticated(),
+      orElse: () {
+        ToastManager().show(
+          message: AppLocalizations.of(context)!.loginRequiredMessage,
+          type: ToastType.warning,
+        );
+        context.push('/login');
+      },
+    );
   }
 }

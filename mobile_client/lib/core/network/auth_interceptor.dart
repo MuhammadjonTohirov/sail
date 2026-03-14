@@ -5,6 +5,7 @@
 library;
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:logger/logger.dart';
@@ -37,9 +38,33 @@ class AuthInterceptor extends QueuedInterceptor {
   ) async {
     final token = await _storage.getAccessToken();
     if (token != null && token.isNotEmpty) {
-      options.headers['Authorization'] = 'Bearer $token';
+      if (_isTokenExpired(token)) {
+        _logger.d('Access token expired, clearing auth');
+        await _storage.clearAuth();
+      } else {
+        options.headers['Authorization'] = 'Bearer $token';
+      }
     }
     handler.next(options);
+  }
+
+  /// Decodes the JWT payload and checks the `exp` claim.
+  bool _isTokenExpired(String token) {
+    try {
+      final parts = token.split('.');
+      if (parts.length != 3) return true;
+      final payload = parts[1];
+      // Base64 needs padding to be a multiple of 4
+      final normalized = base64Url.normalize(payload);
+      final decoded = utf8.decode(base64Url.decode(normalized));
+      final map = jsonDecode(decoded) as Map<String, dynamic>;
+      final exp = map['exp'] as int?;
+      if (exp == null) return true;
+      // Expired if current time is past exp (with 5s buffer)
+      return DateTime.now().millisecondsSinceEpoch ~/ 1000 >= exp - 5;
+    } catch (_) {
+      return true;
+    }
   }
 
   @override
@@ -69,30 +94,18 @@ class AuthInterceptor extends QueuedInterceptor {
       final newToken = await _refreshAccessToken();
       if (newToken != null) {
         _logger.d('Token refreshed successfully, retrying request');
-        // Retry original request with new token
         final response = await _retryRequest(err.requestOptions, newToken);
         return handler.resolve(response);
       } else {
-        _logger.w('Token refresh failed, logging out');
+        _logger.w('Token refresh failed, retrying without auth');
         await _storage.clearAuth();
-        return handler.reject(
-          DioException(
-            requestOptions: err.requestOptions,
-            error: const RefreshTokenInvalidException(),
-            type: DioExceptionType.badResponse,
-          ),
-        );
+        // Retry without token — endpoint may be public (AllowAny)
+        return _retryWithoutAuth(err, handler);
       }
     } catch (e) {
       _logger.e('Error during token refresh: $e');
       await _storage.clearAuth();
-      return handler.reject(
-        DioException(
-          requestOptions: err.requestOptions,
-          error: const RefreshTokenInvalidException(),
-          type: DioExceptionType.badResponse,
-        ),
-      );
+      return _retryWithoutAuth(err, handler);
     }
   }
 
@@ -150,5 +163,19 @@ class AuthInterceptor extends QueuedInterceptor {
   ) async {
     requestOptions.headers['Authorization'] = 'Bearer $newToken';
     return _dio.fetch(requestOptions);
+  }
+
+  /// Retries the request without auth header for public endpoints.
+  Future<void> _retryWithoutAuth(
+    DioException err,
+    ErrorInterceptorHandler handler,
+  ) async {
+    try {
+      err.requestOptions.headers.remove('Authorization');
+      final response = await _dio.fetch(err.requestOptions);
+      handler.resolve(response);
+    } catch (_) {
+      handler.next(err);
+    }
   }
 }

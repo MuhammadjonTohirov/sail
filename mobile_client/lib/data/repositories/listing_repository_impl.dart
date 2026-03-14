@@ -187,6 +187,22 @@ class ListingRepositoryImpl implements ListingRepository {
       return UnknownFailure(e.toString()).asFail();
     }
   }
+
+  @override
+  Future<Result<RevealContactResult>> revealContact(int listingId) async {
+    try {
+      final data = await _remote.revealContact(listingId);
+      return RevealContactResult(
+        contactPhone: data['contact_phone'] as String?,
+        contactEmail: data['contact_email'] as String?,
+        contactName: data['contact_name'] as String?,
+      ).asSuccess;
+    } on AppException catch (e) {
+      return e.toFailure().asFail();
+    } catch (e) {
+      return UnknownFailure(e.toString()).asFail();
+    }
+  }
 }
 
 extension on AppException {

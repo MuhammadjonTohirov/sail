@@ -23,9 +23,11 @@ abstract class ListingMedia with _$ListingMedia {
 @freezed
 abstract class ListingAttribute with _$ListingAttribute {
   const factory ListingAttribute({
+    int? attributeId,
     required String key,
     required dynamic value,
     String? label,
+    String? type,
   }) = _ListingAttribute;
 }
 
@@ -67,6 +69,9 @@ abstract class Listing with _$Listing {
     String? contactPhoneMasked,
     double? priceNormalized,
     bool? isPromoted,
+    @Default(0) int viewCount,
+    @Default(0) int favoriteCount,
+    @Default(0) int interestCount,
     int? userId,
     ListingUser? user,
     ListingSeller? seller,
@@ -105,4 +110,14 @@ abstract class ListingAttributePayload with _$ListingAttributePayload {
     required int attributeId,
     required dynamic value,
   }) = _ListingAttributePayload;
+}
+
+/// Result of revealing contact info.
+@freezed
+abstract class RevealContactResult with _$RevealContactResult {
+  const factory RevealContactResult({
+    String? contactPhone,
+    String? contactEmail,
+    String? contactName,
+  }) = _RevealContactResult;
 }

@@ -3,8 +3,6 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'favorite.freezed.dart';
 
 /// Favorite listing entity.
-/// 
-/// Matches web_client/domain/models/Favorite.ts
 @freezed
 abstract class Favorite with _$Favorite {
   const factory Favorite({
@@ -12,11 +10,9 @@ abstract class Favorite with _$Favorite {
     required int listingId,
     required String title,
     double? price,
-    String? currency,
-    String? thumbnailUrl,
     String? locationName,
-    String? status,
-    DateTime? addedAt,
+    List<String>? mediaUrls,
+    DateTime? createdAt,
   }) = _Favorite;
 }
 
@@ -28,9 +24,8 @@ abstract class RecentlyViewedListing with _$RecentlyViewedListing {
     required int listingId,
     required String title,
     double? price,
-    String? currency,
-    String? thumbnailUrl,
     String? locationName,
+    List<String>? mediaUrls,
     DateTime? viewedAt,
   }) = _RecentlyViewedListing;
 }

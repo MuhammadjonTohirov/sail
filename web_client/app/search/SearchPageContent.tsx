@@ -27,6 +27,8 @@ export default function SearchPageContent({
     setMinPrice,
     maxPrice,
     setMaxPrice,
+    currency,
+    setCurrency,
     viewMode,
     setViewMode,
     categoryTree,
@@ -80,6 +82,8 @@ export default function SearchPageContent({
           setMinPrice={setMinPrice}
           maxPrice={maxPrice}
           setMaxPrice={setMaxPrice}
+          currency={currency}
+          setCurrency={setCurrency}
           attributes={attributes}
           attrValues={attrValues}
           setAttrValue={setAttrValue}
@@ -96,6 +100,7 @@ export default function SearchPageContent({
             viewMode={viewMode}
             basePath={basePath}
             locale={locale as "ru" | "uz"}
+            filterCurrency={currency || undefined}
           />
 
           {/* Infinite scroll sentinel */}

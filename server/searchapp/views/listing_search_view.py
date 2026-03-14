@@ -1,8 +1,10 @@
 from __future__ import annotations
 
+import re
 from typing import Any, Dict, List
 
 from django.conf import settings
+from drf_spectacular.utils import OpenApiExample, OpenApiParameter, extend_schema
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -32,6 +34,79 @@ def _parse_filters(params) -> Dict[str, Any]:
     return filters
 
 
+def _build_text_query(query: str) -> Dict[str, Any]:
+    tokens = [token.strip() for token in re.split(r"\s+", query) if token.strip()]
+    if not tokens:
+        return {"match_all": {}}
+
+    must_clauses: List[Dict[str, Any]] = []
+    for token in tokens:
+        normalized = _normalize_query_token(token)
+        token_shoulds: List[Dict[str, Any]] = [
+            {
+                "multi_match": {
+                    "query": token,
+                    "fields": ["title^5", "description^2"],
+                    "type": "best_fields",
+                }
+            },
+            {
+                "multi_match": {
+                    "query": token,
+                    "fields": ["title^6", "description^2"],
+                    "type": "phrase_prefix",
+                }
+            },
+            {
+                "multi_match": {
+                    "query": token,
+                    "fields": ["title^4", "description"],
+                    "type": "best_fields",
+                    "fuzziness": "AUTO",
+                }
+            },
+        ]
+
+        if len(normalized) >= 3:
+            token_shoulds.extend(
+                [
+                    {
+                        "wildcard": {
+                            "title": {
+                                "value": f"*{normalized}*",
+                                "boost": 2.5,
+                            }
+                        }
+                    },
+                    {
+                        "wildcard": {
+                            "description": {
+                                "value": f"*{normalized}*",
+                                "boost": 1.0,
+                            }
+                        }
+                    },
+                ]
+            )
+
+        must_clauses.append(
+            {
+                "bool": {
+                    "should": token_shoulds,
+                    "minimum_should_match": 1,
+                }
+            }
+        )
+
+    return {"bool": {"must": must_clauses}}
+
+
+def _normalize_query_token(token: str) -> str:
+    cleaned = token.strip().lower()
+    cleaned = cleaned.replace("*", "").replace("?", "")
+    return cleaned
+
+
 class ListingSearchView(APIView):
     """
     Listing search API with currency-aware price filtering.
@@ -57,6 +132,31 @@ class ListingSearchView(APIView):
     authentication_classes: list = []
     permission_classes: list = []
 
+    @extend_schema(
+        tags=["search"],
+        summary="Search listings",
+        description="Search listings with full-text search, faceted filtering, and multi-currency price support.",
+        parameters=[
+            OpenApiParameter(name="q", description="Search query text", required=False, type=str),
+            OpenApiParameter(name="currency", description="Currency code for price filtering (default: UZS)", required=False, type=str),
+            OpenApiParameter(name="min_price", description="Minimum price in the specified currency", required=False, type=float),
+            OpenApiParameter(name="max_price", description="Maximum price in the specified currency", required=False, type=float),
+            OpenApiParameter(name="category_slug", description="Filter by category slug", required=False, type=str),
+            OpenApiParameter(name="location_slug", description="Filter by location slug", required=False, type=str),
+            OpenApiParameter(name="condition", description="Filter by condition (new/used)", required=False, type=str),
+            OpenApiParameter(name="user_id", description="Filter by user ID", required=False, type=int),
+            OpenApiParameter(name="sort", description="Sort order: relevance, newest, price_asc, price_desc", required=False, type=str),
+            OpenApiParameter(name="page", description="Page number (default: 1)", required=False, type=int),
+            OpenApiParameter(name="per_page", description="Results per page (default: 20, max: 50)", required=False, type=int),
+        ],
+        examples=[
+            OpenApiExample(
+                "Success",
+                value={"success": True, "data": {"results": [{"id": "1", "title": "iPhone 15", "price": 500, "price_currency": "USD"}], "total": 1, "page": 1, "per_page": 20, "facets": {"categories": [], "locations": []}}, "error": None, "code": 200},
+                response_only=True,
+            ),
+        ],
+    )
     def get(self, request):
         client = get_client()
         if not client:
@@ -87,13 +187,7 @@ class ListingSearchView(APIView):
         filter_clauses: List[Dict[str, Any]] = []
 
         if q:
-            must.append({
-                "multi_match": {
-                    "query": q,
-                    "fields": ["title^2", "description"],
-                    "type": "best_fields",
-                }
-            })
+            must.append(_build_text_query(q))
 
         # Category filter: requires full path slug match; we accept single slug and filter on prefix
         if slug := filters.get("category_slug"):

@@ -58,7 +58,9 @@
     "filtersApplied": "{{count}} фильтров",
     "filtersBack": "Назад к результатам",
     "select": "Выбрать",
-    "endOfResults": "Больше объявлений нет"
+    "endOfResults": "Больше объявлений нет",
+    "currencyLabel": "Валюта",
+    "allCurrencies": "Все"
   },
   "features": {
     "promotions": "Продвижение объявлений",
@@ -202,6 +204,7 @@
     "sendMessage": "Написать сообщение",
     "ownListing": "Это ваше объявление",
     "showPhone": "Показать телефон",
+    "showContact": "Показать контакт",
     "seller": "Продавец",
     "user": "Пользователь",
     "onSiteSince": "На сайте с",
@@ -416,7 +419,23 @@
     "back": "Назад",
     "loadingMore": "Загружаем ещё...",
     "share": "Поделиться",
-    "copyLink": "Скопировать ссылку"
+    "copyLink": "Скопировать ссылку",
+    "free": "Бесплатно",
+    "today": "Сегодня",
+    "yesterday": "Вчера",
+    "daysAgo": "{{count}} дн. назад",
+    "top": "ТОП",
+    "yes": "Да",
+    "mySearch": "Мой поиск",
+    "priceLabel": "Цена:",
+    "searchSaved": "Поиск сохранен",
+    "searchSaveError": "Ошибка при сохранении",
+    "searchAlreadySaved": "Этот поиск уже сохранен",
+    "searchSavedSuccess": "Поиск сохранен! Вы будете получать уведомления о новых объявлениях.",
+    "searchSaveLoginRequired": "Не удалось сохранить поиск. Пожалуйста, войдите в систему.",
+    "saving": "Сохранение...",
+    "saved": "Поиск сохранен",
+    "saveSearch": "Сохранить поиск"
   },
   "settings": {
     "pageTitle": "Настройки",
